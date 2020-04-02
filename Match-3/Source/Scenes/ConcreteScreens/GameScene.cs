@@ -6,21 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Screens
+namespace Match_3.Source.Scenes
 {
-    class GameScreen : Screen
+    class GameScene : Scene
     {
-        private static Screen _instance;
-        public static Screen Instance
+        public GameScene(SceneId id) : base(id)
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new GameScreen();
-                }
-                return _instance;
-            }
         }
 
         public override void Awake()
@@ -33,7 +24,7 @@ namespace Match_3.Source.Screens
 
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch batch)
+        public override void Draw(GameTime gameTime)
         {
 
         }

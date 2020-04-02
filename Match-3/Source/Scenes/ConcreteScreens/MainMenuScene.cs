@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Match_3.Source.Scenes;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -6,21 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Screens
+namespace Match_3.Source.Scenes
 {
-    class MainMenuScreen : Screen
+    class MainMenuScene : Scene
     {
-        private static Screen _instance;
-        public static Screen Instance 
+        public MainMenuScene(SceneId id) : base(id)
         {
-            get 
-            { 
-                if (_instance == null)
-                {
-                    _instance = new MainMenuScreen();
-                }
-                return _instance;
-            }
         }
 
         public override void Awake()
@@ -33,7 +25,7 @@ namespace Match_3.Source.Screens
             
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch batch)
+        public override void Draw(GameTime gameTime)
         {
             
         }
