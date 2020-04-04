@@ -9,7 +9,7 @@ namespace Match_3.Source.Exceptions
 {
     class SceneNotFoundException : Exception
     {
-        public SceneNotFoundException(SceneId sceneId) : base($"Scene with id: {sceneId.Name} not founded")
+        public SceneNotFoundException(Type sceneType) : base($"Scene with id: {sceneType.Name} not founded")
         { 
         
         }

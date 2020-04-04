@@ -1,7 +1,6 @@
-﻿using Match_3.Source.Scenes;
+﻿using Match_3.Source.Core.SceneSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Match_3
 {
@@ -17,30 +16,11 @@ namespace Match_3
         protected override void Initialize()
         {
             SceneManager.Instance.GraphicsDevice = GraphicsDevice;
-            SceneManager.Instance.Register(
-                new MainMenuScene(
-                    new SceneId(
-                        nameof(MainMenuScene)
-                    )
-                )
-            );
-            SceneManager.Instance.Register(
-                null
-            );
-            SceneManager.Instance.Register(
-                new GameScene(
-                    new SceneId(
-                        nameof(GameScene)
-                    )
-                )
-            );
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            SceneManager.Instance.LoadScene(new SceneId(nameof(MainMenuScene)));
-            SceneManager.Instance.SetActiveScene(new SceneId(nameof(MainMenuScene)));
         }
 
         protected override void UnloadContent()
@@ -51,14 +31,14 @@ namespace Match_3
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            SceneManager.Instance.UpdateActiveScreen(gameTime);
+            SceneManager.Instance.UpdateActiveScreen();
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
-            SceneManager.Instance.DrawActiveScreen(gameTime);
+            SceneManager.Instance.DrawActiveScreen();
         }
     }
 }

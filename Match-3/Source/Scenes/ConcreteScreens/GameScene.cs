@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Match_3.Source.Core.SceneSystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,21 +11,12 @@ namespace Match_3.Source.Scenes
 {
     class GameScene : Scene
     {
-        public GameScene(SceneId id) : base(id)
-        {
-        }
-
         public override void Awake()
         {
             Console.WriteLine("Awake game");
         }
 
-        public override void Update(GameTime gameTime)
-        {
-
-        }
-
-        public override void Draw(GameTime gameTime)
+        public override void Update()
         {
 
         }

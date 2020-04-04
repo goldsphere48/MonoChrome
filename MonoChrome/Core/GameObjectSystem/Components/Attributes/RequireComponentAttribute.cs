@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Actors
+namespace Match_3.Source.Core.GameObjectSystem.Components.Attributes
 {
-    class Transform
+    class RequireComponentAttribute
     {
-
     }
 }

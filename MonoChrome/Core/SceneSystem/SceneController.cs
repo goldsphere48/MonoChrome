@@ -1,58 +1,54 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Match_3.Source.Scenes
+namespace Match_3.Source.Core.SceneSystem
 {
     /// <summary>
     /// Add additional functionality to work with SceneManager
     /// </summary>
     class SceneController : IDisposable
     {
-        private Scene _scene;
+        public Scene Scene { get; }
 
         public SceneController(Scene scene, GraphicsDevice device)
         {
-            _scene = scene;
-            if (_scene.SpriteBatch == null)
+            Scene = scene;
+            if (Scene.SpriteBatch == null)
             {
-                _scene.SpriteBatch = new SpriteBatch(device);
+                Scene.SpriteBatch = new SpriteBatch(device);
             }
         }
 
         #region Scene Interface
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
-            _scene.Draw(gameTime);
+            //Scene.Draw();
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            _scene.Update(gameTime);
+            Scene.Update();
         }
         #endregion
 
         #region Scene Controller Interface
-        public bool IsInitialized { get; set; } = false;
-        public bool IsDisposed { get; set; } = false;
+        public bool IsInitialized { get; private set; } = false;
+        public bool IsDisposed { get; private set; } = false;
 
         public void Enable()
         {
-            _scene.OnEnable();
+            Scene.Enabled = true;
         }
         public void Disable()
         {
-            _scene.OnDisable();
+            Scene.Enabled = false;
         }
         public void Initialize()
         {
             IsInitialized = true;
             IsDisposed = false;
-            _scene.Awake();
+            Scene.Awake();
         }
         public void CleanUp(bool clean)
         {
@@ -60,16 +56,16 @@ namespace Match_3.Source.Scenes
             {
                 if (clean)
                 {
-                    _scene.CleanControlled();
+                    Scene.OnDestroy();
                 }
-                _scene.Finalise();
+                Scene.OnFinalize();
                 IsDisposed = true;
                 IsInitialized = false;
             }
         }
         #endregion
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             CleanUp(true);
             GC.SuppressFinalize(true);
