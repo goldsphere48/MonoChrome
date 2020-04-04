@@ -1,4 +1,4 @@
-﻿using Match_3.Source.Exceptions;
+﻿using MonoChrome.Core.Exceptions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Core.SceneSystem
+namespace MonoChrome.Core.SceneSystem
 {
-    class SceneManager
+    public class SceneManager
     {
         public GraphicsDevice GraphicsDevice { get; set; }
         public static SceneManager Instance
@@ -40,7 +40,7 @@ namespace Match_3.Source.Core.SceneSystem
             return _scenes.Any(sceneController => sceneType == sceneController.Scene.GetType());
         }
 
-        public SceneController GetSceneController<T>() where T : Scene
+        internal SceneController GetSceneController<T>() where T : Scene
         {
             return _scenes.Find(sceneController => sceneController.Scene.GetType() == typeof(T));
         }

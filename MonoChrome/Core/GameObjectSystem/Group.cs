@@ -1,13 +1,13 @@
-﻿using Match_3.Source.Core.GameObjectSystem.Components;
+﻿using MonoChrome.Core.GameObjectSystem.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Core.GameObjectSystem
+namespace MonoChrome.Core.GameObjectSystem
 {
-    class Group : GameObject
+    public class Group : GameObject
     {
         public void Add(GameObject gameObject)
         {

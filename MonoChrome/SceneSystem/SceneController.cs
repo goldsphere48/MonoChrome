@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Match_3.Source.Core.SceneSystem
+namespace MonoChrome.Core.SceneSystem
 {
     /// <summary>
     /// Add additional functionality to work with SceneManager
     /// </summary>
-    class SceneController : IDisposable
+    internal class SceneController : IDisposable
     {
         public Scene Scene { get; }
 

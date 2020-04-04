@@ -1,6 +1,7 @@
-﻿using Match_3.Source.Core.SceneSystem;
+﻿using Match_3.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core.SceneSystem;
 
 namespace Match_3
 {
@@ -16,11 +17,14 @@ namespace Match_3
         protected override void Initialize()
         {
             SceneManager.Instance.GraphicsDevice = GraphicsDevice;
+            SceneManager.Instance.Register<MainMenuScene>();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            SceneManager.Instance.LoadScene<MainMenuScene>();
+            SceneManager.Instance.SetActiveScene<MainMenuScene>();
         }
 
         protected override void UnloadContent()

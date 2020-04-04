@@ -1,12 +1,11 @@
-﻿using Match_3.Source.Core;
-using Match_3.Source.Core.GameObjectSystem.Components;
+﻿using MonoChrome.Core.GameObjectSystem.Components;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Match_3.Source.Core.GameObjectSystem
+namespace MonoChrome.Core.GameObjectSystem
 {
-    class GameObject : Playable
+    public class GameObject : Playable
     {
         private List<Component> _components = new List<Component>();
 

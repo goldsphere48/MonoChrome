@@ -1,13 +1,13 @@
-﻿using Match_3.Source.Core.SceneSystem;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core.SceneSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Scenes
+namespace Match_3.Scenes
 {
     class GameScene : Scene
     {

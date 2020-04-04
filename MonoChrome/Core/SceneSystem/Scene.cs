@@ -1,10 +1,10 @@
-﻿using Match_3.Source.Core.GameObjectSystem;
+﻿using MonoChrome.Core.GameObjectSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Match_3.Source.Core.SceneSystem
+namespace MonoChrome.Core.SceneSystem
 {
-    abstract class Scene : Playable
+    public abstract class Scene : Playable
     {
         private Group _root = new Group();
         private bool _enabled = true;

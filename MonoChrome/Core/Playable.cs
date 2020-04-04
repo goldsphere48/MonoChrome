@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3.Source.Core
+namespace MonoChrome.Core
 {
-    abstract class Playable
+    public abstract class Playable
     {
         private bool _enabled = true;
         bool Enabled 

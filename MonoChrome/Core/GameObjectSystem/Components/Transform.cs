@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Match_3.Source.Core.GameObjectSystem.Components
+namespace MonoChrome.Core.GameObjectSystem.Components
 {
-    class Transform : Component
+    public class Transform : Component
     {
         private Vector2 _localPosition = new Vector2(0, 0);
         private Vector2 _position = new Vector2(0, 0);
