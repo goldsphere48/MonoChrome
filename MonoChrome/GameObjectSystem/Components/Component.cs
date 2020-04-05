@@ -10,6 +10,16 @@ namespace MonoChrome.Core.GameObjectSystem.Components
     {
         public GameObject GameObject { get; private set; }
 
+        public T GetComponent<T>() where T : Component
+        {
+            return GameObject.GetComponent<T>();
+        }
+
+        public Component GetComponent(Type componentType)
+        {
+            return GameObject.GetComponent(componentType);
+        }
+
         public override void Awake()
         {
 

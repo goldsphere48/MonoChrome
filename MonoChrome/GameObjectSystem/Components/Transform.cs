@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoChrome.GameObjectSystem.Components.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace MonoChrome.Core.GameObjectSystem.Components
 {
+    [ComponentUsage(AllowMultipleComponentUsage = false)]
     public class Transform : Component
     {
         private Vector2 _position = Vector2.Zero;

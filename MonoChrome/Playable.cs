@@ -25,6 +25,7 @@ namespace MonoChrome.Core
                 }
             }
         }
+
         public abstract void Awake();
         public abstract void Start();
         public abstract void Update();
