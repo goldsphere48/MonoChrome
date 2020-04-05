@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Exceptions
 {
-    class SceneNotFoundException : Exception
+    public class SceneNotFoundException : Exception
     {
         public SceneNotFoundException(Type sceneType) : base($"Scene with id: {sceneType.Name} not founded")
         { 

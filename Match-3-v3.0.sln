@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Match-3", "Match-3\Match-3.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoChrome", "MonoChrome\MonoChrome.csproj", "{3C96FA0A-F72B-4935-AF43-48DBAA01F511}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoChrome.Tests", "MonoChrome.Tests\MonoChrome.Tests.csproj", "{140B85F0-A3FC-4702-818A-CBF51E022321}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,14 @@ Global
 		{3C96FA0A-F72B-4935-AF43-48DBAA01F511}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C96FA0A-F72B-4935-AF43-48DBAA01F511}.Release|x86.ActiveCfg = Release|Any CPU
 		{3C96FA0A-F72B-4935-AF43-48DBAA01F511}.Release|x86.Build.0 = Release|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Debug|x86.Build.0 = Debug|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Release|x86.ActiveCfg = Release|Any CPU
+		{140B85F0-A3FC-4702-818A-CBF51E022321}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

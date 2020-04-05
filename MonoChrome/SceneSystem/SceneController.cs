@@ -14,7 +14,7 @@ namespace MonoChrome.Core.SceneSystem
         public SceneController(Scene scene, GraphicsDevice device)
         {
             Scene = scene;
-            if (Scene.SpriteBatch == null)
+            if (Scene.SpriteBatch == null && device != null)
             {
                 Scene.SpriteBatch = new SpriteBatch(device);
             }

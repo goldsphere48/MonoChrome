@@ -20,7 +20,7 @@ namespace MonoChrome.Core.GameObjectSystem
         {
             var parentTransform = GetComponent<Transform>();
             var childTransform = gameObject.GetComponent<Transform>();
-            parentTransform.Childrens.Remove(childTransform);
+            childTransform.Parent = null;
         }
     }
 }

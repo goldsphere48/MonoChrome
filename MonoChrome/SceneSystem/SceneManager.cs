@@ -82,15 +82,28 @@ namespace MonoChrome.Core.SceneSystem
             {
                 ((IDisposable)scene).Dispose();
             }
+            _scenes.Remove(scene);
+        }
+
+        private void UnloadScene(SceneController scene)
+        {
+            if (_scenes.Contains(scene))
+            {
+                scene.Disable();
+                if (scene.IsInitialized)
+                {
+                    ((IDisposable)scene).Dispose();
+                }
+            }
         }
 
         public void UnloadAll()
         {
             foreach (var value in _scenes)
             {
-                value.Disable();
-                ((IDisposable)value).Dispose();
+                UnloadScene(value);
             }
+            _scenes.Clear();
         }
 
         public void SetActiveScene<T>() where T : Scene
@@ -135,7 +148,7 @@ namespace MonoChrome.Core.SceneSystem
 
         private void DisableScene(SceneController _scene)
         {
-            _currentScreen?.Disable();
+            _scene?.Disable();
         }
     }
 }

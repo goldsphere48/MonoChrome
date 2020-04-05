@@ -6,14 +6,38 @@ namespace MonoChrome.Core.GameObjectSystem.Components
 {
     public class Transform : Component
     {
-        private Vector2 _localPosition = new Vector2(0, 0);
-        private Vector2 _position = new Vector2(0, 0);
+        private Vector2 _position = Vector2.Zero;
+        private Transform _parent;
 
         public List<Transform> Childrens { get; } = new List<Transform>();
-        public Transform Parent { get; set; }
-        public Vector2 LocalPosition 
+        public Transform Parent 
         { 
-            get => _localPosition;
+            get => _parent;
+            set
+            {
+                if (value == null)
+                {
+                    if (_parent != null)
+                    {
+                        _parent.Childrens.Remove(this);
+                    }
+                } else if (!value.Childrens.Contains(this))
+                {
+                    value.Childrens.Add(this);
+                }
+                _parent = value;
+            }
+        }
+        public Vector2 LocalPosition 
+        {
+            get 
+            { 
+                if (Parent == null)
+                {
+                    return _position;
+                }
+                return _position - Parent.Position;
+            }
             set => HandleLocalPositionChange(value);
         }
         public Vector2 Position
@@ -24,10 +48,12 @@ namespace MonoChrome.Core.GameObjectSystem.Components
 
         private void HandleLocalPositionChange(Vector2 newLocalPosition)
         {
-            if (newLocalPosition != _localPosition)
+            if (Parent != null)
             {
-                _localPosition = newLocalPosition;
                 Position = newLocalPosition + Parent.Position;
+            } else
+            {
+                Position = newLocalPosition;
             }
         }
 
@@ -35,7 +61,7 @@ namespace MonoChrome.Core.GameObjectSystem.Components
         {
             if (newAbsolutePosition != _position)
             {
-                var dv = _position - newAbsolutePosition;
+                var dv = newAbsolutePosition - _position;
                 _position = newAbsolutePosition;
                 foreach (var child in Childrens)
                 {
