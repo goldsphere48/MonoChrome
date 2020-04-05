@@ -14,7 +14,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Unload_Empty_SceneManager()
+        public void UnloadAll_SceneManagerIsEmpty_WithoutExceptions()
         {
             try
             {
@@ -27,7 +27,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Register_2_Simullar_Scenes_Throw_SceneAlreadyExistException()
+        public void Register_2SimullarScenes_ThrowSceneAlreadyExistException()
         {
             SceneManager.Instance.UnloadAll();
             Assert.ThrowsException<SceneAlreadyExistException>(() => {
@@ -37,20 +37,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Register_Scene_After_SceneManagerUnload_Correct()
-        {
-            SceneManager.Instance.UnloadAll();
-            try
-            {
-                SceneManager.Instance.Register<SceneA>();
-            } catch(SceneAlreadyExistException e)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod]
-        public void Unload_Not_Existing_Scene_Throw_SceneAlreadyExistException()
+        public void Unload_NotExistingScene_ThrowSceneAlreadyExistException()
         {
             SceneManager.Instance.UnloadAll();
             Assert.ThrowsException<SceneNotFoundException>(() => {
@@ -59,21 +46,21 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Unload_Existing_Scene_Throw_SceneAlreadyExistException()
+        public void Unload_ExistingScene_WithoutExceptions()
         {
             SceneManager.Instance.UnloadAll();
             SceneManager.Instance.Register<SceneA>();
             try
             {
                 SceneManager.Instance.UnloadScene<SceneA>();
-            } catch(SceneNotFoundException e)
+            } catch(Exception e)
             {
                 Assert.Fail();
             }
         }
 
         [TestMethod]
-        public void Load_Not_Existing_Scene_Throw_SceneAlreadyExistException()
+        public void Load_NotExistingScene_ThrowSceneAlreadyExistException()
         {
             SceneManager.Instance.UnloadAll();
             Assert.ThrowsException<SceneNotFoundException>(() => {
@@ -82,7 +69,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Load_Existing_Scene_Throw_SceneAlreadyExistException()
+        public void Load_ExistingScene_WithoutExceptions()
         {
             SceneManager.Instance.UnloadAll();
             SceneManager.Instance.Register<SceneA>();
@@ -90,14 +77,14 @@ namespace MonoChrome.Tests
             {
                 SceneManager.Instance.LoadScene<SceneA>();
             }
-            catch (SceneNotFoundException e)
+            catch (Exception e)
             {
                 Assert.Fail();
             }
         }
 
         [TestMethod]
-        public void SetActive_Not_Existing_Scene_Throw_SceneAlreadyExistException()
+        public void SetActive_NotExistingScene_ThrowSceneAlreadyExistException()
         {
             SceneManager.Instance.UnloadAll();
             Assert.ThrowsException<SceneNotFoundException>(() => {
@@ -106,7 +93,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void SetActive_Existing_But_Not_Initialized_Scene_Throw_SceneAlreadyExistException()
+        public void SetActive_ExistingButNotInitializedScene_ThrowSceneNotInitializedException()
         {
             SceneManager.Instance.UnloadAll();
             SceneManager.Instance.Register<SceneA>();
@@ -117,7 +104,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void SetActive_Existing_Initialized_Scene_Throw_SceneAlreadyExistException()
+        public void SetActive_ExistingInitializedScene_WithoutExceptions()
         {
             SceneManager.Instance.UnloadAll();
             SceneManager.Instance.Register<SceneA>();
@@ -126,7 +113,7 @@ namespace MonoChrome.Tests
             {
                 SceneManager.Instance.SetActiveScene<SceneA>();
             }
-            catch (SceneNotInitializedException e)
+            catch (Exception e)
             {
                 Assert.Fail();
             }

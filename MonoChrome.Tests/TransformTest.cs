@@ -9,7 +9,7 @@ namespace MonoChrome.Tests
     public class TransformTest
     {
         [TestMethod]
-        public void Transform_Without_Parent_And_Childrens_Change_LocalPosition_AbsolutePosition_Equals_LocalPosition()
+        public void LocalPosition_WithoutParentAndChildrensChangeLocalPosition_AbsolutePositionEqualsLocalPosition()
         {
             //Arrange
             Transform t1 = new Transform();
@@ -20,7 +20,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Transform_Without_Parent_And_Childrens_Change_AbsolutePosition_AbsolutePosition_Equals_LocalPosition()
+        public void Position_WithoutParentAndChildrensChangeLocalPosition_AbsolutePositionEqualsLocalPosition()
         {
             //Arrange
             Transform t1 = new Transform();
@@ -31,7 +31,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Transform_Group_Change_AbsolutePosition_And_Children_Change_AbsolutePosition_Relative_Parent()
+        public void Position_HasChildrenTransformChangeParentPosition_ChildrenPositionChanged()
         {
             //Arrange
             Transform t1 = new Transform();
@@ -46,7 +46,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Transform_Group_Change_AbsolutePosition_And_Children_LocalPosition_Doesnt_Change()
+        public void Position_HasChildrenTransformChangeParentPosition_ChildrenLocalPositionNotChanged()
         {
             //Arrange
             Transform t1 = new Transform();
@@ -61,22 +61,22 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Change_Local_Position_In_Group_To_1_1_And_AbsolutePosition_Equals_1_1()
+        public void Position_HasParentChangeChildrenPosition_ChildLocalPositionChanged()
         {
             //Arrange
             Transform t1 = new Transform();
+            t1.Position = new Vector2(5, 5);
             Transform t2 = new Transform();
             t2.Position = new Vector2(2, 2);
             t2.Parent = t1;
-            var t2Local = t2.LocalPosition;
             //Actual
-            t1.Position = new Vector2(1, 1);
+            t2.Position = new Vector2(1, 1);
             //Expected
-            Assert.AreEqual(t2Local, t2.LocalPosition);
+            Assert.AreEqual(new Vector2(-4, -4), t2.LocalPosition);
         }
 
         [TestMethod]
-        public void Add_1_Children_AndChildrenCount_Equals_1()
+        public void Parent_Add_1_Children_ChildrenCountReturn_1()
         {
             //Arrange
             Transform t1 = new Transform();
@@ -90,7 +90,7 @@ namespace MonoChrome.Tests
         }
 
         [TestMethod]
-        public void Remove_1_Children_And_Children_Count_Equals_0()
+        public void Parent_Remove_1_Children_ChildrenCountReturn_0()
         {
             //Arrange
             Transform t1 = new Transform();
