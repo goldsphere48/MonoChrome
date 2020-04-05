@@ -31,6 +31,14 @@ namespace MonoChrome.GameObjectSystem.Components.Attributes
         public static bool Verify(Component component, GameObject gameObject)
         {
             var componentsInfo = GetAttributesInfo(component);
+            CheckAllowMultipleComponentUsage(component, gameObject, componentsInfo);
+            CheckUnfoundedComponents(gameObject, componentsInfo);
+            CheckTargetType(component, gameObject, componentsInfo);
+            return true;
+        }
+
+        private static bool CheckAllowMultipleComponentUsage(Component component, GameObject gameObject, ComponentAttributesInfo componentsInfo)
+        {
             if (!componentsInfo.AllowMultipleComponentUsage)
             {
                 if (gameObject.GetComponent(component.GetType()) != null)
@@ -38,6 +46,11 @@ namespace MonoChrome.GameObjectSystem.Components.Attributes
                     throw new InvalidComponentDuplicateException(component.GetType());
                 }
             }
+            return true;
+        }
+
+        private static bool CheckUnfoundedComponents(GameObject gameObject, ComponentAttributesInfo componentsInfo)
+        {
             var unfoundedRequiredComponents = new List<Type>();
             foreach (var requiredComponent in componentsInfo.RequiredComponents)
             {
@@ -49,6 +62,20 @@ namespace MonoChrome.GameObjectSystem.Components.Attributes
             if (unfoundedRequiredComponents.Count > 0)
             {
                 throw new UnfoundRequiredComponentsException(unfoundedRequiredComponents);
+            }
+            return true;
+        }
+
+        private static bool CheckTargetType(Component component, GameObject gameObject, ComponentAttributesInfo componentsInfo)
+        {
+            bool inherit = componentsInfo.TargetTypeInherit;
+            bool isSameOrSubclass = componentsInfo.TargetType.IsAssignableFrom(gameObject.GetType());
+            bool isSame = componentsInfo.TargetType != gameObject.GetType();
+            bool notCorrect = (inherit && !isSameOrSubclass) ||
+                              (!inherit && !isSame);
+            if (notCorrect)
+            {
+                throw new InvalidComponentTargetException(component.GetType(), gameObject.GetType());
             }
             return true;
         }

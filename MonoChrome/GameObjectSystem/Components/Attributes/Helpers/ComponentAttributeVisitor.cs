@@ -21,5 +21,10 @@ namespace MonoChrome.GameObjectSystem.Components.Attributes.Helpers
         {
             _result.RequiredComponents.Add(attribute.RequiredComponent);
         }
+
+        public void VisitCreatedForAttribute(CreatedForAttribute attribute)
+        {
+            _result.TargetType = attribute.TargetType;
+        }
     }
 }

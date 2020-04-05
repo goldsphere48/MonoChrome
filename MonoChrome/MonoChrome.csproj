@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObjectSystem\Components\Attributes\CreatedForAttribute.cs" />
     <Compile Include="GameObjectSystem\Components\Attributes\Helpers\ComponentAttributesInfo.cs" />
     <Compile Include="GameObjectSystem\Components\Attributes\Helpers\ComponentAttributeVisitor.cs" />
     <Compile Include="GameObjectSystem\Components\Attributes\Helpers\ComponentsAttributeChecker.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="GameObjectSystem\Components\Attributes\RequireComponentAttribute.cs" />
     <Compile Include="GameObjectSystem\Components\Component.cs" />
     <Compile Include="GameObjectSystem\Components\Exceptions\InvalidComponentDuplicateException.cs" />
+    <Compile Include="GameObjectSystem\Components\Exceptions\InvalidComponentTargetException.cs" />
     <Compile Include="GameObjectSystem\Components\Exceptions\UnfoundRequiredComponentsException.cs" />
     <Compile Include="GameObjectSystem\Components\Transform.cs" />
     <Compile Include="GameObjectSystem\GameObject.cs" />
