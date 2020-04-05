@@ -48,7 +48,7 @@ namespace MonoChrome.Core.GameObjectSystem.Components
         /// Attach gameObject to Component with reflection
         /// </summary>
         /// <param name="gameObject"></param>
-        private void Attach(GameObject gameObject)
+        internal void Attach(GameObject gameObject)
         {
             GameObject = gameObject;
         }

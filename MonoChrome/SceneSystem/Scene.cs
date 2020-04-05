@@ -7,25 +7,8 @@ namespace MonoChrome.Core.SceneSystem
     public abstract class Scene : Playable
     {
         private Group _root = new Group();
-        private bool _enabled = true;
 
         public SpriteBatch SpriteBatch { get; set; }
-        public virtual bool Enabled
-        {
-            get => _enabled;
-            set
-            {
-                _enabled = value;
-                if (_enabled)
-                {
-                    OnEnable();
-                }
-                else
-                {
-                    OnDisable();
-                }
-            }
-        }
 
         public void Add(GameObject gameObject)
         {

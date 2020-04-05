@@ -9,23 +9,6 @@ namespace MonoChrome.Core.GameObjectSystem
     {
         private List<Component> _components = new List<Component>();
 
-        private bool _enabled = true;
-        public virtual bool Enabled 
-        {
-            get => _enabled;
-            set
-            {
-                _enabled = value;
-                if (_enabled)
-                {
-                    OnEnable();
-                } else
-                {
-                    OnDisable();
-                }
-            }
-        }
-
         public GameObject()
         {
             AddComponent<Transform>();
@@ -34,8 +17,7 @@ namespace MonoChrome.Core.GameObjectSystem
         public T AddComponent<T>() where T : Component
         {
             var component = Activator.CreateInstance(typeof(T)) as Component;
-            MethodInfo attachGameObjectMethod = component.GetType().GetMethod("Attach");
-            attachGameObjectMethod?.Invoke(component, new object[] { this });
+            component.Attach(this);
             _components.Add(component);
             component.Awake();
             return component as T;
