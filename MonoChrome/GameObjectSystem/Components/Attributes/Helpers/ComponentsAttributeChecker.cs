@@ -71,8 +71,7 @@ namespace MonoChrome.GameObjectSystem.Components.Attributes
             bool inherit = componentsInfo.TargetTypeInherit;
             bool isSameOrSubclass = componentsInfo.TargetType.IsAssignableFrom(gameObject.GetType());
             bool isSame = componentsInfo.TargetType != gameObject.GetType();
-            bool notCorrect = (inherit && !isSameOrSubclass) ||
-                              (!inherit && !isSame);
+            bool notCorrect = (inherit && !isSameOrSubclass) || (!inherit && !isSame);
             if (notCorrect)
             {
                 throw new InvalidComponentTargetException(component.GetType(), gameObject.GetType());
