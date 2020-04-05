@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MonoChrome.GameObjectSystem.Components.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    class ComponentUsageAttribute : Attribute, IComponentVisitorAcceptable
+    public class ComponentUsageAttribute : Attribute, IComponentVisitorAcceptable
     {
         public bool AllowMultipleComponentUsage { get; set; } = true;
 

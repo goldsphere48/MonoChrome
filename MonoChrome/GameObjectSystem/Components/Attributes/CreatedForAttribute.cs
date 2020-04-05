@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MonoChrome.GameObjectSystem.Components.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    class CreatedForAttribute : Attribute, IComponentVisitorAcceptable
+    public class CreatedForAttribute : Attribute, IComponentVisitorAcceptable
     {
         public readonly Type TargetType;
         public bool Inherit { get; set; } = false;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MonoChrome.GameObjectSystem.Components.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    class RequireComponentAttribute : Attribute, IComponentVisitorAcceptable
+    public class RequireComponentAttribute : Attribute, IComponentVisitorAcceptable
     {
         public readonly Type RequiredComponent;
         public RequireComponentAttribute(Type componentType)

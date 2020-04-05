@@ -1,31 +1,43 @@
 ﻿using Match_3.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core.GameObjectSystem;
 using MonoChrome.Core.GameObjectSystem.Components;
 using MonoChrome.Core.SceneSystem;
+using MonoChrome.GameObjectSystem.Components.Attributes;
 
 namespace Match_3
 {
     public class Match3Game : Game
     {
+        [CreatedFor(typeof(Obj1), Inherit = true)]
+        class A : Component
+        {
+
+        }
+
+        class Obj1 : GameObject
+        {
+
+        }
+
+        class Obj3 : Obj1
+        {
+
+        }
+
         private GraphicsDeviceManager _graphics;
         public Match3Game()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            Transform t1 = new Transform();
-            Transform t2 = new Transform();
-            t2.Position = new Vector2(2, 2);
-            t2.Parent = t1;
-            var t2Local = t2.LocalPosition;
-            //Actual
-            t1.Position = new Vector2(1, 1);
+            Obj3 o = new Obj3();
+            o.AddComponent<A>();
         }
 
         protected override void Initialize()
         {
             SceneManager.Instance.GraphicsDevice = GraphicsDevice;
-            SceneManager.Instance.Register<MainMenuScene>();
             SceneManager.Instance.Register<MainMenuScene>();
             base.Initialize();
         }

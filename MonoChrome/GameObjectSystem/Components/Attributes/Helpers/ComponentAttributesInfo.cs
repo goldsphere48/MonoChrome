@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.GameObjectSystem.Components.Attributes.Helpers
 {
-    class ComponentAttributesInfo
+    public class ComponentAttributesInfo
     {
         public bool AllowMultipleComponentUsage { get; set; } = true;
         public Type TargetType { get; set; } = null;

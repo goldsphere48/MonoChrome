@@ -8,8 +8,8 @@ namespace MonoChrome.GameObjectSystem.Components.Exceptions
 {
     public class UnfoundRequiredComponentsException : Exception
     {
-        public UnfoundRequiredComponentsException(List<Type> requiredComponents) 
-            : base($"Can't find required components: {string.Join(",", requiredComponents)}")
+        public UnfoundRequiredComponentsException(Type requiredComponent) 
+            : base($"Can't find required components: {requiredComponent}")
         {
 
         }
