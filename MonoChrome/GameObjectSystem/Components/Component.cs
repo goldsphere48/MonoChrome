@@ -10,16 +10,6 @@ namespace MonoChrome.Core.GameObjectSystem.Components
     {
         public GameObject GameObject { get; private set; }
 
-        public T GetComponent<T>() where T : Component
-        {
-            return GameObject.GetComponent<T>();
-        }
-
-        public Component GetComponent(Type componentType)
-        {
-            return GameObject.GetComponent(componentType);
-        }
-
         public override void Awake()
         {
 
@@ -54,10 +44,6 @@ namespace MonoChrome.Core.GameObjectSystem.Components
 
         }
 
-        /// <summary>
-        /// Attach gameObject to Component with reflection
-        /// </summary>
-        /// <param name="gameObject"></param>
         internal void Attach(GameObject gameObject)
         {
             GameObject = gameObject;

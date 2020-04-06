@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="ComponentUsageAttributeTest.cs" />
     <Compile Include="CreatedForAttributeTest.cs" />
-    <Compile Include="GroupTest.cs" />
     <Compile Include="RequireComponentAttributeTest.cs" />
     <Compile Include="SceneManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.GameObjectSystem.Components;
 using System;
 
 namespace MonoChrome.Core.SceneSystem
@@ -21,11 +22,6 @@ namespace MonoChrome.Core.SceneSystem
         }
 
         #region Scene Interface
-        public void Draw()
-        {
-            //Scene.Draw();
-        }
-
         public void Update()
         {
             Scene.Update();
@@ -35,6 +31,15 @@ namespace MonoChrome.Core.SceneSystem
         #region Scene Controller Interface
         public bool IsInitialized { get; private set; } = false;
         public bool IsDisposed { get; private set; } = false;
+
+        public void Draw()
+        {
+            var renderers = Scene.Root.GetComponentsInChildren<Renderer>(true);
+            foreach (var renderer in renderers)
+            {
+                renderer.Draw(Scene.SpriteBatch);
+            }
+        }
 
         public void Enable()
         {

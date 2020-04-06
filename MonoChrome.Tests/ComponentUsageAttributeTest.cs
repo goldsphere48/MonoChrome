@@ -22,18 +22,13 @@ namespace MonoChrome.Tests
 
         }
 
-        class Obj : GameObject
-        {
-
-        }
-
 
         [TestMethod]
         public void Attribute_AllowMultipleComponentUsageEqualsFalseAndUseOneAttribue_NotThrowInvalidComponentDuplicateException()
         {
             try
             {
-                Obj o = new Obj();
+                GameObject o = new GameObject();
                 o.AddComponent<A>();
             } catch(InvalidComponentDuplicateException e)
             {
@@ -46,7 +41,7 @@ namespace MonoChrome.Tests
         {
             Assert.ThrowsException<InvalidComponentDuplicateException>(() =>
             {
-                Obj o = new Obj();
+                GameObject o = new GameObject();
                 o.AddComponent<A>();
                 o.AddComponent<A>();
             });
@@ -57,7 +52,7 @@ namespace MonoChrome.Tests
         {
             try
             {
-                Obj o = new Obj();
+                GameObject o = new GameObject();
                 o.AddComponent<B>();
                 o.AddComponent<B>();
             }

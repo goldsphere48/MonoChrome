@@ -22,17 +22,12 @@ namespace MonoChrome.Tests
 
         }
 
-        class Obj : GameObject
-        {
-
-        }
-
         [TestMethod]
         public void Attribute_RequireComponentBAndBExist_NotThrowUnfoundRequiredComponentsException()
         {
             try
             {
-                Obj o = new Obj();
+                GameObject o = new GameObject();
                 o.AddComponent<B>();
                 o.AddComponent<A>();
             } catch(UnfoundRequiredComponentsException e)
@@ -45,7 +40,7 @@ namespace MonoChrome.Tests
         public void Attribute_RequireComponentBAndBExist_ThrowUnfoundRequiredComponentsException()
         {
             Assert.ThrowsException<UnfoundRequiredComponentsException>(() => {
-                Obj o = new Obj();
+                GameObject o = new GameObject();
                 o.AddComponent<A>();
             });
         }

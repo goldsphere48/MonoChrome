@@ -6,17 +6,18 @@ namespace MonoChrome.Core.SceneSystem
 {
     public abstract class Scene : Playable
     {
-        private Group _root = new Group();
+        private GameObject _root = new GameObject();
 
         public SpriteBatch SpriteBatch { get; set; }
+        public GameObject Root => _root;
 
         public void Add(GameObject gameObject)
         {
-            _root.Add(gameObject);
+            _root.Transform.Parent = gameObject.Transform;
         }
         public void Remove(GameObject gameObject)
         {
-            _root.Remove(gameObject);
+            _root.Transform.Parent = null;
         }
 
         #region IPlayable
