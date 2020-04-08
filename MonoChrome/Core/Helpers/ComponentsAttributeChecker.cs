@@ -1,14 +1,13 @@
 ﻿using MonoChrome.Core.GameObjectSystem;
 using MonoChrome.Core.GameObjectSystem.Components;
 using MonoChrome.GameObjectSystem.Components.Attributes.Helpers;
-using MonoChrome.GameObjectSystem.Components.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components.Attributes
+namespace MonoChrome.Core.Helpers
 {
     static class ComponentsAttributeChecker
     {

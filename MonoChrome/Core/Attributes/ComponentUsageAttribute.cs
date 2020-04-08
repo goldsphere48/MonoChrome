@@ -1,11 +1,7 @@
 ﻿using MonoChrome.GameObjectSystem.Components.Attributes.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components.Attributes
+namespace MonoChrome.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ComponentUsageAttribute : Attribute, IComponentVisitorAcceptable

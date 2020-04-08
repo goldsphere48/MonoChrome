@@ -3,7 +3,7 @@ using MonoChrome.GameObjectSystem.Components.Attributes;
 using System;
 using System.Collections.Generic;
 
-namespace MonoChrome.Core.GameObjectSystem.Components
+namespace MonoChrome.Core.Components
 {
     [ComponentUsage(AllowMultipleComponentUsage = false)]
     public class Transform : Component

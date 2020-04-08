@@ -9,7 +9,7 @@ namespace MonoChrome.Core
     public abstract class Playable
     {
         private bool _enabled = true;
-        bool Enabled 
+        public bool Enabled 
         { 
             get => _enabled;
             set
@@ -25,6 +25,7 @@ namespace MonoChrome.Core
                 }
             }
         }
+
         public abstract void Awake();
         public abstract void Start();
         public abstract void Update();

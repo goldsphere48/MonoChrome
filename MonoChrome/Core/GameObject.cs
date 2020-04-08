@@ -1,14 +1,15 @@
-﻿using MonoChrome.Core.GameObjectSystem.Components;
-using MonoChrome.GameObjectSystem.Components.Attributes;
+﻿using MonoChrome.Core.Components;
+using MonoChrome.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MonoChrome.Core.GameObjectSystem
+namespace MonoChrome.Core
 {
     public sealed class GameObject : Playable
     {
         public Transform Transform { get; }
+        public string Name { get; }
 
         private List<Component> _components = new List<Component>();
 
@@ -17,10 +18,15 @@ namespace MonoChrome.Core.GameObjectSystem
             Transform = AddComponent<Transform>();
         }
 
+        public GameObject(string name) : base()
+        {
+            Name = name;
+        }
+
         #region Components Controller
         public Component AddComponent(Type componentType)
         {
-            var component = Activator.CreateInstance(componentType) as Component;
+            var component = Component.Create(componentType);
             var checkResult = ComponentsAttributeChecker.Verify(component, this);
             if (checkResult)
             {

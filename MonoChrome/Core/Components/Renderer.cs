@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components
+namespace MonoChrome.Core.Components
 {
     abstract class Renderer : Component
     {

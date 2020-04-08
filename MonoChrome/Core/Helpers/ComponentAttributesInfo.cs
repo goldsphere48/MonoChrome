@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components.Attributes.Helpers
+namespace MonoChrome.Core.Helpers
 {
     public class ComponentAttributesInfo
     {

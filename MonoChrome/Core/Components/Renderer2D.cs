@@ -2,13 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.GameObjectSystem.Components;
 using MonoChrome.GameObjectSystem.Components.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components
+namespace MonoChrome.Core.Components
 {
     [RequireComponent(typeof(Transform))]
     class Renderer2D : Renderer

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.GameObjectSystem.Components.Attributes
+namespace MonoChrome.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class RequireComponentAttribute : Attribute, IComponentVisitorAcceptable
