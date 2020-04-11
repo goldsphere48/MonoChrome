@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core.Helpers
+namespace MonoChrome.Core.Helpers.ComponentValidation
 {
     public class ComponentAttributeVisitor
     {

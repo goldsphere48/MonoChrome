@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core.Helpers
+namespace MonoChrome.Core.Helpers.ComponentValidation
 {
     static class ComponentValidator
     {
         private static ComponentAttributeVisitor _attributeVisitor = new ComponentAttributeVisitor();
-        public static bool Verify(Type[] componentTypes)
+        public static bool Valid(Type[] componentTypes)
         {
             _attributeVisitor.ComponentTypes = componentTypes;
             foreach (var componentType in componentTypes) {

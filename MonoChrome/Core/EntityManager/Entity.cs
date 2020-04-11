@@ -1,4 +1,5 @@
 ﻿using MonoChrome.Core.Helpers;
+using MonoChrome.Core.Helpers.ComponentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentsValid(componentTypes))
+            if (ComponentValidator.Valid(componentTypes))
             {
                 _definitions.Define(definition, inheritFromDefinition, componentTypes);
             }
@@ -35,7 +36,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentsValid(componentTypes))
+            if (ComponentValidator.Valid(componentTypes))
             {
                 return _entityFactory.Create(name, componentTypes);
             }
@@ -50,15 +51,6 @@ namespace MonoChrome.Core.EntityManager
             }
             var componentTypes = _definitions.Get(definition);
             return _entityFactory.Create(name, componentTypes.ToArray());
-        }
-
-        public static bool ComponentsValid(IEnumerable<Type> componentTypes)
-        {
-            foreach (var componentType in componentTypes)
-            {
-                ComponentValidator.Verify(componentType, componentTypes.ToArray());
-            }
-            return true;
         }
     }
 }
