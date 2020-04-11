@@ -13,10 +13,10 @@ namespace MonoChrome.SceneSystem
         public bool Disposed { get; private set; } = false;
         public Type SceneType => GetType();
 
-        private Scene _scene;
+        private IScene _scene;
         private SpriteBatch _spriteBatch;
 
-        public SceneController(Scene scene, GraphicsDevice device)
+        public SceneController(IScene scene, GraphicsDevice device)
         {
             _scene = scene;
             _spriteBatch = new SpriteBatch(device);
@@ -63,9 +63,12 @@ namespace MonoChrome.SceneSystem
             // Вызывать все методы Draw, из Renderer'ов текущего контекста
             _spriteBatch.End();
         }
+        #endregion
 
+        #region Disposable
         public void CleanUp(bool clean)
         {
+            OnDisable();
             if (!Disposed)
             {
                 if (clean)
@@ -77,9 +80,8 @@ namespace MonoChrome.SceneSystem
                 Initialized = false;
             }
         }
-        #endregion
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             CleanUp(true);
             GC.SuppressFinalize(true);
@@ -89,5 +91,6 @@ namespace MonoChrome.SceneSystem
         {
             CleanUp(false);
         }
+        #endregion
     }
 }

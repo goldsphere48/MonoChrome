@@ -8,7 +8,7 @@ namespace MonoChrome.SceneSystem
 {
     interface ISceneManager
     {
-        T CreateEmpty<T>() where T : IScene;
+        T CreateEmpty<T>() where T : class, IScene;
         IScene CreateEmpty(Type type);
         void LoadScene<T>() where T : IScene;
         void LoadScene(Type sceneType);
@@ -18,7 +18,9 @@ namespace MonoChrome.SceneSystem
         void SetActiveScene(Type sceneType);
         bool IsLoaded<T>() where T : IScene;
         bool IsLoaded(Type sceneType);
-        void Flush();
+        void ClearAllExceptCurrent();
+        void DrawActiveScene();
+        void UpdateActiveScene();
         void Clear();
     }
 }

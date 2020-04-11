@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem
 {
-    public class SceneManager : ISceneManager
+    public sealed class SceneManager : ISceneManager
     {
         public GraphicsDevice GraphicsDevice { get; set; }
         public static SceneManager Instance
@@ -28,15 +28,14 @@ namespace MonoChrome.SceneSystem
         private static SceneManager _instance;
         private SceneController _currentScreen;
         private List<SceneController> _scenes = new List<SceneController>();
-        
 
-        protected SceneManager()
+        private SceneManager()
         {
 
         }
 
-        #region ISceneMagar interface
-        public T CreateEmpty<T>() where T : IScene
+        #region ISceneManager interface
+        public T CreateEmpty<T>() where T : class, IScene
         {
             return CreateEmpty(typeof(T)) as T;
         }
@@ -52,14 +51,20 @@ namespace MonoChrome.SceneSystem
 
         public void LoadScene(Type type)
         {
-            if (IsScene(type) && !Contains(type))
+            if (!IsScene(type))
             {
-                throw new SceneNotFoundException(type);
+                throw new ArgumentException($"{type.Name} is not subclass of IScene");
             }
             var scene = GetSceneController(type);
+            if (scene == null)
+            {
+                scene = new SceneController(CreateEmpty(type), GraphicsDevice);
+                _scenes.Add(scene);
+            }
             if (!scene.Initialized)
             {
                 scene.Setup();
+                scene.OnEnable();
             }
         }
 
@@ -72,12 +77,12 @@ namespace MonoChrome.SceneSystem
         {
             if (IsScene(type) && !Contains(type))
             {
-                throw new SceneNotFoundException(type);
+                throw new ArgumentException($"{type.Name} is not subclass of IScene or this scene doesn't exist");
             }
             var scene = GetSceneController(type);
             if (scene.Initialized)
             {
-                ((IDisposable)scene).Dispose();
+                scene.Dispose();
             }
             _scenes.Remove(scene);
         }
@@ -96,7 +101,7 @@ namespace MonoChrome.SceneSystem
             _scenes.Clear();
         }
 
-        public void Flush()
+        public void ClearAllExceptCurrent()
         {
             foreach (var value in _scenes)
             {
@@ -110,18 +115,19 @@ namespace MonoChrome.SceneSystem
 
         public void SetActiveScene(Type type)
         {
-            if (IsScene(type) && !Contains(type))
-            {
-                throw new SceneNotFoundException(type);
-            }
             var scene = GetSceneController(type);
+            if (scene == null)
+            {
+                LoadScene(type);
+                scene = GetSceneController(type);
+            }
+            _currentScreen.OnDisable();
+            _currentScreen = scene;
             if (!scene.Initialized)
             {
-                throw new SceneNotInitializedException(type);
+                scene.Setup();
             }
-            DisableScene(_currentScreen);
-            _currentScreen = scene;
-            InitializeOrEnable(_currentScreen);
+            scene.OnEnable();
         }
 
         public void SetActiveScene<T>() where T : IScene
@@ -138,17 +144,17 @@ namespace MonoChrome.SceneSystem
         {
             return IsLoaded(typeof(T));
         }
-        #endregion
 
-        public void DrawActiveScreen()
+        public void DrawActiveScene()
         {
             _currentScreen?.Draw();
         }
 
-        public void UpdateActiveScreen()
+        public void UpdateActiveScene()
         {
             _currentScreen?.Update();
         }
+        #endregion
 
         internal SceneController GetSceneController(Type type)
         {
@@ -168,24 +174,6 @@ namespace MonoChrome.SceneSystem
         private bool Contains(Type sceneType)
         {
             return _scenes.Any(sceneController => sceneType == sceneController.SceneType);
-        }
-
-        private void InitializeOrEnable(SceneController scene)
-        {
-            Debug.Assert(scene != null);
-            if (!scene.Initialized)
-            {
-                scene.Setup();
-            }
-            else
-            {
-                scene.OnEnable();
-            }
-        }
-
-        private void DisableScene(SceneController _scene)
-        {
-            _scene?.Dispose();
         }
     }
 }
