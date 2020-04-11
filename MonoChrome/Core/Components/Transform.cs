@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoChrome.GameObjectSystem.Components.Attributes;
+using MonoChrome.Core.Attributes;
 using System;
 using System.Collections.Generic;
 

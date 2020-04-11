@@ -3,6 +3,8 @@ using MonoChrome.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
+using MonoChrome.Core.Helpers.ComponentValidation;
 
 namespace MonoChrome.Core
 {
@@ -21,9 +23,11 @@ namespace MonoChrome.Core
         #region Components Controller
         public Component AddComponent(Type componentType)
         {
+            // TODO: Refactor convertation
             var component = Component.Create(componentType);
-            var checkResult = ComponentsAttributeChecker.Verify(component, this);
-            if (checkResult)
+            var componentTypes = _components.Select(c => c.GetType()).ToList();
+            componentTypes.Add(componentType);
+            if (ComponentValidator.Valid(componentTypes.ToArray()))
             {
                 component.Attach(this);
                 _components.Add(component);

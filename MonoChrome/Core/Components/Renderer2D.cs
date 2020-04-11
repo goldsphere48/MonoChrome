@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoChrome.Core.GameObjectSystem.Components;
-using MonoChrome.GameObjectSystem.Components.Attributes;
+using MonoChrome.Core.Attributes;
 
 namespace MonoChrome.Core.Components
 {

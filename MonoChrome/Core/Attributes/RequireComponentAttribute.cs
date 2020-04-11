@@ -1,4 +1,4 @@
-﻿using MonoChrome.GameObjectSystem.Components.Attributes.Helpers;
+﻿using MonoChrome.Core.Helpers.ComponentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
