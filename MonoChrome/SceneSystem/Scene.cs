@@ -1,15 +1,17 @@
-﻿using MonoChrome.Core.GameObjectSystem;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core;
+using System;
 
-namespace MonoChrome.Core.SceneSystem
+namespace MonoChrome.SceneSystem
 {
-    public abstract class Scene : Playable
+    public abstract class Scene : IScene
     {
+        public GameObject Root => _root;
+
         private GameObject _root = new GameObject();
 
-        public SpriteBatch SpriteBatch { get; set; }
-        public GameObject Root => _root;
+        public Type GetSceneType => GetType();
 
         public void Add(GameObject gameObject)
         {
@@ -20,35 +22,22 @@ namespace MonoChrome.Core.SceneSystem
             _root.Transform.Parent = null;
         }
 
-        #region IPlayable
-        public override void Awake()
+        public virtual void OnDisable()
         {
 
         }
-        public override void Start()
+        public virtual void OnEnable()
         {
-            throw new System.NotImplementedException();
+
         }
-        public override void Update()
+        public virtual void OnDestroy()
         {
-            _root.Update();
+
         }
-        public override void OnDisable()
+        public virtual void OnFinalize()
         {
-            _root.OnDisable();
+
         }
-        public override void OnEnable()
-        {
-            _root.OnEnable();
-        }
-        public override void OnDestroy()
-        {
-            _root.OnDestroy();
-        }
-        public override void OnFinalize()
-        {
-            _root.OnFinalize();
-        }
-        #endregion
+        public abstract void Setup();
     }
 }

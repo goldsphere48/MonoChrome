@@ -64,6 +64,8 @@
     <Compile Include="Core\Exceptions\SceneAlreadyExistException.cs" />
     <Compile Include="Core\Exceptions\SceneNotFoundException.cs" />
     <Compile Include="Core\Exceptions\SceneNotInitializedException.cs" />
+    <Compile Include="SceneSystem\IScene.cs" />
+    <Compile Include="SceneSystem\ISceneManager.cs" />
     <Compile Include="SceneSystem\Scene.cs" />
     <Compile Include="SceneSystem\SceneController.cs" />
     <Compile Include="SceneSystem\SceneManager.cs" />

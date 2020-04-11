@@ -1,71 +1,80 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoChrome.GameObjectSystem.Components;
 using System;
 
-namespace MonoChrome.Core.SceneSystem
+namespace MonoChrome.SceneSystem
 {
     /// <summary>
     /// Add additional functionality to work with SceneManager
     /// </summary>
-    internal class SceneController : IDisposable
+    internal class SceneController : IScene, IDisposable
     {
-        public Scene Scene { get; }
+        public bool Initialized { get; private set; } = false;
+        public bool Disposed { get; private set; } = false;
+        public Type SceneType => GetType();
+
+        private Scene _scene;
+        private SpriteBatch _spriteBatch;
 
         public SceneController(Scene scene, GraphicsDevice device)
         {
-            Scene = scene;
-            if (Scene.SpriteBatch == null && device != null)
-            {
-                Scene.SpriteBatch = new SpriteBatch(device);
-            }
+            _scene = scene;
+            _spriteBatch = new SpriteBatch(device);
         }
 
         #region Scene Interface
-        public void Update()
+        public void Setup()
         {
-            Scene.Update();
+            _scene.Setup();
+            Initialized = true;
+            Disposed = false;
+        }
+
+        public void OnEnable()
+        {
+            _scene.OnEnable();
+        }
+
+        public void OnDisable()
+        {
+            _scene.OnDisable();
+        }
+
+        public void OnDestroy()
+        {
+            _scene.OnDestroy();
+        }
+
+        public void OnFinalize()
+        {
+            _scene.OnFinalize();
         }
         #endregion
 
         #region Scene Controller Interface
-        public bool IsInitialized { get; private set; } = false;
-        public bool IsDisposed { get; private set; } = false;
+        public void Update()
+        {
+            // Вызывать все методы Update текущего контекста
+        }
 
         public void Draw()
         {
-            var renderers = Scene.Root.GetComponentsInChildren<Renderer>(true);
-            foreach (var renderer in renderers)
-            {
-                renderer.Draw(Scene.SpriteBatch);
-            }
+            _spriteBatch.Begin();
+            // Вызывать все методы Draw, из Renderer'ов текущего контекста
+            _spriteBatch.End();
         }
 
-        public void Enable()
-        {
-            Scene.Enabled = true;
-        }
-        public void Disable()
-        {
-            Scene.Enabled = false;
-        }
-        public void Initialize()
-        {
-            IsInitialized = true;
-            IsDisposed = false;
-            Scene.Awake();
-        }
         public void CleanUp(bool clean)
         {
-            if (!IsDisposed)
+            if (!Disposed)
             {
                 if (clean)
                 {
-                    Scene.OnDestroy();
+                    OnDestroy();
                 }
-                Scene.OnFinalize();
-                IsDisposed = true;
-                IsInitialized = false;
+                OnFinalize();
+                Disposed = true;
+                Initialized = false;
             }
         }
         #endregion
