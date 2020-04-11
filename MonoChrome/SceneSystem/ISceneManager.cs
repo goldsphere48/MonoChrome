@@ -8,8 +8,8 @@ namespace MonoChrome.SceneSystem
 {
     interface ISceneManager
     {
-        T CreateEmpty<T>() where T : class, IScene;
-        IScene CreateEmpty(Type type);
+        T Create<T>() where T : class, IScene;
+        IScene Create(Type type);
         void LoadScene<T>() where T : IScene;
         void LoadScene(Type sceneType);
         void UnloadScene<T>() where T : IScene;

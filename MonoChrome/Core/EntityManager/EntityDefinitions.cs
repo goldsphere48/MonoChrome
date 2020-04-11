@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core
+namespace MonoChrome.Core.EntityManager
 {
     class EntityDefinitions : IEntityDefinitionCollection<string>
     {
@@ -45,20 +45,6 @@ namespace MonoChrome.Core
             {
                 _definitions[definition] = componentTypes;
             }
-        }
-
-        public GameObject Make(string definition)
-        {
-            if (definition == null || !_definitions.ContainsKey(definition))
-            {
-                return null;
-            }
-            var gameObject = new GameObject(definition);
-            foreach (var componentType in _definitions[definition])
-            {
-                gameObject.AddComponent(componentType);
-            }
-            return gameObject;
         }
 
         public bool Undefine(string definition)

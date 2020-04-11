@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core
+namespace MonoChrome.Core.EntityManager
 {
     static class Entity
     {

@@ -4,9 +4,6 @@ using System;
 
 namespace MonoChrome.SceneSystem
 {
-    /// <summary>
-    /// Add additional functionality to work with SceneManager
-    /// </summary>
     internal class SceneController : IScene, IDisposable
     {
         public bool Initialized { get; private set; } = false;
@@ -18,6 +15,7 @@ namespace MonoChrome.SceneSystem
 
         public SceneController(IScene scene, GraphicsDevice device)
         {
+            //Entity.Registry.CreateCOntext(this);
             _scene = scene;
             _spriteBatch = new SpriteBatch(device);
         }
@@ -25,6 +23,7 @@ namespace MonoChrome.SceneSystem
         #region Scene Interface
         public void Setup()
         {
+            //Entity.Registry.SetContext(this);
             _scene.Setup();
             Initialized = true;
             Disposed = false;
@@ -32,6 +31,7 @@ namespace MonoChrome.SceneSystem
 
         public void OnEnable()
         {
+            //Entity.Registry.SetContext(this);
             _scene.OnEnable();
         }
 
@@ -42,11 +42,14 @@ namespace MonoChrome.SceneSystem
 
         public void OnDestroy()
         {
+            //Entity.Registry.OnDestroy();
             _scene.OnDestroy();
         }
 
         public void OnFinalize()
         {
+            //Entity.Registry.OnFinalize();
+            //Entity.Registry.Clear();
             _scene.OnFinalize();
         }
         #endregion

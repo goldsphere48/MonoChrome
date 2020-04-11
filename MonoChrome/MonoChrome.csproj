@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\EntityDefinitions.cs" />
+    <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
     <Compile Include="Core\Helpers\ComponentAttributesInfo.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeVisitor.cs" />
     <Compile Include="Core\Helpers\ComponentsAttributeChecker.cs" />
@@ -56,8 +56,8 @@
     <Compile Include="Core\Components\Renderer.cs" />
     <Compile Include="Core\Components\Renderer2D.cs" />
     <Compile Include="Core\Components\Transform.cs" />
-    <Compile Include="Core\Entity.cs" />
-    <Compile Include="Core\IEntityDefinitionCollection.cs" />
+    <Compile Include="Core\EntityManager\Entity.cs" />
+    <Compile Include="Core\EntityManager\IEntityDefinitionCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Playable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
