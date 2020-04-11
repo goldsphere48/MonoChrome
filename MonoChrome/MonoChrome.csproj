@@ -46,9 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributesInfo.cs" />
+    <Compile Include="Core\EntityManager\EntityFactory.cs" />
+    <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
+    <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeVisitor.cs" />
-    <Compile Include="Core\Helpers\ComponentsAttributeChecker.cs" />
+    <Compile Include="Core\Helpers\ComponentValidator.cs" />
     <Compile Include="Core\Attributes\ComponentUsageAttribute.cs" />
     <Compile Include="Core\Helpers\IComponentVisitorAcceptable.cs" />
     <Compile Include="Core\Attributes\RequireComponentAttribute.cs" />

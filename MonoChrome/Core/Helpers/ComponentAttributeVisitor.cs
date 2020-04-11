@@ -1,6 +1,5 @@
 ﻿using MonoChrome.Core.Attributes;
-using MonoChrome.Core.GameObjectSystem;
-using MonoChrome.Core.GameObjectSystem.Components;
+using MonoChrome.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,44 +10,33 @@ namespace MonoChrome.Core.Helpers
 {
     public class ComponentAttributeVisitor
     {
-        private Component _component;
-        private GameObject _gameObject;
+        private Type _componentType;
+        private Type[] _otherComponentTypes;
 
-        public ComponentAttributeVisitor(Component component, GameObject gameObject)
+        public ComponentAttributeVisitor(Type componentType, Type[] otherComponentTypes)
         {
-            _component = component;
-            _gameObject = gameObject;
+            _componentType = componentType;
+            _otherComponentTypes = otherComponentTypes;
         }
 
         public void VisitComponentUsageAttribute(ComponentUsageAttribute attribute)
         {
             if (!attribute.AllowMultipleComponentUsage)
             {
-                if (_gameObject.GetComponent(_component.GetType()) != null)
+                var sameComponents = _otherComponentTypes.ToList().FindAll(component => component == _componentType);
+                if (sameComponents.Count > 1)
                 {
-                    throw new InvalidComponentDuplicateException(_component.GetType());
+                    throw new InvalidComponentDuplicateException($"Found invalid duplicate of component {_componentType.Name}");
                 }
             }
         }
 
         public void VisitRequireComponentAttribute(RequireComponentAttribute attribute)
         {
-            var requiredComponent = _gameObject.GetComponent(attribute.RequiredComponent);
+            var requiredComponent = _otherComponentTypes.ToList().Find(component => component == attribute.RequiredComponent);
             if (requiredComponent == null)
             {
-                throw new UnfoundRequiredComponentsException(attribute.RequiredComponent);
-            }
-        }
-
-        public void VisitCreatedForAttribute(CreatedForAttribute attribute)
-        {
-            bool inherit = attribute.Inherit;
-            bool isSameOrSubclass = attribute.TargetType.IsAssignableFrom(_gameObject.GetType());
-            bool isSame = attribute.TargetType == _gameObject.GetType();
-            bool notCorrect = (inherit && !isSameOrSubclass) || (!inherit && !isSame);
-            if (notCorrect)
-            {
-                throw new InvalidComponentTargetException(_component.GetType(), _gameObject.GetType());
+                throw new UnfoundRequiredComponentsException($"Unfound required component {attribute.RequiredComponent.Name}");
             }
         }
     }

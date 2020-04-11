@@ -64,7 +64,6 @@ namespace MonoChrome.SceneSystem
             if (!scene.Initialized)
             {
                 scene.Setup();
-                scene.OnEnable();
             }
         }
 

@@ -1,7 +1,4 @@
-﻿using MonoChrome.Core.GameObjectSystem;
-using MonoChrome.Core.GameObjectSystem.Components;
-using MonoChrome.GameObjectSystem.Components.Attributes.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Helpers
 {
-    static class ComponentsAttributeChecker
+    static class ComponentValidator
     {
-        public static bool Verify(Component component, GameObject gameObject)
+        public static bool Verify(Type componentType, Type[] otherComponentTypes)
         {
-            var componentTypeInfo = component.GetType();
-            var componentAttributes = componentTypeInfo.GetCustomAttributes(false);
-            var attributeVisitor = new ComponentAttributeVisitor(component, gameObject);
+            var componentAttributes = componentType.GetCustomAttributes(false);
+            var attributeVisitor = new ComponentAttributeVisitor(componentType, otherComponentTypes);
             foreach (var componentAttribute in componentAttributes)
             {
                 if (componentAttribute is IComponentVisitorAcceptable)

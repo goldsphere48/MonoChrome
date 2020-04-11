@@ -7,26 +7,16 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    class EntityDefinitions : IEntityDefinitionCollection<string>
+    internal class EntityDefinitions : IEntityDefinitionCollection<string>
     {
         private IDictionary<string, IList<Type>> _definitions = new Dictionary<string, IList<Type>>();
 
-        public void Define(string definition, params Type[] types)
-        {
-            Define(definition, null, types);
-        }
-
         public void Define(string definition, string inheritFromDefinition, params Type[] types)
         {
-            if (definition == null || types == null)
-            {
-                throw new ArgumentNullException();
-            }
             if (_definitions.ContainsKey(definition))
             {
                 throw new ArgumentException($"Definition {definition} is already exist");
             }
-
             List<Type> componentTypes = new List<Type>();
             componentTypes.AddRange(types);
 
@@ -64,6 +54,11 @@ namespace MonoChrome.Core.EntityManager
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public IList<Type> Get(string definition)
+        {
+            return _definitions[definition];
         }
     }
 }

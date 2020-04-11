@@ -13,12 +13,7 @@ namespace MonoChrome.Core
 
         private List<Component> _components = new List<Component>();
 
-        public GameObject()
-        {
-            Transform = AddComponent<Transform>();
-        }
-
-        public GameObject(string name) : base()
+        private GameObject(string name)
         {
             Name = name;
         }
