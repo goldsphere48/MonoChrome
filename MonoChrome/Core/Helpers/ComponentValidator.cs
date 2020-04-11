@@ -8,19 +8,33 @@ namespace MonoChrome.Core.Helpers
 {
     static class ComponentValidator
     {
-        public static bool Verify(Type componentType, Type[] otherComponentTypes)
+        private static ComponentAttributeVisitor _attributeVisitor = new ComponentAttributeVisitor();
+        public static bool Verify(Type[] componentTypes)
         {
-            var componentAttributes = componentType.GetCustomAttributes(false);
-            var attributeVisitor = new ComponentAttributeVisitor(componentType, otherComponentTypes);
-            foreach (var componentAttribute in componentAttributes)
-            {
-                if (componentAttribute is IComponentVisitorAcceptable)
-                {
-                    var acceplatbleAttribute = componentAttribute as IComponentVisitorAcceptable;
-                    acceplatbleAttribute.AcceptVisitor(attributeVisitor);
-                }
+            _attributeVisitor.ComponentTypes = componentTypes;
+            foreach (var componentType in componentTypes) {
+                _attributeVisitor.CurrentComponent = componentType;
+                ProceedComponent(componentType, componentTypes);
             }
             return true;
+        }
+
+        private static void ProceedComponent(Type componentType, Type[] otherComponentTypes)
+        {
+            var componentAttributes = componentType.GetCustomAttributes(false);
+            foreach (var componentAttribute in componentAttributes)
+            {
+                ProceedAttribute(componentAttribute);
+            }
+        }
+
+        private static void ProceedAttribute(object componentAttribute)
+        {
+            if (componentAttribute is IComponentVisitorAcceptable)
+            {
+                var acceplatbleAttribute = componentAttribute as IComponentVisitorAcceptable;
+                acceplatbleAttribute.AcceptVisitor(_attributeVisitor);
+            }
         }
     }
 }

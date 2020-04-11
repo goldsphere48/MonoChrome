@@ -10,30 +10,24 @@ namespace MonoChrome.Core.Helpers
 {
     public class ComponentAttributeVisitor
     {
-        private Type _componentType;
-        private Type[] _otherComponentTypes;
-
-        public ComponentAttributeVisitor(Type componentType, Type[] otherComponentTypes)
-        {
-            _componentType = componentType;
-            _otherComponentTypes = otherComponentTypes;
-        }
+        public Type CurrentComponent { private get; set; }
+        public Type[] ComponentTypes { private get; set; }
 
         public void VisitComponentUsageAttribute(ComponentUsageAttribute attribute)
         {
             if (!attribute.AllowMultipleComponentUsage)
             {
-                var sameComponents = _otherComponentTypes.ToList().FindAll(component => component == _componentType);
+                var sameComponents = ComponentTypes.ToList().FindAll(component => component == CurrentComponent);
                 if (sameComponents.Count > 1)
                 {
-                    throw new InvalidComponentDuplicateException($"Found invalid duplicate of component {_componentType.Name}");
+                    throw new InvalidComponentDuplicateException($"Found invalid duplicate of component {CurrentComponent.Name}");
                 }
             }
         }
 
         public void VisitRequireComponentAttribute(RequireComponentAttribute attribute)
         {
-            var requiredComponent = _otherComponentTypes.ToList().Find(component => component == attribute.RequiredComponent);
+            var requiredComponent = ComponentTypes.ToList().Find(component => component == attribute.RequiredComponent);
             if (requiredComponent == null)
             {
                 throw new UnfoundRequiredComponentsException($"Unfound required component {attribute.RequiredComponent.Name}");
