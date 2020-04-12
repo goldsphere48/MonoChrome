@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    interface IEntityCollection
+    interface IEntityCollection<TEntity> : ICollection<TEntity>
     {
+        void Synchronize();
     }
 }
