@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoChrome.Core.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,32 +7,29 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    static class EntityRegistry
+    class EntityRegistry
     {
-        public static EntityStore Global = Create();
-        public static EntityStore Current = Global;
+        public EntityStore Store { get; } = new EntityStore();
+        public EntityCachedComponents CachedComponents { get; } = new EntityCachedComponents();
 
-        private static IDictionary<object, IEntityCollection<GameObject>> _stores = 
-            new Dictionary<object, IEntityCollection<GameObject>>();
+        private IDictionary<Predicate<Component>, Action<Component>> _onAddTriggers =
+            new Dictionary<Predicate<Component>, Action<Component>>();
+        private IDictionary<Predicate<Component>, Action<Component>> _onRemoveTriggers =
+            new Dictionary<Predicate<Component>, Action<Component>>();
 
-        public static void SetContext(object context)
+        public EntityRegistry()
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException();
-            }
-            _stores.TryGetValue(context, out IEntityCollection<GameObject> store);
-            if (store == null)
-            {
-                store = Create();
-                _stores.Add(context, store);
-            }
-            Current = store as EntityStore;
+            SetTrigger(
+                component => component is Renderer,
+                component => CachedComponents.Cache(component),
+                component => CachedComponents.Remove(component)
+            );
         }
 
-        public static EntityStore Create()
+        public void SetTrigger(Predicate<Component> predicate, Action<Component> onAdd, Action<Component> onRemove)
         {
-            return new EntityStore();
+            _onAddTriggers.Add(predicate, onAdd);
+            _onRemoveTriggers.Add(predicate, onRemove);
         }
     }
 }

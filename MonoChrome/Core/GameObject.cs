@@ -15,6 +15,8 @@ namespace MonoChrome.Core
         public Transform Transform { get; }
         public string Name { get; }
 
+        internal EntityRegistry Registry { get; set; }
+
         private GameObject(string name)
         {
             Name = name;
@@ -24,10 +26,10 @@ namespace MonoChrome.Core
         public Component AddComponent(Type componentType)
         {
             var component = Component.Create(componentType);
-            var components = EntityRegistry.Current.GetComponents(this).ToList();
+            var components = Registry.Store.GetComponents(this).ToList();
             if (ComponentValidator.Valid(component, components))
             {
-                EntityRegistry.Current.Add(this, component);
+                Registry.Store.Add(this, component);
                 component.Awake();
                 return component;
             }

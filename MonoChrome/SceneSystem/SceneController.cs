@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core;
+using MonoChrome.Core.Components;
+using MonoChrome.Core.EntityManager;
 using System;
 
 namespace MonoChrome.SceneSystem
@@ -12,6 +15,8 @@ namespace MonoChrome.SceneSystem
 
         private IScene _scene;
         private SpriteBatch _spriteBatch;
+        private EntityRegistry _registry = new EntityRegistry();
+        private Type _rendererType = typeof(Renderer2D);
 
         public SceneController(IScene scene, GraphicsDevice device)
         {
@@ -23,7 +28,7 @@ namespace MonoChrome.SceneSystem
         #region Scene Interface
         public void Setup()
         {
-            //Entity.Registry.SetContext(this);
+            Entity.Registry = _registry;
             _scene.Setup();
             Initialized = true;
             Disposed = false;
@@ -31,7 +36,7 @@ namespace MonoChrome.SceneSystem
 
         public void OnEnable()
         {
-            //Entity.Registry.SetContext(this);
+            Entity.Registry = _registry;
             _scene.OnEnable();
         }
 
@@ -58,12 +63,21 @@ namespace MonoChrome.SceneSystem
         public void Update()
         {
             // Вызывать все методы Update текущего контекста
+            var components = _registry.Store.GetComponents<Component>(true);
+            foreach (var component in components)
+            {
+                component.Update();
+            }
         }
 
         public void Draw()
         {
             _spriteBatch.Begin();
             // Вызывать все методы Draw, из Renderer'ов текущего контекста
+            foreach (Renderer renderer in _registry.CachedComponents[_rendererType])
+            {
+                renderer.Draw(_spriteBatch);
+            }
             _spriteBatch.End();
         }
         #endregion

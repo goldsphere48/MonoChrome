@@ -12,7 +12,8 @@ namespace MonoChrome.Core.EntityManager
     {
         private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
         private static EntityFactory _entityFactory = new EntityFactory();
-
+        public static EntityRegistry Registry { private get; set; }
+        
         public static void Define(string definition, params Type[] componentTypes)
         {
             Define(definition, null, componentTypes);
@@ -56,15 +57,18 @@ namespace MonoChrome.Core.EntityManager
                 throw new ArgumentNullException();
             }
             var componentTypes = _definitions.Get(definition);
-            return _entityFactory.Create(name, componentTypes.ToArray());
+            var gameObject = _entityFactory.Create(name, componentTypes.ToArray());
+            gameObject.Registry = Registry;
+            return gameObject;
         }
 
         private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)
         {
             foreach (var component in components)
             {
-                EntityRegistry.Current.Add(gameObject, component);
+                Registry.Store.Add(gameObject, component);
             }
+            gameObject.Registry = Registry;
         }
     }
 }
