@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
+    <Compile Include="Core\EntityManager\EntityEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
     <Compile Include="Core\EntityManager\EntityStore.cs" />
+    <Compile Include="Core\EntityManager\IComponentContainer.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />

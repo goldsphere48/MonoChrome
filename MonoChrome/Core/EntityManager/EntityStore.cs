@@ -1,52 +1,139 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
     class EntityStore : IEntityCollection<GameObject>
     {
-        private HashSet<GameObject> _gameObjects = new HashSet<GameObject>();
-        public int Count => _gameObjects.Count;
+        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
+            new Dictionary<GameObject, IDictionary<Type, Component>>();
 
-        public bool IsReadOnly => false;
-
-        public void Add(GameObject item)
+        public void Add(GameObject entity, Component component)
         {
-            _gameObjects.Add(item);
+            if (entity == null || component == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var components = GetComponentsForEntity(entity);
+            if (components == null)
+            {
+                components = new Dictionary<Type, Component>();
+                _gameObjects[entity] = components;
+            }
+            components.Add(component.GetType(), component);
+            component.Attach(entity);
         }
 
-        public void Clear()
+        public bool Remove(GameObject entity, Component component)
         {
-            _gameObjects.Clear();
+            if (entity == null || component == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var components = GetComponentsForEntity(entity);
+            if (components == null || components.Count == 0)
+            {
+                return false;
+            }
+            component.Dettach();
+            //TODO Component dispose
+            return components.Remove(component.GetType());
         }
 
-        public bool Contains(GameObject item)
+        IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
-            return _gameObjects.Contains(item);
+            IDictionary<Type, Component> components = null;
+            if (_gameObjects.ContainsKey(gameObject))
+            {
+                components = _gameObjects[gameObject];
+            }
+            return components;
         }
 
-        public void CopyTo(GameObject[] array, int arrayIndex)
+        public bool Contains(GameObject entity)
         {
-            _gameObjects.CopyTo(array, arrayIndex);
+            if (entity == null)
+            {
+                throw new ArgumentNullException();
+            }
+            return _gameObjects.ContainsKey(entity);
+        }
+
+        public T GetComponent<T>(GameObject entity) where T : Component
+        {
+            return GetComponent(entity, typeof(T), false) as T;
+        }
+
+        public T GetComponent<T>(GameObject entity, bool allowDerivedComponents) where T : Component
+        {
+            return GetComponent(entity, typeof(T), allowDerivedComponents) as T;
+        }
+
+        public Component GetComponent(GameObject entity, Type componentType)
+        {
+            return GetComponent(entity, componentType, false);
+        }
+
+        public Component GetComponent(GameObject entity, Type componentType, bool allowDerivedComponents)
+        {
+            if (entity == null || componentType == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            IDictionary<Type, Component> components = GetComponentsForEntity(entity);
+
+            Component result = null;
+
+            if (components != null && components.Count > 0)
+            {
+                foreach (Component otherComponent in components.Values)
+                {
+                    if ((allowDerivedComponents && otherComponent.GetType().IsSubclassOf(componentType))
+                        || otherComponent.GetType() == componentType)
+                    {
+                        result = otherComponent;
+
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Component> GetComponents(GameObject entity)
+        {
+            return GetComponentsForEntity(entity).Values;
+        }
+
+        public IEnumerable<T> GetComponents<T>() where T : Component
+        {
+            return GetComponents(typeof(T), false) as IEnumerable<T>;
+        }
+
+        public IEnumerable<T> GetComponents<T>(bool allowDerivedComponents) where T : Component
+        {
+            return GetComponents(typeof(T), allowDerivedComponents) as IEnumerable<T>;
+        }
+
+        public IEnumerable<Component> GetComponents(Type component)
+        {
+            return GetComponents(component, false);
+        }
+
+        public IEnumerable<Component> GetComponents(Type component, bool allowDerivedComponents)
+        {
+            foreach (var go in _gameObjects.Keys)
+            {
+                yield return GetComponent(go, component, allowDerivedComponents);
+            }
         }
 
         public IEnumerator<GameObject> GetEnumerator()
         {
-            return _gameObjects.GetEnumerator();
-        }
-
-        public bool Remove(GameObject item)
-        {
-            return _gameObjects.Remove(item);
-        }
-
-        public void Synchronize()
-        {
-            throw new NotImplementedException();
+            return _gameObjects.Keys.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
