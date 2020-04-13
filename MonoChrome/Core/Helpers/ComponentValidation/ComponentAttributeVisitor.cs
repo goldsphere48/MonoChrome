@@ -11,7 +11,7 @@ namespace MonoChrome.Core.Helpers.ComponentValidation
     public class ComponentAttributeVisitor
     {
         public Type CurrentComponent { private get; set; }
-        public Type[] ComponentTypes { private get; set; }
+        public IEnumerable<Type> ComponentTypes { private get; set; }
 
         public void VisitComponentUsageAttribute(ComponentUsageAttribute attribute)
         {

@@ -8,7 +8,7 @@ namespace MonoChrome.SceneSystem
     {
         public bool Initialized { get; private set; } = false;
         public bool Disposed { get; private set; } = false;
-        public Type SceneType => GetType();
+        public Type SceneType => _scene.SceneType;
 
         private IScene _scene;
         private SpriteBatch _spriteBatch;

@@ -30,15 +30,21 @@ namespace MonoChrome.Core.EntityManager
             }
         }
 
-        public static GameObject Create(string name, params Type[] componentTypes)
+        public static GameObject Create(params Component[] components)
         {
-            if (name == null || componentTypes == null)
+            return Create(GameObject.DefaultName, components);
+        }
+
+        public static GameObject Create(string name, params Component[] components)
+        {
+            if (name == null || components == null)
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentValidator.Valid(componentTypes))
+            if (ComponentValidator.Valid(components))
             {
-                return _entityFactory.Create(name, componentTypes);
+                var gameObject = _entityFactory.CreateEmpty(name);
+                AttachComponents(gameObject, components);
             }
             return null;
         }
@@ -51,6 +57,14 @@ namespace MonoChrome.Core.EntityManager
             }
             var componentTypes = _definitions.Get(definition);
             return _entityFactory.Create(name, componentTypes.ToArray());
+        }
+
+        private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)
+        {
+            foreach (var component in components)
+            {
+                EntityRegistry.Current.Add(gameObject, component);
+            }
         }
     }
 }

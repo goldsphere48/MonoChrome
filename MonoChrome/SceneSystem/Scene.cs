@@ -8,8 +8,8 @@ namespace MonoChrome.SceneSystem
 {
     public abstract class Scene : IScene
     {
-        public GameObject Root { get; } = Entity.Create("Root");
-        public Type GetSceneType => GetType();
+        protected GameObject Root { get; }
+        public Type SceneType => GetType();
 
         public void Add(GameObject gameObject)
         {

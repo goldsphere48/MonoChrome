@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using MonoChrome.Core.Helpers.ComponentValidation;
+using MonoChrome.Core.EntityManager;
 
 namespace MonoChrome.Core
 {
-    public sealed class GameObject : Playable
+    public sealed class GameObject
     {
+        public const string DefaultName = "GameObject";
         public Transform Transform { get; }
         public string Name { get; }
-
-        private List<Component> _components = new List<Component>();
 
         private GameObject(string name)
         {
@@ -23,14 +23,11 @@ namespace MonoChrome.Core
         #region Components Controller
         public Component AddComponent(Type componentType)
         {
-            // TODO: Refactor convertation
             var component = Component.Create(componentType);
-            var componentTypes = _components.Select(c => c.GetType()).ToList();
-            componentTypes.Add(componentType);
-            if (ComponentValidator.Valid(componentTypes.ToArray()))
+            var components = EntityRegistry.Current.GetComponents(this).ToList();
+            if (ComponentValidator.Valid(component, components))
             {
-                component.Attach(this);
-                _components.Add(component);
+                EntityRegistry.Current.Add(this, component);
                 component.Awake();
                 return component;
             }
@@ -47,7 +44,7 @@ namespace MonoChrome.Core
             var removableComponent = GetComponent(type);
             if (removableComponent != null)
             {
-                _components.Remove(removableComponent);
+                EntityRegistry.Current.Remove(this, removableComponent);
             }
         }
 
@@ -58,21 +55,11 @@ namespace MonoChrome.Core
 
         public Component GetComponent(Type componentType, bool inherit = false)
         {
-            return _components.Find(FindComponentPredicate(componentType, inherit));
+            return EntityRegistry.Current.GetComponent(this, componentType, inherit);
         }
         public T GetComponent<T>(bool inherit = false) where T : Component
         {
             return GetComponent(typeof(T), inherit) as T;
-        }
-
-        public List<Component> GetComponents(Type componentType, bool inherit = false)
-        {
-            return _components.FindAll(FindComponentPredicate(componentType, inherit));
-        }
-
-        public List<T> GetComponents<T>() where T : Component
-        {
-            return GetComponents(typeof(T)) as List<T>;
         }
 
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
@@ -97,17 +84,21 @@ namespace MonoChrome.Core
             return GetComponentInChildren(typeof(T), inherit) as T;
         }
 
-        public List<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
+        public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
         {
-            var components = GetComponents(componentType, inherit);
-            if (components.Count == 0)
+            var currentComponent = GetComponent(componentType, inherit);
+            if (currentComponent != null)
             {
-                for (int i = 0; i < Transform.Childrens.Count; ++i)
+                yield return currentComponent;
+            }
+            foreach (var child in Transform.Childrens)
+            {
+                var childrenComponents = child.GameObject.GetComponentsInChildren(componentType, inherit);
+                foreach (var childrenComponent in childrenComponents)
                 {
-                    components.AddRange(Transform.Childrens[i].GameObject.GetComponentsInChildren(componentType));
+                    yield return childrenComponent;
                 }
             }
-            return components;
         }
 
         public List<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
@@ -133,18 +124,21 @@ namespace MonoChrome.Core
             return GetComponentInParent(typeof(T), inherit) as T;
         }
 
-        public List<Component> GetComponentsInParent(Type componentType, bool inherit = false)
+        public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
         {
-            var components = GetComponents(componentType, inherit);
-            if (components.Count == 0)
+            var currentComponent = GetComponent(componentType, inherit);
+            if (currentComponent != null)
             {
-                if (Transform.Parent != null)
+                yield return currentComponent;
+            }
+            if (Transform.Parent != null)
+            {
+                var parentComponents = Transform.Parent.GameObject.GetComponentsInParent(componentType, inherit);
+                foreach (var parentComponent in parentComponents)
                 {
-                    var parentComponents = Transform.Parent.GameObject.GetComponentsInParent(componentType, inherit);
-                    components.AddRange(parentComponents);
+                    yield return parentComponent;
                 }
             }
-            return components;
         }
 
         public List<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
@@ -152,56 +146,5 @@ namespace MonoChrome.Core
             return GetComponentsInParent(typeof(T), inherit) as List<T>;
         }
         #endregion Components Controller
-
-        #region IPlayable interface
-        public override void Awake()
-        {
-
-        }
-
-        public override void Start()
-        {
-
-        }
-
-        public override void Update()
-        {
-            for (int i = 0; i < _components.Count; ++i)
-            {
-                _components[i].Update();
-            }
-            for (int i = 0; i < Transform.Childrens.Count; ++i)
-            {
-                Transform.Childrens[i].Update();
-            }
-
-        }
-
-        public override void OnEnable()
-        {
-
-        }
-
-        public override void OnDisable()
-        {
-
-        }
-
-        public override void OnDestroy()
-        {
-
-        }
-
-        public override void OnFinalize()
-        {
-
-        }
-        #endregion
-
-        private Predicate<Component> FindComponentPredicate(Type componentType, bool inherit)
-        {
-            return item => item.GetType() == componentType ||
-               (inherit && item.GetType().IsAssignableFrom(componentType));
-        }
     }
 }

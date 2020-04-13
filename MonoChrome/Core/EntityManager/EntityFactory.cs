@@ -5,11 +5,9 @@ namespace MonoChrome.Core.EntityManager
 {
     internal class EntityFactory
     {
-        private const string DefaultName = "GameObject";
-
         public GameObject CreateEmpty()
         {
-            return Construct(DefaultName);
+            return Construct(GameObject.DefaultName);
         }
 
         public GameObject CreateEmpty(string name)
@@ -19,7 +17,7 @@ namespace MonoChrome.Core.EntityManager
 
         public GameObject Create(Type[] types)
         {
-            return Create(DefaultName, types);
+            return Create(GameObject.DefaultName, types);
         }
 
         public GameObject Create(string name, Type[] types)

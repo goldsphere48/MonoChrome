@@ -8,6 +8,7 @@ namespace MonoChrome.SceneSystem
 {
     public interface IScene
     {
+        Type SceneType { get; }
         void Setup();
         void OnEnable();
         void OnDisable();
