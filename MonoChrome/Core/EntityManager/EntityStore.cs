@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoChrome.Core.EntityManager
 {
@@ -8,6 +9,9 @@ namespace MonoChrome.Core.EntityManager
     {
         private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
             new Dictionary<GameObject, IDictionary<Type, Component>>();
+
+        public event EventHandler ComponentAdded;
+        public event EventHandler ComponentRemoved;
 
         public void Add(GameObject entity, Component component)
         {
@@ -23,6 +27,7 @@ namespace MonoChrome.Core.EntityManager
             }
             components.Add(component.GetType(), component);
             component.Attach(entity);
+            OnAdd(component, entity);
         }
 
         public bool Remove(GameObject entity, Component component)
@@ -139,6 +144,18 @@ namespace MonoChrome.Core.EntityManager
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private void OnAdd(Component component, GameObject gameObject)
+        {
+            var args = new ComponentEventArgs(component, gameObject);
+            ComponentAdded?.Invoke(this, args);
+        }
+
+        private void OnRemove(Component component, GameObject gameObject)
+        {
+            var args = new ComponentEventArgs(component, gameObject);
+            ComponentRemoved?.Invoke(this, args);
         }
     }
 }

@@ -4,6 +4,7 @@ using MonoChrome.Core;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.EntityManager;
 using System;
+using System.Linq;
 
 namespace MonoChrome.SceneSystem
 {
@@ -15,20 +16,50 @@ namespace MonoChrome.SceneSystem
 
         private IScene _scene;
         private SpriteBatch _spriteBatch;
-        private EntityRegistry _registry = new EntityRegistry();
+        private EntityStore _store = new EntityStore();
+        private CachedComponents _cachedComponents = new CachedComponents();
+        private CachedMethods _cachedMethods = new CachedMethods();
         private Type _rendererType = typeof(Renderer2D);
 
         public SceneController(IScene scene, GraphicsDevice device)
         {
-            //Entity.Registry.CreateCOntext(this);
             _scene = scene;
             _spriteBatch = new SpriteBatch(device);
         }
 
+        #region Store Events
+        private void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
+        {
+            if (componentArgs.Component is Renderer2D)
+            {
+                _cachedComponents.Cache(componentArgs.GetType(), componentArgs.Component);
+            }
+            CacheMethod("Update", componentArgs.Component.UpdateMethod);
+            CacheMethod("OnDisable", componentArgs.Component.OnDisableMethod);
+            CacheMethod("OnDestroy", componentArgs.Component.OnDestroyMethod);
+            CacheMethod("OnEnable", componentArgs.Component.OnEnableMethod);
+            CacheMethod("OnFinalise", componentArgs.Component.OnFinaliseMethod);
+        }
+        private void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
+        {
+            if (componentArgs.Component is Renderer2D)
+            {
+                _cachedComponents.Remove(componentArgs.Component.GetType());
+            }
+        }
+        private void CacheMethod(string methodName, Action method)
+        {
+            if (method != null)
+            {
+                _cachedMethods.Cache(methodName, method);
+            }
+        }
+        #endregion
+
         #region Scene Interface
         public void Setup()
         {
-            Entity.Registry = _registry;
+            Entity.Registry = _store;
             _scene.Setup();
             Initialized = true;
             Disposed = false;
@@ -36,24 +67,26 @@ namespace MonoChrome.SceneSystem
 
         public void OnEnable()
         {
-            Entity.Registry = _registry;
+            Entity.Registry = _store;
+            _cachedMethods["OnEnable"]();
             _scene.OnEnable();
         }
 
         public void OnDisable()
         {
+            _cachedMethods["OnDisable"]();
             _scene.OnDisable();
         }
 
         public void OnDestroy()
         {
-            //Entity.Registry.OnDestroy();
+            _cachedMethods["OnDestroy"]();
             _scene.OnDestroy();
         }
 
         public void OnFinalize()
         {
-            //Entity.Registry.OnFinalize();
+            _cachedMethods["OnFinalize"]();
             //Entity.Registry.Clear();
             _scene.OnFinalize();
         }
@@ -62,19 +95,13 @@ namespace MonoChrome.SceneSystem
         #region Scene Controller Interface
         public void Update()
         {
-            // Вызывать все методы Update текущего контекста
-            var components = _registry.Store.GetComponents<Component>(true);
-            foreach (var component in components)
-            {
-                component.Update();
-            }
+            _cachedMethods["Update"]();
         }
 
         public void Draw()
         {
             _spriteBatch.Begin();
-            // Вызывать все методы Draw, из Renderer'ов текущего контекста
-            foreach (Renderer renderer in _registry.CachedComponents[_rendererType])
+            foreach (Renderer2D renderer in _cachedComponents[_rendererType])
             {
                 renderer.Draw(_spriteBatch);
             }

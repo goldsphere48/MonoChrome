@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    class EntityCachedComponents : ICachedCollection<Component, Type>
+    class CachedComponents : ICachedCollection<Type, Component>
     {
         private IDictionary<Type, IList<Component>> _cached = new Dictionary<Type, IList<Component>>();
         public IList<Component> this[Type type]
@@ -18,12 +18,11 @@ namespace MonoChrome.Core.EntityManager
             }
         }
 
-        public void Cache(Component component)
+        public void Cache(Type key, Component component)
         {
-            var type = component.GetType();
-            if (_cached.ContainsKey(type))
+            if (_cached.ContainsKey(key))
             {
-                var components = _cached[type];
+                var components = _cached[key];
                 if (!components.Contains(component))
                 {
                     components.Add(component);
@@ -36,16 +35,11 @@ namespace MonoChrome.Core.EntityManager
             _cached.Clear();
         }
 
-        public bool Remove(Component component)
+        public bool Remove(Type key)
         {
-            var type = component.GetType();
-            if (_cached.ContainsKey(type))
+            if (_cached.ContainsKey(key))
             {
-                var components = _cached[type];
-                if (!components.Contains(component))
-                {
-                    return components.Remove(component);
-                }
+                return _cached.Remove(key);
             }
             return false;
         }

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    interface ICachedCollection<TCached, TKey>
+    interface ICachedCollection<TKey, TCached>
     {
-        IList<TCached> this[TKey type] { get; }
-        void Cache(TCached cached);
-        bool Remove(TCached cached);
+        void Cache(TKey key, TCached cached);
+        bool Remove(TKey key);
         void Clear();
     }
 }

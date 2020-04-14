@@ -12,7 +12,7 @@ namespace MonoChrome.Core.EntityManager
     {
         private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
         private static EntityFactory _entityFactory = new EntityFactory();
-        public static EntityRegistry Registry { private get; set; }
+        public static EntityStore Registry { private get; set; }
         
         public static void Define(string definition, params Type[] componentTypes)
         {

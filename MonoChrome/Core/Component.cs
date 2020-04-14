@@ -1,25 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    public class Component : Playable
+    public abstract class Component
     {
-        public GameObject GameObject { get; private set; }
-
-        internal void Attach(GameObject gameObject)
-        {
-            GameObject = gameObject;
-        }
-
-        internal void Dettach()
-        {
-            GameObject = null;
-        }
-
         public static Component Create(Type componentType)
         {
             Component result = null;
@@ -35,38 +24,60 @@ namespace MonoChrome.Core
             return result;
         }
 
-        public override void Awake()
-        {
+        public GameObject GameObject { get; private set; }
 
+        private bool _enabled = true;
+        public bool Enabled 
+        {
+            get => _enabled;
+            set 
+            {
+                if (value)
+                {
+                    OnEnableMethod?.Invoke();
+                } else
+                {
+                    OnDisableMethod?.Invoke();
+                }
+                _enabled = value;
+            } 
         }
 
-        public override void OnDestroy()
-        {
+        internal Action AwakeMethod;
+        internal Action UpdateMethod;
+        internal Action OnEnableMethod;
+        internal Action OnDisableMethod;
+        internal Action OnFinaliseMethod;
+        internal Action OnDestroyMethod;
 
+        private Component()
+        {
+            AwakeMethod = CreateDelegate("Awake");
+            UpdateMethod = CreateDelegate("Update");
+            OnEnableMethod = CreateDelegate("OnEnable");
+            OnDisableMethod = CreateDelegate("OnDisable");
+            OnFinaliseMethod = CreateDelegate("OnFinalise");
+            OnDestroyMethod = CreateDelegate("OnDestroy");
         }
 
-        public override void OnDisable()
+        internal void Attach(GameObject gameObject)
         {
-
+            GameObject = gameObject;
         }
 
-        public override void OnEnable()
+        internal void Dettach()
         {
-
+            GameObject = null;
         }
 
-        public override void OnFinalize()
+        private Action CreateDelegate(string name)
         {
+            return Delegate.CreateDelegate(typeof(void), GetMethod(name)) as Action;
         }
 
-        public override void Start()
+        private MethodInfo GetMethod(string name)
         {
-
-        }
-
-        public override void Update()
-        {
-
+            return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null);
         }
     }
 }

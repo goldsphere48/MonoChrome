@@ -45,11 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\EntityManager\EntityCachedComponents.cs" />
+    <Compile Include="Core\EntityManager\CachedComponents.cs" />
+    <Compile Include="Core\EntityManager\CachedMethods.cs" />
+    <Compile Include="Core\EntityManager\ComponentEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
     <Compile Include="Core\EntityManager\EntityEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
-    <Compile Include="Core\EntityManager\EntityRegistry.cs" />
     <Compile Include="Core\EntityManager\EntityStore.cs" />
     <Compile Include="Core\EntityManager\ICachedCollection.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
