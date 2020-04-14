@@ -89,19 +89,6 @@ namespace MonoChrome.SceneSystem
         {
             _scene.OnDisable();
         }
-
-        private void OnDestroy()
-        {
-            _cachedMethods["OnDestroy"]();
-        }
-
-        private void OnFinalize()
-        {
-            _cachedMethods["OnFinalize"]();
-            _store.Clear();
-            _cachedComponents.Clear();
-            _cachedMethods.Clear();
-        }
         #endregion
 
         #region Scene Controller Interface
@@ -141,6 +128,19 @@ namespace MonoChrome.SceneSystem
         {
             Dispose(true);
             GC.SuppressFinalize(true);
+        }
+
+        private void OnDestroy()
+        {
+            _cachedMethods["OnDestroy"]();
+        }
+
+        private void OnFinalize()
+        {
+            _cachedMethods["OnFinalize"]();
+            _store.Clear();
+            _cachedComponents.Clear();
+            _cachedMethods.Clear();
         }
 
         ~SceneController()
