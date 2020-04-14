@@ -10,8 +10,10 @@ namespace MonoChrome.Core.EntityManager
         private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
             new Dictionary<GameObject, IDictionary<Type, Component>>();
 
-        public event EventHandler ComponentAdded;
-        public event EventHandler ComponentRemoved;
+        public event ComponentEventHandler ComponentAdded;
+        public event ComponentEventHandler ComponentRemoved;
+        public event ComponentEventHandler ComponentEnabled;
+        public event ComponentEventHandler ComponentDisabled;
 
         public void Add(GameObject entity, Component component)
         {
@@ -139,6 +141,23 @@ namespace MonoChrome.Core.EntityManager
         public IEnumerator<GameObject> GetEnumerator()
         {
             return _gameObjects.Keys.GetEnumerator();
+        }
+
+        public void Clear()
+        {
+            _gameObjects.Clear();
+        }
+
+        internal void OnComponentEnabled(Component component, GameObject gameObject)
+        {
+            var args = new ComponentEventArgs(component, gameObject);
+            ComponentEnabled?.Invoke(this, args);
+        }
+
+        internal void OnComponentDisabled(Component component, GameObject gameObject)
+        {
+            var args = new ComponentEventArgs(component, gameObject);
+            ComponentEnabled?.Invoke(this, args);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

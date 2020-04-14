@@ -28,14 +28,6 @@ namespace MonoChrome.SceneSystem
         {
 
         }
-        public virtual void OnDestroy()
-        {
-
-        }
-        public virtual void OnFinalize()
-        {
-
-        }
         public abstract void Setup();
     }
 }

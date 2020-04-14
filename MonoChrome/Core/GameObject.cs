@@ -15,7 +15,7 @@ namespace MonoChrome.Core
         public Transform Transform { get; }
         public string Name { get; }
 
-        internal EntityRegistry Registry { get; set; }
+        internal EntityStore Registry { get; set; }
 
         private GameObject(string name)
         {
@@ -26,11 +26,10 @@ namespace MonoChrome.Core
         public Component AddComponent(Type componentType)
         {
             var component = Component.Create(componentType);
-            var components = Registry.Store.GetComponents(this).ToList();
+            var components = Registry.GetComponents(this).ToList();
             if (ComponentValidator.Valid(component, components))
             {
-                Registry.Store.Add(this, component);
-                component.Awake();
+                Registry.Add(this, component);
                 return component;
             }
             return null;
@@ -46,7 +45,7 @@ namespace MonoChrome.Core
             var removableComponent = GetComponent(type);
             if (removableComponent != null)
             {
-                EntityRegistry.Current.Remove(this, removableComponent);
+                Registry.Remove(this, removableComponent);
             }
         }
 
@@ -57,7 +56,7 @@ namespace MonoChrome.Core
 
         public Component GetComponent(Type componentType, bool inherit = false)
         {
-            return EntityRegistry.Current.GetComponent(this, componentType, inherit);
+            return Registry.GetComponent(this, componentType, inherit);
         }
         public T GetComponent<T>(bool inherit = false) where T : Component
         {

@@ -22,6 +22,7 @@ namespace MonoChrome.Core.EntityManager
         {
             if (_cached.ContainsKey(key))
             {
+                _cached[key] -= action;
                 _cached[key] += action;
             } else
             {
@@ -39,6 +40,16 @@ namespace MonoChrome.Core.EntityManager
             if (key != null)
             {
                 return _cached.Remove(key);
+            }
+            return false;
+        }
+
+        public bool Remove(string key, Action action)
+        {
+            if (key != null)
+            {
+                _cached[key] -= action;
+                return true;
             }
             return false;
         }

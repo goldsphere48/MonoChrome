@@ -43,5 +43,15 @@ namespace MonoChrome.Core.EntityManager
             }
             return false;
         }
+
+        public bool Remove(Component component)
+        {
+            var key = component.GetType();
+            if (_cached.ContainsKey(key))
+            {
+                return _cached[key].Remove(component);
+            }
+            return false;
+        }
     }
 }

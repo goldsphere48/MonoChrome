@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    class ComponentEventArgs : EventArgs
+    public delegate void ComponentEventHandler(object sender, ComponentEventArgs e);
+    public class ComponentEventArgs : EventArgs
     {
         public GameObject GameObject { get; private set; }
         public Component Component { get; private set; }

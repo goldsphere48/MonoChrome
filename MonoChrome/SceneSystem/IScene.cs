@@ -12,7 +12,5 @@ namespace MonoChrome.SceneSystem
         void Setup();
         void OnEnable();
         void OnDisable();
-        void OnDestroy();
-        void OnFinalize();
     }
 }

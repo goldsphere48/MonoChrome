@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    public abstract class Component
+    public abstract class Component : IDisposable
     {
+        private bool _disposed = false;
+
         public static Component Create(Type componentType)
         {
             Component result = null;
@@ -35,9 +37,11 @@ namespace MonoChrome.Core
                 if (value)
                 {
                     OnEnableMethod?.Invoke();
+                    GameObject.Registry.OnComponentEnabled(this, GameObject);
                 } else
                 {
                     OnDisableMethod?.Invoke();
+                    GameObject.Registry.OnComponentDisabled(this, GameObject);
                 }
                 _enabled = value;
             } 
@@ -78,6 +82,29 @@ namespace MonoChrome.Core
         private MethodInfo GetMethod(string name)
         {
             return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose(bool clean)
+        {
+            if (!_disposed)
+            {
+                if (clean)
+                {
+                    OnDestroyMethod?.Invoke();
+                }
+                OnFinaliseMethod?.Invoke();
+            }
+        }
+
+        ~Component()
+        {
+            Dispose(false);
         }
     }
 }

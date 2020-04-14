@@ -25,19 +25,16 @@ namespace MonoChrome.SceneSystem
         {
             _scene = scene;
             _spriteBatch = new SpriteBatch(device);
+            _store.ComponentAdded += OnComponentAdded;
+            _store.ComponentRemoved += OnComponentRemoved;
         }
 
         #region Store Events
         private void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
         {
-            if (componentArgs.Component is Renderer2D)
-            {
-                _cachedComponents.Cache(componentArgs.GetType(), componentArgs.Component);
-            }
+            CacheComponent(typeof(Renderer2D), componentArgs.Component);
             CacheMethod("Update", componentArgs.Component.UpdateMethod);
-            CacheMethod("OnDisable", componentArgs.Component.OnDisableMethod);
             CacheMethod("OnDestroy", componentArgs.Component.OnDestroyMethod);
-            CacheMethod("OnEnable", componentArgs.Component.OnEnableMethod);
             CacheMethod("OnFinalise", componentArgs.Component.OnFinaliseMethod);
         }
         private void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
@@ -47,11 +44,28 @@ namespace MonoChrome.SceneSystem
                 _cachedComponents.Remove(componentArgs.Component.GetType());
             }
         }
+        private void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
+        {
+            CacheMethod("Update", componentArgs.Component.UpdateMethod);
+            CacheComponent(typeof(Renderer2D), componentArgs.Component);
+        }
+        private void OnComponentDisabled(object sender, ComponentEventArgs componentArgs)
+        {
+            _cachedMethods.Remove("Update", componentArgs.Component.UpdateMethod);
+            _cachedComponents.Remove(componentArgs.Component);
+        }
         private void CacheMethod(string methodName, Action method)
         {
             if (method != null)
             {
                 _cachedMethods.Cache(methodName, method);
+            }
+        }
+        private void CacheComponent(Type cachedType, Component component)
+        {
+            if (component.GetType() == cachedType)
+            {
+                _cachedComponents.Cache(cachedType, component);
             }
         }
         #endregion
@@ -68,27 +82,25 @@ namespace MonoChrome.SceneSystem
         public void OnEnable()
         {
             Entity.Registry = _store;
-            _cachedMethods["OnEnable"]();
             _scene.OnEnable();
         }
 
         public void OnDisable()
         {
-            _cachedMethods["OnDisable"]();
             _scene.OnDisable();
         }
 
-        public void OnDestroy()
+        private void OnDestroy()
         {
             _cachedMethods["OnDestroy"]();
-            _scene.OnDestroy();
         }
 
-        public void OnFinalize()
+        private void OnFinalize()
         {
             _cachedMethods["OnFinalize"]();
-            //Entity.Registry.Clear();
-            _scene.OnFinalize();
+            _store.Clear();
+            _cachedComponents.Clear();
+            _cachedMethods.Clear();
         }
         #endregion
 
@@ -110,7 +122,7 @@ namespace MonoChrome.SceneSystem
         #endregion
 
         #region Disposable
-        public void CleanUp(bool clean)
+        public void Dispose(bool clean)
         {
             OnDisable();
             if (!Disposed)
@@ -127,13 +139,13 @@ namespace MonoChrome.SceneSystem
 
         public void Dispose()
         {
-            CleanUp(true);
+            Dispose(true);
             GC.SuppressFinalize(true);
         }
 
         ~SceneController()
         {
-            CleanUp(false);
+            Dispose(false);
         }
         #endregion
     }
