@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoChrome.Core.Components;
+using System;
 using System.Reflection;
 
 namespace MonoChrome.Core.EntityManager
@@ -7,12 +8,14 @@ namespace MonoChrome.Core.EntityManager
     {
         public GameObject CreateEmpty()
         {
-            return Construct(GameObject.DefaultName);
+            return CreateEmpty(GameObject.DefaultName);
         }
 
         public GameObject CreateEmpty(string name)
         {
-            return Construct(name);
+            var gameObject = Construct(name);
+            gameObject.AddComponent<Transform>();
+            return gameObject;
         }
 
         public GameObject Create(Type[] types)
