@@ -12,7 +12,7 @@ namespace MonoChrome.Core
     public sealed class GameObject
     {
         public const string DefaultName = "GameObject";
-        public Transform Transform { get; }
+        public Transform Transform { get => GetComponent<Transform>(); }
         public string Name { get; }
 
         internal EntityStore Registry { get; set; }
@@ -23,21 +23,20 @@ namespace MonoChrome.Core
         }
 
         #region Components Controller
-        public Component AddComponent(Type componentType)
+        public void AddComponent(Type componentType)
         {
             var component = Component.Create(componentType);
-            var components = Registry.GetComponents(this).ToList();
-            if (ComponentValidator.Valid(component, components))
-            {
-                Registry.Add(this, component);
-                return component;
-            }
-            return null;
+            Registry.Add(this, component);
         }
 
-        public T AddComponent<T>() where T : Component
+        public void AddComponent(Component component)
         {
-            return AddComponent(typeof(T)) as T;
+            Registry.Add(this, component);
+        }
+
+        public void AddComponent<T>() where T : Component
+        {
+            AddComponent(typeof(T));
         }
 
         public void RemoveComponent(Type type)
@@ -66,11 +65,12 @@ namespace MonoChrome.Core
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
+            var transform = Transform;
             if (component == null)
             {
-                for (int i = 0; i < Transform.Childrens.Count; ++i)
+                for (int i = 0; i < transform.Childrens.Count; ++i)
                 {
-                    component = Transform.Childrens[i].GameObject.GetComponentInChildren(componentType);
+                    component = transform.Childrens[i].GameObject.GetComponentInChildren(componentType);
                     if (component != null)
                     {
                         return component;
@@ -88,11 +88,12 @@ namespace MonoChrome.Core
         public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
         {
             var currentComponent = GetComponent(componentType, inherit);
+            var transform = Transform;
             if (currentComponent != null)
             {
                 yield return currentComponent;
             }
-            foreach (var child in Transform.Childrens)
+            foreach (var child in transform.Childrens)
             {
                 var childrenComponents = child.GameObject.GetComponentsInChildren(componentType, inherit);
                 foreach (var childrenComponent in childrenComponents)
@@ -102,7 +103,7 @@ namespace MonoChrome.Core
             }
         }
 
-        public List<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
+        public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
         {
             return GetComponentsInChildren(typeof(T), inherit) as List<T>;
         }
@@ -110,11 +111,12 @@ namespace MonoChrome.Core
         public Component GetComponentInParent(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
+            var transform = Transform;
             if (component == null)
             {
-                if (Transform.Parent != null)
+                if (transform.Parent != null)
                 {
-                    return Transform.Parent.GameObject.GetComponentInParent(componentType, inherit);
+                    return transform.Parent.GameObject.GetComponentInParent(componentType, inherit);
                 }
             }
             return component;
@@ -128,13 +130,14 @@ namespace MonoChrome.Core
         public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
         {
             var currentComponent = GetComponent(componentType, inherit);
+            var transform = Transform;
             if (currentComponent != null)
             {
                 yield return currentComponent;
             }
-            if (Transform.Parent != null)
+            if (transform.Parent != null)
             {
-                var parentComponents = Transform.Parent.GameObject.GetComponentsInParent(componentType, inherit);
+                var parentComponents = transform.Parent.GameObject.GetComponentsInParent(componentType, inherit);
                 foreach (var parentComponent in parentComponents)
                 {
                     yield return parentComponent;
@@ -142,10 +145,16 @@ namespace MonoChrome.Core
             }
         }
 
-        public List<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
+        public IEnumerable<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
         {
             return GetComponentsInParent(typeof(T), inherit) as List<T>;
         }
+
+        public IEnumerable<Component> GetComponents()
+        {
+            return Registry.GetComponents(this);
+        }
+
         #endregion Components Controller
     }
 }

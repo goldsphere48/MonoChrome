@@ -15,21 +15,29 @@ namespace MonoChrome.Core.EntityManager
         public event ComponentEventHandler ComponentEnabled;
         public event ComponentEventHandler ComponentDisabled;
 
-        public void Add(GameObject entity, Component component)
+        public bool Add(GameObject entity, Component component)
         {
             if (entity == null || component == null)
             {
                 throw new ArgumentNullException();
             }
+            bool componentSuccessfullyAttached = false;
             var components = GetComponentsForEntity(entity);
             if (components == null)
             {
                 components = new Dictionary<Type, Component>();
                 _gameObjects[entity] = components;
+            } else
+            {
+                if (!components.ContainsKey(component.GetType()))
+                {
+                    components.Add(component.GetType(), component);
+                    component.Attach(entity);
+                    componentSuccessfullyAttached = true;
+                    OnAdd(component, entity);
+                }
             }
-            components.Add(component.GetType(), component);
-            component.Attach(entity);
-            OnAdd(component, entity);
+            return componentSuccessfullyAttached;
         }
 
         public bool Remove(GameObject entity, Component component)

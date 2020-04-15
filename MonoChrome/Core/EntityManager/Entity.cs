@@ -66,7 +66,7 @@ namespace MonoChrome.Core.EntityManager
         {
             foreach (var component in components)
             {
-                Registry.Store.Add(gameObject, component);
+                Registry.Add(gameObject, component);
             }
             gameObject.Registry = Registry;
         }

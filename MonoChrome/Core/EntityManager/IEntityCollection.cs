@@ -13,7 +13,7 @@ namespace MonoChrome.Core.EntityManager
         event ComponentEventHandler ComponentEnabled;
         event ComponentEventHandler ComponentDisabled;
 
-        void Add(TEntity entity, Component component);
+        bool Add(TEntity entity, Component component);
         bool Remove(TEntity entity, Component component);
         bool Contains(TEntity entity);
         void Clear();

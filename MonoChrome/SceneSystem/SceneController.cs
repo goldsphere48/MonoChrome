@@ -27,6 +27,8 @@ namespace MonoChrome.SceneSystem
             _spriteBatch = new SpriteBatch(device);
             _store.ComponentAdded += OnComponentAdded;
             _store.ComponentRemoved += OnComponentRemoved;
+            _store.ComponentEnabled += OnComponentEnabled;
+            _store.ComponentDisabled += OnComponentDisabled;
         }
 
         #region Store Events
