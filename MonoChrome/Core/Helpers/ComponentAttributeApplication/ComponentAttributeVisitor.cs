@@ -6,24 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core.Helpers.ComponentValidation
+namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
     public class ComponentAttributeVisitor
     {
         public Type CurrentComponent { private get; set; }
         public IEnumerable<Type> ComponentTypes { private get; set; }
-
-        public void VisitComponentUsageAttribute(ComponentUsageAttribute attribute)
-        {
-            if (!attribute.AllowMultipleComponentUsage)
-            {
-                var sameComponents = ComponentTypes.ToList().FindAll(component => component == CurrentComponent);
-                if (sameComponents.Count > 1)
-                {
-                    throw new InvalidComponentDuplicateException($"Found invalid duplicate of component {CurrentComponent.Name}");
-                }
-            }
-        }
 
         public void VisitRequireComponentAttribute(RequireComponentAttribute attribute)
         {

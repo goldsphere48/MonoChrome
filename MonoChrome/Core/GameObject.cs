@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using MonoChrome.Core.Helpers.ComponentValidation;
+using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using MonoChrome.Core.EntityManager;
 
 namespace MonoChrome.Core

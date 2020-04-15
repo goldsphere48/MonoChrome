@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Attributes\InsertComponentAttribute.cs" />
     <Compile Include="Core\EntityManager\CachedComponents.cs" />
     <Compile Include="Core\EntityManager\CachedMethods.cs" />
     <Compile Include="Core\EntityManager\ComponentEventArgs.cs" />
@@ -56,10 +57,11 @@
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
-    <Compile Include="Core\Helpers\ComponentValidation\ComponentAttributeVisitor.cs" />
-    <Compile Include="Core\Helpers\ComponentValidation\ComponentValidator.cs" />
-    <Compile Include="Core\Attributes\ComponentUsageAttribute.cs" />
-    <Compile Include="Core\Helpers\ComponentValidation\IComponentVisitorAcceptable.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\ComponentAttributeVisitor.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\ComponentAttributeAplicator.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldAttributeVisitor.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentApplicatorAcceptable.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentValidatorAcceptable.cs" />
     <Compile Include="Core\Attributes\RequireComponentAttribute.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\Renderer.cs" />

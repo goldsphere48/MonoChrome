@@ -54,7 +54,7 @@ namespace MonoChrome.Core
         internal Action OnFinaliseMethod;
         internal Action OnDestroyMethod;
 
-        private Component()
+        protected Component()
         {
             AwakeMethod = CreateDelegate("Awake");
             UpdateMethod = CreateDelegate("Update");

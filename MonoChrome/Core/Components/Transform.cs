@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace MonoChrome.Core.Components
 {
-    [ComponentUsage(AllowMultipleComponentUsage = false)]
     public class Transform : Component
     {
         private Vector2 _position = Vector2.Zero;

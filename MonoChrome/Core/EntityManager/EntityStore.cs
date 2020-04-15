@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoChrome.Core.Helpers.ComponentAttributeApplication;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +32,16 @@ namespace MonoChrome.Core.EntityManager
             {
                 if (!components.ContainsKey(component.GetType()))
                 {
-                    components.Add(component.GetType(), component);
-                    component.Attach(entity);
-                    componentSuccessfullyAttached = true;
-                    OnAdd(component, entity);
+                    if (ComponentAttributeAplicator.Valid(component, components.Values))
+                    {
+                        components.Add(component.GetType(), component);
+                        component.Attach(entity);
+                        if (ComponentAttributeAplicator.Apply(component, components.Values))
+                        {
+                            OnAdd(component, entity);
+                            componentSuccessfullyAttached = true;
+                        }
+                    }
                 }
             }
             return componentSuccessfullyAttached;
@@ -52,7 +59,7 @@ namespace MonoChrome.Core.EntityManager
                 return false;
             }
             component.Dettach();
-            //TODO Component dispose
+            component.Dispose();
             return components.Remove(component.GetType());
         }
 

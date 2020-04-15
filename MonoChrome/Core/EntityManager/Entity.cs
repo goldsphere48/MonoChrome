@@ -1,5 +1,5 @@
 ﻿using MonoChrome.Core.Helpers;
-using MonoChrome.Core.Helpers.ComponentValidation;
+using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentValidator.Valid(componentTypes))
+            if (ComponentAttributeAplicator.Valid(componentTypes))
             {
                 _definitions.Define(definition, inheritFromDefinition, componentTypes);
             }
@@ -42,7 +42,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentValidator.Valid(components))
+            if (ComponentAttributeAplicator.Valid(components))
             {
                 var gameObject = _entityFactory.CreateEmpty(name);
                 AttachComponents(gameObject, components);
