@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoChrome.Core.SceneSystem;
+using MonoChrome.SceneSystem;
+using MonoChrome.Core.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,25 +12,9 @@ namespace Match_3.Scenes
 {
     class MainMenuScene : Scene
     {
-        public override void Awake()
+        public override void Setup()
         {
-            Console.WriteLine("Awake main");
+            var e = Entity.Create("1", typeof(Renderer2D));
         }
-
-        public override void Update()
-        {
-
-        }
-
-        public override void OnEnable()
-        {
-            Console.WriteLine("Enabale main");
-        }
-
-        public override void OnDisable()
-        {
-            Console.WriteLine("Disable main");
-        }
-
     }
 }

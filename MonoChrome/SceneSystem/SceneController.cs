@@ -96,7 +96,7 @@ namespace MonoChrome.SceneSystem
         #region Scene Controller Interface
         public void Update()
         {
-            _cachedMethods["Update"]();
+            _cachedMethods["Update"]?.Invoke();
         }
 
         public void Draw()
@@ -134,12 +134,12 @@ namespace MonoChrome.SceneSystem
 
         private void OnDestroy()
         {
-            _cachedMethods["OnDestroy"]();
+            _cachedMethods["OnDestroy"]?.Invoke();
         }
 
         private void OnFinalize()
         {
-            _cachedMethods["OnFinalize"]();
+            _cachedMethods["OnFinalize"]?.Invoke();
             _store.Clear();
             _cachedComponents.Clear();
             _cachedMethods.Clear();

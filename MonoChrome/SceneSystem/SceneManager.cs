@@ -74,7 +74,7 @@ namespace MonoChrome.SceneSystem
 
         public void UnloadScene(Type type)
         {
-            if (IsScene(type) && !Contains(type))
+            if (!IsScene(type) && !Contains(type))
             {
                 throw new ArgumentException($"{type.Name} is not subclass of IScene or this scene doesn't exist");
             }
@@ -95,20 +95,34 @@ namespace MonoChrome.SceneSystem
         {
             foreach (var value in _scenes)
             {
-                UnloadScene(value.GetType());
+                var scene = GetSceneController(value.SceneType);
+                if (scene.Initialized)
+                {
+                    scene.Dispose();
+                }
             }
             _scenes.Clear();
         }
 
         public void ClearAllExceptCurrent()
         {
+            var scenesToRemove = new List<Type>();
             foreach (var value in _scenes)
             {
                 if (_currentScreen != value)
                 {
-                    UnloadScene(value.GetType());
-                    _scenes.Remove(value);
+                    var scene = GetSceneController(value.SceneType);
+                    scenesToRemove.Add(value.SceneType);
+                    if (scene.Initialized)
+                    {
+                        scene.Dispose();
+                    }
                 }
+            }
+            for (int i = 0; i < scenesToRemove.Count; ++i)
+            {
+                var scene = GetSceneController(scenesToRemove[i]);
+                _scenes.Remove(scene);
             }
         }
 

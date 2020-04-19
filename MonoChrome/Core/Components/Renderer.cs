@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Components
 {
-    abstract class Renderer : Component
+    public abstract class Renderer : Component
     {
         public Color Color { get; set; } = Color.White;
         public abstract Vector2 Size { get; }
