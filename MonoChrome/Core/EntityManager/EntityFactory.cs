@@ -13,7 +13,7 @@ namespace MonoChrome.Core.EntityManager
 
         public GameObject CreateEmpty(string name)
         {
-            var gameObject = Construct(name);
+            var gameObject = new GameObject(name);
             gameObject.AddComponent<Transform>();
             return gameObject;
         }
@@ -31,14 +31,6 @@ namespace MonoChrome.Core.EntityManager
                 gameObject.AddComponent(componentType);
             }
             return gameObject;
-        }
-
-        private GameObject Construct(string name)
-        {
-            var flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            var types = new Type[] { typeof(string) };
-            var constructor = typeof(GameObject).GetConstructor(flags, null, types, null);
-            return constructor?.Invoke(new object[] { name }) as GameObject;
         }
     }
 }
