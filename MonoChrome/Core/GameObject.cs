@@ -17,7 +17,7 @@ namespace MonoChrome.Core
 
         internal EntityStore Registry { get; set; }
 
-        private GameObject(string name)
+        internal GameObject(string name)
         {
             Name = name;
         }
