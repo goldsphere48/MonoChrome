@@ -9,13 +9,33 @@ using MonoChrome.Core.EntityManager;
 
 namespace MonoChrome.Core
 {
-    public sealed class GameObject
+    public sealed class GameObject : IDisposable
     {
         public const string DefaultName = "GameObject";
         public Transform Transform { get => GetComponent<Transform>(); }
         public string Name { get; }
+        public bool Enabled
+        {
+            get => _enabled;
+            set
+            {
+                _enabled = value;
+                var components = Registry.GetComponents(this);
+                foreach (var component in components)
+                {
+                    component.Enabled = _enabled;
+                }
+                var transform = Transform;
+                foreach (var child in transform.Childrens)
+                {
+                    child.GameObject.Enabled = _enabled;
+                }
+            }
+        }
 
         internal EntityStore Registry { get; set; }
+
+        private bool _enabled = true;
 
         internal GameObject(string name)
         {
@@ -154,7 +174,35 @@ namespace MonoChrome.Core
         {
             return Registry.GetComponents(this);
         }
-
         #endregion Components Controller
+
+        public void Dispose()
+        {
+            var components = Registry.GetComponents(this);
+            foreach (var component in components)
+            {
+                Registry.Remove(this, component);
+            }
+            var transform = Transform;
+            transform.Parent?.Childrens.Remove(transform);
+            foreach (var child in transform.Childrens)
+            {
+                child.GameObject.Dispose();
+            }
+        }
+
+        public void Awake()
+        {
+            var components = Registry.GetComponents(this);
+            foreach (var component in components)
+            {
+                component.AwakeMethod?.Invoke();
+            }
+            var transform = Transform;
+            foreach (var child in transform.Childrens)
+            {
+                child.GameObject.Awake();
+            }
+        }
     }
 }

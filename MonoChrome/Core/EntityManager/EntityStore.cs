@@ -56,6 +56,10 @@ namespace MonoChrome.Core.EntityManager
             var components = GetComponentsForEntity(entity);
             if (components == null || components.Count == 0)
             {
+                if (components.Count == 0)
+                {
+                    _gameObjects.Remove(entity);
+                }
                 return false;
             }
             component.Dettach();

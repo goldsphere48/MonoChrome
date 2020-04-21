@@ -70,7 +70,6 @@
     <Compile Include="Core\EntityManager\Entity.cs" />
     <Compile Include="Core\EntityManager\IEntityDefinitionCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
-    <Compile Include="Core\Playable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Exceptions\SceneAlreadyExistException.cs" />
     <Compile Include="Core\Exceptions\SceneNotFoundException.cs" />
