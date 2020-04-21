@@ -6,26 +6,26 @@ namespace MonoChrome.Core.EntityManager
 {
     internal class EntityFactory
     {
-        public GameObject CreateEmpty()
+        public GameObject CreateEmpty(EntityStore store)
         {
-            return CreateEmpty(GameObject.DefaultName);
+            return CreateEmpty(GameObject.DefaultName, store);
         }
 
-        public GameObject CreateEmpty(string name)
+        public GameObject CreateEmpty(string name, EntityStore store)
         {
-            var gameObject = new GameObject(name);
+            var gameObject = new GameObject(name, store);
             gameObject.AddComponent<Transform>();
             return gameObject;
         }
 
-        public GameObject Create(Type[] types)
+        public GameObject Create(Type[] types, EntityStore store)
         {
-            return Create(GameObject.DefaultName, types);
+            return Create(GameObject.DefaultName, types, store);
         }
 
-        public GameObject Create(string name, Type[] types)
+        public GameObject Create(string name, Type[] types, EntityStore store)
         {
-            var gameObject = CreateEmpty(name);
+            var gameObject = CreateEmpty(name, store);
             foreach (var componentType in types)
             {
                 gameObject.AddComponent(componentType);

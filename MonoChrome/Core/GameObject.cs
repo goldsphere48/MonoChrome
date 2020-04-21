@@ -37,9 +37,10 @@ namespace MonoChrome.Core
 
         private bool _enabled = true;
 
-        internal GameObject(string name)
+        internal GameObject(string name, EntityStore store)
         {
             Name = name;
+            Registry = store;
         }
 
         #region Components Controller

@@ -76,7 +76,7 @@ namespace MonoChrome.Core
 
         private Action CreateDelegate(string name)
         {
-            return Delegate.CreateDelegate(typeof(void), GetMethod(name)) as Action;
+            return GetMethod(name)?.CreateDelegate(typeof(Action), this) as Action;
         }
 
         private MethodInfo GetMethod(string name)

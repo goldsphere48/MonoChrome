@@ -44,7 +44,7 @@ namespace MonoChrome.Core.EntityManager
             }
             if (ComponentAttributeAplicator.Valid(components))
             {
-                var gameObject = _entityFactory.CreateEmpty(name);
+                var gameObject = _entityFactory.CreateEmpty(name, Registry);
                 AttachComponents(gameObject, components);
             }
             return null;
@@ -57,8 +57,7 @@ namespace MonoChrome.Core.EntityManager
                 throw new ArgumentNullException();
             }
             var componentTypes = _definitions.Get(definition);
-            var gameObject = _entityFactory.Create(name, componentTypes.ToArray());
-            gameObject.Registry = Registry;
+            var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
             return gameObject;
         }
 
@@ -68,7 +67,6 @@ namespace MonoChrome.Core.EntityManager
             {
                 Registry.Add(gameObject, component);
             }
-            gameObject.Registry = Registry;
         }
     }
 }
