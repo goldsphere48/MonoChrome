@@ -28,7 +28,9 @@ namespace Match_3.Scenes
     {
         public override void Setup()
         {
+            base.Setup();
             var e = Entity.Create("1", new TestComponent());
+            Add(e);
         }
     }
 }

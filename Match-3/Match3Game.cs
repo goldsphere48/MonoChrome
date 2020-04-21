@@ -17,12 +17,13 @@ namespace Match_3
         protected override void Initialize()
         {
             SceneManager.Instance.GraphicsDevice = GraphicsDevice;
+            SceneManager.Instance.LoadScene<MainMenuScene>();
+            SceneManager.Instance.SetActiveScene<MainMenuScene>();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            SceneManager.Instance.LoadScene<MainMenuScene>();
         }
 
         protected override void UnloadContent()

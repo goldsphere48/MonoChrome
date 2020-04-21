@@ -46,6 +46,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 var gameObject = _entityFactory.CreateEmpty(name, Registry);
                 AttachComponents(gameObject, components);
+                return gameObject;
             }
             return null;
         }

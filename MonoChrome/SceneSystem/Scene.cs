@@ -8,16 +8,21 @@ namespace MonoChrome.SceneSystem
 {
     public abstract class Scene : IScene
     {
-        protected GameObject Root { get; }
         public Type SceneType => GetType();
+        
+        protected GameObject Root { get => _root; }
+        
+        private GameObject _root;
 
         public void Add(GameObject gameObject)
         {
             Root.Transform.Parent = gameObject.Transform;
+            gameObject.Awake();
         }
         public void Remove(GameObject gameObject)
         {
             Root.Transform.Parent = null;
+            gameObject.Dispose();
         }
 
         public virtual void OnDisable()
@@ -28,6 +33,9 @@ namespace MonoChrome.SceneSystem
         {
 
         }
-        public abstract void Setup();
+        public virtual void Setup()
+        {
+            _root = Entity.Create("Root");
+        }
     }
 }

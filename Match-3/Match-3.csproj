@@ -40,6 +40,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Match_3.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Match3Game.cs" />
     <Compile Include="Program.cs" />

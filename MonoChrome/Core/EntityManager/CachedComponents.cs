@@ -14,6 +14,10 @@ namespace MonoChrome.Core.EntityManager
             get
             {
                 _cached.TryGetValue(type, out IList<Component> result);
+                if (result == null)
+                {
+                    return Enumerable.Empty<Component>() as IList<Component>;
+                }
                 return result;
             }
         }

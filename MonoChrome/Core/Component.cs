@@ -81,7 +81,7 @@ namespace MonoChrome.Core
 
         private MethodInfo GetMethod(string name)
         {
-            return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null);
+            return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
         public void Dispose()

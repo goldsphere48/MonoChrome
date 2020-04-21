@@ -45,6 +45,9 @@ namespace MonoChrome.SceneSystem
             {
                 _cachedComponents.Remove(componentArgs.Component.GetType());
             }
+            _cachedMethods.Remove("Update", componentArgs.Component.UpdateMethod);
+            _cachedMethods.Remove("OnDestroy", componentArgs.Component.UpdateMethod);
+            _cachedMethods.Remove("OnFinalise", componentArgs.Component.UpdateMethod);
         }
         private void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
         {

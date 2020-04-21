@@ -28,19 +28,17 @@ namespace MonoChrome.Core.EntityManager
             {
                 components = new Dictionary<Type, Component>();
                 _gameObjects[entity] = components;
-            } else
+            }
+            if (!components.ContainsKey(component.GetType()))
             {
-                if (!components.ContainsKey(component.GetType()))
+                if (ComponentAttributeAplicator.Valid(component, components.Values))
                 {
-                    if (ComponentAttributeAplicator.Valid(component, components.Values))
+                    components.Add(component.GetType(), component);
+                    component.Attach(entity);
+                    if (ComponentAttributeAplicator.Apply(component, components.Values))
                     {
-                        components.Add(component.GetType(), component);
-                        component.Attach(entity);
-                        if (ComponentAttributeAplicator.Apply(component, components.Values))
-                        {
-                            OnAdd(component, entity);
-                            componentSuccessfullyAttached = true;
-                        }
+                        OnAdd(component, entity);
+                        componentSuccessfullyAttached = true;
                     }
                 }
             }

@@ -134,7 +134,7 @@ namespace MonoChrome.SceneSystem
                 LoadScene(type);
                 scene = GetSceneController(type);
             }
-            _currentScreen.OnDisable();
+            _currentScreen?.OnDisable();
             _currentScreen = scene;
             if (!scene.Initialized)
             {
