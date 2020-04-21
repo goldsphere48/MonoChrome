@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core.EntityManager
 {
-    static class Entity
+    public static class Entity
     {
         private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
         private static EntityFactory _entityFactory = new EntityFactory();

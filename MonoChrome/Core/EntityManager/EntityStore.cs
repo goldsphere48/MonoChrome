@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MonoChrome.Core.EntityManager
 {
-    class EntityStore : IEntityCollection<GameObject>
+    public class EntityStore : IEntityCollection<GameObject>
     {
         private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
             new Dictionary<GameObject, IDictionary<Type, Component>>();
