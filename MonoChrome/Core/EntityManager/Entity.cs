@@ -10,9 +10,10 @@ namespace MonoChrome.Core.EntityManager
 {
     public static class Entity
     {
+        public static EntityStore Registry { private get; set; }
+
         private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
         private static EntityFactory _entityFactory = new EntityFactory();
-        public static EntityStore Registry { private get; set; }
         
         public static void Define(string definition, params Type[] componentTypes)
         {
@@ -21,7 +22,7 @@ namespace MonoChrome.Core.EntityManager
 
         public static void Define(string definition, string inheritFromDefinition, params Type[] componentTypes)
         {
-            if (definition == null || componentTypes == null || inheritFromDefinition == null)
+            if (definition == null || componentTypes == null)
             {
                 throw new ArgumentNullException();
             }
@@ -60,6 +61,31 @@ namespace MonoChrome.Core.EntityManager
             var componentTypes = _definitions.Get(definition);
             var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
             return gameObject;
+        }
+
+        public static GameObject Find(string name)
+        {
+            foreach (var gameObject in Registry)
+            {
+                if (gameObject.Name == name)
+                {
+                    return gameObject;
+                }
+            }
+            return null;
+        }
+
+        public static IEnumerable<GameObject> FindAll(string name)
+        {
+            var result = new List<GameObject>();
+            foreach (var gameObject in Registry)
+            {
+                if (gameObject.Name == name)
+                {
+                    result.Add(gameObject);
+                }
+            }
+            return result;
         }
 
         private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)

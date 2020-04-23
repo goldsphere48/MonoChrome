@@ -61,7 +61,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         private static void ProceedComponentFields(Component component)
         {
             _fieldAttributeVisitor.CurrentComponent = component;
-            var fields = component.GetType().GetFields();
+            var fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var field in fields)
             {
                 ProceedField(field);

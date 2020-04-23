@@ -34,6 +34,10 @@ namespace MonoChrome.Core
             get => _enabled;
             set 
             {
+                if (value == _enabled)
+                {
+                    return;
+                }
                 if (value)
                 {
                     OnEnableMethod?.Invoke();
@@ -94,11 +98,16 @@ namespace MonoChrome.Core
         {
             if (!_disposed)
             {
+                if (_enabled)
+                {
+                    OnDisableMethod?.Invoke();
+                }
                 if (clean)
                 {
                     OnDestroyMethod?.Invoke();
                 }
                 OnFinaliseMethod?.Invoke();
+                _disposed = true;
             }
         }
 

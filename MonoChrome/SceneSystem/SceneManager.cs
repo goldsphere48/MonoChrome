@@ -35,20 +35,6 @@ namespace MonoChrome.SceneSystem
         }
 
         #region ISceneManager interface
-        public T Create<T>() where T : class, IScene
-        {
-            return Create(typeof(T)) as T;
-        }
-
-        public IScene Create(Type type)
-        {
-            if (IsScene(type))
-            {
-                return Activator.CreateInstance(type) as IScene;
-            }
-            return null;
-        }
-
         public void LoadScene(Type type)
         {
             if (!IsScene(type))
@@ -58,7 +44,7 @@ namespace MonoChrome.SceneSystem
             var scene = GetSceneController(type);
             if (scene == null)
             {
-                scene = new SceneController(Create(type), GraphicsDevice);
+                scene = new SceneController(type, GraphicsDevice);
                 _scenes.Add(scene);
             }
             if (!scene.Initialized)

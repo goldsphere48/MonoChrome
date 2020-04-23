@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.Core.EntityManager
+namespace MonoChrome.Core.Helpers
 {
     class CachedMethods : ICachedCollection<string, Action>
     {

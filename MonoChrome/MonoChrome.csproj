@@ -46,14 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Attributes\InsertComponentAttribute.cs" />
-    <Compile Include="Core\EntityManager\CachedComponents.cs" />
-    <Compile Include="Core\EntityManager\CachedMethods.cs" />
+    <Compile Include="Core\ComponentExtensions.cs" />
+    <Compile Include="Core\Helpers\CachedComponents.cs" />
+    <Compile Include="Core\Helpers\CachedMethods.cs" />
     <Compile Include="Core\EntityManager\ComponentEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
-    <Compile Include="Core\EntityManager\EntityEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
     <Compile Include="Core\EntityManager\EntityStore.cs" />
-    <Compile Include="Core\EntityManager\ICachedCollection.cs" />
+    <Compile Include="Core\Helpers\ICachedCollection.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />

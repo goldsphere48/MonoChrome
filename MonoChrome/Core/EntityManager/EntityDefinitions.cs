@@ -22,13 +22,24 @@ namespace MonoChrome.Core.EntityManager
 
             if (inheritFromDefinition != null)
             {
-                if (_definitions.ContainsKey(inheritFromDefinition))
+                if (!_definitions.ContainsKey(inheritFromDefinition))
                 {
                     throw new ArgumentException(
                         $"Can't inherit from definition {inheritFromDefinition}. {inheritFromDefinition} is not define."
                     );
                 }
-                componentTypes.AddRange(_definitions[inheritFromDefinition]);
+                else
+                {
+                    var parentDefinitionComponentTypes = _definitions[inheritFromDefinition];
+                    foreach (var type in parentDefinitionComponentTypes)
+                    {
+                        if (componentTypes.Contains(type))
+                        {
+                            componentTypes.Remove(type);
+                        }
+                    }
+                    componentTypes.AddRange(_definitions[inheritFromDefinition]);
+                }
             }
 
             if (componentTypes.Count > 0)

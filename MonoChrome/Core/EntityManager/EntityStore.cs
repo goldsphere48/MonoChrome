@@ -60,6 +60,7 @@ namespace MonoChrome.Core.EntityManager
                 }
                 return false;
             }
+            OnRemove(component, entity);
             component.Dettach();
             component.Dispose();
             return components.Remove(component.GetType());
@@ -174,7 +175,7 @@ namespace MonoChrome.Core.EntityManager
         internal void OnComponentDisabled(Component component, GameObject gameObject)
         {
             var args = new ComponentEventArgs(component, gameObject);
-            ComponentEnabled?.Invoke(this, args);
+            ComponentDisabled?.Invoke(this, args);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
