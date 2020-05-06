@@ -1,4 +1,5 @@
-﻿using MonoChrome.Core.Exceptions;
+﻿using MonoChrome.Core.EntityManager;
+using MonoChrome.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,19 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         public FieldInfo CurrentField { private get; set; }
         public IEnumerable<Component> Components { private get; set; }
 
-        public void VisitInsertComponentAttribute()
+        public void VisitInsertComponentAttribute(string from)
         {
+            if (!string.IsNullOrEmpty(from))
+            {
+                var gameObject = Entity.Find(from);
+                if (gameObject != null)
+                {
+                    Components = gameObject.GetComponents();
+                } else
+                {
+                    return;
+                }
+            }
             foreach (var component in Components)
             {
                 if (component.GetType() == CurrentField.FieldType)

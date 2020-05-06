@@ -15,16 +15,13 @@ namespace Match_3.Scenes
 {
     class TestComponent2 : Component
     {
-        public int a = 2;
+        public TestComponent testComponent;
 
-        public TestComponent2()
+        public int A;
+
+        public TestComponent2(int a)
         {
-
-        }
-
-        public TestComponent2(int aa)
-        {
-            a = aa;
+            A = a;
         }
 
         private void Awake()
@@ -33,14 +30,19 @@ namespace Match_3.Scenes
         }
     }
 
+    class TestComponent3 : Component 
+    {
+        [InsertComponent(From = "Ho")]
+        public TestComponent2 testetst;
+    }
+
     class TestComponent : Component
     {
         [InsertComponent]
-        TestComponent2 comp;
+        public TestComponent2 comp;
         void Awake()
         {
             Console.WriteLine("Awake");
-            Console.WriteLine(comp.a);
             Console.WriteLine(GameObject.Name);
         }
 
@@ -73,14 +75,15 @@ namespace Match_3.Scenes
     {
         public override void Setup()
         {
-            Entity.Define("A", typeof(TestComponent2), typeof(TestComponent));
-            var a = Entity.CreateFromDefinition("A", "Ho");
-            var b = Entity.CreateFromDefinition("A", "Ho");
-            var c = Entity.CreateFromDefinition("A", "Ho");
-            c.Transform.Parent = b.Transform;
-            b.Transform.Parent = a.Transform;
-            Add(a);
-            a.Enabled = false;
+            var c = Entity.Create("Ho");
+            c.AddComponent(new TestComponent2(100));
+            var b = Entity.Create();
+            b.AddComponent<TestComponent3>();
+            Entity.Synchronize();
+            var b1 = b.GetComponent<TestComponent3>();
+            Console.WriteLine(b1.testetst.A);
+            Add(b);
+            b.Enabled = false;
         }
     }
 }

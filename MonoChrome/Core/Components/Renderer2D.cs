@@ -4,7 +4,6 @@ using MonoChrome.Core.Attributes;
 
 namespace MonoChrome.Core.Components
 {
-    [RequireComponent(typeof(Transform))]
     public class Renderer2D : Renderer
     {
         public Texture2D Texture { get; set; }

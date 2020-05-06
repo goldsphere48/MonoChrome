@@ -20,6 +20,10 @@ namespace MonoChrome.Core.Helpers
 
         public void Cache(string key, Action action)
         {
+            if (action == null)
+            {
+                return;
+            }
             if (_cached.ContainsKey(key))
             {
                 _cached[key] -= action;
@@ -46,7 +50,7 @@ namespace MonoChrome.Core.Helpers
 
         public bool Remove(string key, Action action)
         {
-            if (key != null)
+            if (key != null && action != null)
             {
                 _cached[key] -= action;
                 return true;

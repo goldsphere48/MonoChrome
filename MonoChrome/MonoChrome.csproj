@@ -57,12 +57,9 @@
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\ComponentAttributeVisitor.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\ComponentAttributeAplicator.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldAttributeVisitor.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentApplicatorAcceptable.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentValidatorAcceptable.cs" />
-    <Compile Include="Core\Attributes\RequireComponentAttribute.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\Renderer.cs" />
     <Compile Include="Core\Components\Renderer2D.cs" />

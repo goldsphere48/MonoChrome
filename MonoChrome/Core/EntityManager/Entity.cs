@@ -26,10 +26,7 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentAttributeAplicator.Valid(componentTypes))
-            {
-                _definitions.Define(definition, inheritFromDefinition, componentTypes);
-            }
+            _definitions.Define(definition, inheritFromDefinition, componentTypes);
         }
 
         public static GameObject Create(params Component[] components)
@@ -43,13 +40,9 @@ namespace MonoChrome.Core.EntityManager
             {
                 throw new ArgumentNullException();
             }
-            if (ComponentAttributeAplicator.Valid(components))
-            {
-                var gameObject = _entityFactory.CreateEmpty(name, Registry);
-                AttachComponents(gameObject, components);
-                return gameObject;
-            }
-            return null;
+            var gameObject = _entityFactory.CreateEmpty(name, Registry);
+            AttachComponents(gameObject, components);
+            return gameObject;
         }
 
         public static GameObject CreateFromDefinition(string definition, string name)
@@ -61,6 +54,11 @@ namespace MonoChrome.Core.EntityManager
             var componentTypes = _definitions.Get(definition);
             var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
             return gameObject;
+        }
+
+        public static void Synchronize()
+        {
+            Registry.Synchronize();
         }
 
         public static GameObject Find(string name)

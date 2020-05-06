@@ -9,38 +9,8 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
     static class ComponentAttributeAplicator
     {
-        private static ComponentAttributeVisitor _componentAttributeVisitor = new ComponentAttributeVisitor();
         private static FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
-        public static bool Valid(IEnumerable<Type> componentTypes)
-        {
-            _componentAttributeVisitor.ComponentTypes = componentTypes;
-            foreach (var componentType in componentTypes) 
-            {
-                _componentAttributeVisitor.CurrentComponent = componentType;
-                ProceedComponent(componentType, componentTypes);
-            }
-            return true;
-        }
-
-        public static bool Valid(Type componentType, IEnumerable<Type> componentTypes)
-        {
-            ProceedComponent(componentType, componentTypes);
-            return true;
-        }
-
-        public static bool Valid(Component component, IEnumerable<Component> components)
-        {
-            var componentTypes = components.Select(item => component.GetType());
-            ProceedComponent(component.GetType(), componentTypes);
-            return true;
-        }
-
-        public static bool Valid(IEnumerable<Component> components)
-        {
-            var componentTypes = components.Select(component => component.GetType());
-            return Valid(componentTypes);
-        }
-
+        
         public static bool Apply(IEnumerable<Component> components)
         {
             _fieldAttributeVisitor.Components = components;
@@ -84,33 +54,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 
         private static void ProceedFieldAttribute(IComponentApplicatorAcceptable attribute)
         {
-            if (attribute.Visited)
-            {
-                return;
-            }
             attribute.AcceptFieldVisitor(_fieldAttributeVisitor);
-        }
-
-        private static void ProceedComponent(Type componentType, IEnumerable<Type> otherComponentTypes)
-        {
-            var componentAttributes = componentType.GetCustomAttributes(false);
-            foreach (var componentAttribute in componentAttributes)
-            {
-                ProceedAttribute(componentAttribute);
-            }
-        }
-
-        private static void ProceedAttribute(object componentAttribute)
-        {
-            if (componentAttribute is IComponentValidatorAcceptable)
-            {
-                var acceptatbleAttribute = componentAttribute as IComponentValidatorAcceptable;
-                if (acceptatbleAttribute.Visited)
-                {
-                    return;
-                }
-                acceptatbleAttribute.AcceptComponentVisitor(_componentAttributeVisitor);
-            }
         }
     }
 }

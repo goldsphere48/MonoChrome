@@ -8,13 +8,28 @@ namespace MonoChrome.Core.EntityManager
 {
     public class EntityStore : IEntityCollection<GameObject>
     {
-        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
-            new Dictionary<GameObject, IDictionary<Type, Component>>();
-
         public event ComponentEventHandler ComponentAdded;
         public event ComponentEventHandler ComponentRemoved;
         public event ComponentEventHandler ComponentEnabled;
         public event ComponentEventHandler ComponentDisabled;
+
+        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
+            new Dictionary<GameObject, IDictionary<Type, Component>>();
+        private ICollection<Component> _unsynchronizedComponents =
+            new HashSet<Component>();
+        private IDictionary<Predicate<Component>, Action<Component>> _triggers =
+            new Dictionary<Predicate<Component>, Action<Component>>();
+
+        public EntityStore()
+        {
+            SetTrigger(
+                component => true,
+                component => {
+                    var gameObjectComponents = _gameObjects[component.GameObject].Values;
+                    ComponentAttributeAplicator.Apply(component, gameObjectComponents);
+                }
+            );
+        }
 
         public bool Add(GameObject entity, Component component)
         {
@@ -31,16 +46,11 @@ namespace MonoChrome.Core.EntityManager
             }
             if (!components.ContainsKey(component.GetType()))
             {
-                if (ComponentAttributeAplicator.Valid(component, components.Values))
-                {
-                    components.Add(component.GetType(), component);
-                    component.Attach(entity);
-                    if (ComponentAttributeAplicator.Apply(component, components.Values))
-                    {
-                        OnAdd(component, entity);
-                        componentSuccessfullyAttached = true;
-                    }
-                }
+                components.Add(component.GetType(), component);
+                component.Attach(entity);
+                OnAdd(component, entity);
+                componentSuccessfullyAttached = true;
+                _unsynchronizedComponents.Add(component);
             }
             return componentSuccessfullyAttached;
         }
@@ -164,6 +174,26 @@ namespace MonoChrome.Core.EntityManager
         public void Clear()
         {
             _gameObjects.Clear();
+        }
+
+        public void SetTrigger(Predicate<Component> predicate, Action<Component> action)
+        {
+            _triggers.Add(predicate, action);
+        }
+
+        public void Synchronize()
+        {
+            foreach (var trigger in _triggers)
+            {
+                foreach (var component in _unsynchronizedComponents)
+                {
+                    if (trigger.Key(component))
+                    {
+                        trigger.Value(component);
+                    }
+                }
+            }
+            _unsynchronizedComponents.Clear();
         }
 
         internal void OnComponentEnabled(Component component, GameObject gameObject)
