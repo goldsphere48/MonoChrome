@@ -50,8 +50,8 @@
     <Compile Include="Core\Components\CollisionDetection\BoxCollider2D.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collider.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
-    <Compile Include="Core\Helpers\CachedComponents.cs" />
-    <Compile Include="Core\Helpers\CachedMethods.cs" />
+    <Compile Include="SceneSystem\LayerManager\Helpers\CachedComponents.cs" />
+    <Compile Include="SceneSystem\LayerManager\Helpers\CachedMethods.cs" />
     <Compile Include="Core\EntityManager\ComponentEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
@@ -83,6 +83,7 @@
     <Compile Include="SceneSystem\IScene.cs" />
     <Compile Include="SceneSystem\ISceneManager.cs" />
     <Compile Include="SceneSystem\LayerManager\DefaultLayers.cs" />
+    <Compile Include="SceneSystem\LayerManager\Helpers\CacheRule.cs" />
     <Compile Include="SceneSystem\LayerManager\ILayerCollection.cs" />
     <Compile Include="SceneSystem\LayerManager\Layer.cs" />
     <Compile Include="SceneSystem\LayerManager\LayerManager.cs" />

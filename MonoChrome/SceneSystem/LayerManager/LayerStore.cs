@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.SceneSystem.LayerManager
+namespace MonoChrome.SceneSystem.Layers
 {
     class LayerComparer : IComparer<Layer>
     {
         public int Compare(Layer x, Layer y)
         {
-            return x.ZIndex - y.ZIndex;
+            return y.ZIndex - x.ZIndex;
         }
     }
 

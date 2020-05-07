@@ -8,6 +8,6 @@ namespace MonoChrome.SceneSystem.Input
 {
     interface IPointerClickHandler
     {
-        void OnPointerClick(PointerEventData pointerData);
+        void OnPointerClick(PointerEventData pointerEventData);
     }
 }

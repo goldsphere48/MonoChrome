@@ -32,6 +32,6 @@ namespace MonoChrome.SceneSystem.Input
             oldState = newState;
         }
 
-        public abstract void OnMouseClick(PointerEventData pointerData);
+        public abstract void OnMouseClick(PointerEventData pointerEventData);
     }
 }

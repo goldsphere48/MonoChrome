@@ -1,19 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
+using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoChrome.SceneSystem.LayerManager
+namespace MonoChrome.SceneSystem.Layers
 {
     class LayerManager
     {
         private ILayerCollection _layers = new LayerStore();
+        private EntityStore _store;
 
-        public LayerManager()
+        public LayerManager(EntityStore store)
         {
+            _store = store;
             CreateLayer(DefaultLayers.Default, 0);
             var backgroundLayer = CreateLayer(DefaultLayers.Background, int.MinValue + 1000);
             var uiLayer = CreateLayer(DefaultLayers.UI, int.MaxValue - 100);
@@ -85,7 +90,7 @@ namespace MonoChrome.SceneSystem.LayerManager
                 var layer = _layers.GetLayer(layerName);
                 if (layer == null)
                 {
-                    layer = new Layer(layerName, zIndex);
+                    layer = new Layer(layerName, zIndex, _store);
                     _layers.Add(layer);
                 } else
                 {
@@ -95,6 +100,50 @@ namespace MonoChrome.SceneSystem.LayerManager
             } else
             {
                 throw new ArgumentNullException();
+            }
+        }
+
+        public void Draw(SpriteBatch batch)
+        {
+            foreach (var layer in _layers)
+            {
+                layer.Draw(batch);
+            }
+        }
+
+        public void Update()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.Update();
+            }
+        }
+
+        public void OnDestroy()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnDestroy();
+            }
+        }
+
+        public void OnFinalise()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnFinalise();
+            }
+        }
+
+        public void HandleMouseClick(PointerEventData pointerEventData)
+        {
+            foreach (var layer in _layers)
+            {
+                var clickWasHandled = layer.HandleMouseClick(pointerEventData);
+                if (clickWasHandled && !layer.AllowThroughHandling)
+                {
+                    break;
+                }
             }
         }
 

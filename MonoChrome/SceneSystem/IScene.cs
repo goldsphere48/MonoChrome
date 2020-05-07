@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MonoChrome.Core;
+using MonoChrome.SceneSystem.Layers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +10,6 @@ namespace MonoChrome.SceneSystem
 {
     public interface IScene
     {
-        Type SceneType { get; }
         void Setup();
         void OnEnable();
         void OnDisable();
