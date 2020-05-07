@@ -82,7 +82,11 @@
     <Compile Include="SceneSystem\Input\PointerEventData.cs" />
     <Compile Include="SceneSystem\IScene.cs" />
     <Compile Include="SceneSystem\ISceneManager.cs" />
-    <Compile Include="SceneSystem\LayerManager.cs" />
+    <Compile Include="SceneSystem\LayerManager\DefaultLayers.cs" />
+    <Compile Include="SceneSystem\LayerManager\ILayerCollection.cs" />
+    <Compile Include="SceneSystem\LayerManager\Layer.cs" />
+    <Compile Include="SceneSystem\LayerManager\LayerManager.cs" />
+    <Compile Include="SceneSystem\LayerManager\LayerStore.cs" />
     <Compile Include="SceneSystem\Scene.cs" />
     <Compile Include="SceneSystem\SceneController.cs" />
     <Compile Include="SceneSystem\SceneManager.cs" />
