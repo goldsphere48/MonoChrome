@@ -15,21 +15,29 @@ namespace MonoChrome.SceneSystem.LayerManager
         public int ZIndex { get; set; }
         public int Count => _gameObjects.Count;
         public bool IsReadOnly => false;
+        public bool CollisionDetectionEnable { get; set; } = true;
+        public bool HandleClickEnable { get; set; } = true;
 
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
 
-        public Layer(string name)
+        public Layer(string name, int zIndex)
         {
             Name = name;
+            ZIndex = zIndex;
         }
 
         public void Add(GameObject item)
         {
+            item.LayerName = Name;
             _gameObjects.Add(item);
         }
 
         public void Clear()
         {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.LayerName = null;
+            }
             _gameObjects.Clear();
         }
 
@@ -45,6 +53,7 @@ namespace MonoChrome.SceneSystem.LayerManager
 
         public bool Remove(GameObject item)
         {
+            item.LayerName = null;
             return _gameObjects.Remove(item);
         }
 

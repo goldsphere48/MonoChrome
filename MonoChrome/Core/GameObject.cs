@@ -11,11 +11,12 @@ using MonoChrome.Core.Components.CollisionDetection;
 
 namespace MonoChrome.Core
 {
-    public sealed class GameObject : IDisposable, IMouseClickHandler
+    public sealed class GameObject : IDisposable
     {
         public const string DefaultName = "GameObject";
         public Transform Transform { get => GetComponent<Transform>(); }
         public string Name { get; }
+        public string LayerName { get; internal set; }
         public bool Enabled
         {
             get => _enabled;
@@ -213,7 +214,7 @@ namespace MonoChrome.Core
             }
         }
 
-        internal void OnMouseClick(PointerEventData pointerData)
+        internal void MouseClickHandle(PointerEventData pointerData)
         {
             var components = GetComponents();
             foreach (var component in components)

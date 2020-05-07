@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoChrome.Core;
+﻿using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using System;
@@ -26,7 +24,7 @@ namespace MonoChrome.SceneSystem
         {
             foreach (var gameObject in Entity.Registry)
             {
-                gameObject.OnMouseClick(data);
+                gameObject.MouseClickHandle(data);
             }
         }
         public virtual void OnDisable()

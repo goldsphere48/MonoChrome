@@ -11,7 +11,6 @@ namespace MonoChrome.SceneSystem.LayerManager
         Default,
         UI,
         Background,
-        Foreground,
-        Base
+        Foreground
     }
 }
