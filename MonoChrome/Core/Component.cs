@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoChrome.Core.Components.CollisionDetection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -57,6 +58,7 @@ namespace MonoChrome.Core
         internal Action OnDisableMethod;
         internal Action OnFinaliseMethod;
         internal Action OnDestroyMethod;
+        internal Action<Collision> OnCollision;
 
         protected Component()
         {
@@ -66,6 +68,7 @@ namespace MonoChrome.Core
             OnDisableMethod = CreateDelegate("OnDisable");
             OnFinaliseMethod = CreateDelegate("OnFinalise");
             OnDestroyMethod = CreateDelegate("OnDestroy");
+            OnCollision = CreateDelegate<Collision>("OnCollision");
         }
 
         internal void Attach(GameObject gameObject)
@@ -81,6 +84,11 @@ namespace MonoChrome.Core
         private Action CreateDelegate(string name)
         {
             return GetMethod(name)?.CreateDelegate(typeof(Action), this) as Action;
+        }
+
+        private Action<T> CreateDelegate<T>(string name)
+        {
+            return GetMethod(name)?.CreateDelegate(typeof(Action<T>), this) as Action<T>;
         }
 
         private MethodInfo GetMethod(string name)

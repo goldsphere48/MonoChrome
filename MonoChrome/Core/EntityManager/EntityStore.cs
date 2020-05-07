@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MonoChrome.Core.EntityManager
 {
@@ -25,8 +24,11 @@ namespace MonoChrome.Core.EntityManager
             SetTrigger(
                 component => true,
                 component => {
-                    var gameObjectComponents = _gameObjects[component.GameObject].Values;
-                    ComponentAttributeAplicator.Apply(component, gameObjectComponents);
+                    var issues = ComponentAttributeAplicator.Apply(component);
+                    foreach (var issue in issues)
+                    {
+                        throw new Exception(issue.Message);
+                    }
                 }
             );
         }
@@ -93,6 +95,21 @@ namespace MonoChrome.Core.EntityManager
                 throw new ArgumentNullException();
             }
             return _gameObjects.ContainsKey(entity);
+        }
+
+        public bool HasComponent<T>(GameObject gameObject, bool inherit = false) where T : Component
+        {
+            if (gameObject != null && Contains(gameObject))
+            {
+                if (inherit == false)
+                {
+                    return _gameObjects[gameObject].ContainsKey(typeof(T));
+                } else
+                {
+                    return GetComponent<T>(gameObject, inherit) != null;
+                }
+            }
+            return false;
         }
 
         public T GetComponent<T>(GameObject entity) where T : Component

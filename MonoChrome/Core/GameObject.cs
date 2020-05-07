@@ -6,10 +6,12 @@ using System.Reflection;
 using System.Linq;
 using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem.Input;
+using MonoChrome.Core.Components.CollisionDetection;
 
 namespace MonoChrome.Core
 {
-    public sealed class GameObject : IDisposable
+    public sealed class GameObject : IDisposable, IMouseClickHandler
     {
         public const string DefaultName = "GameObject";
         public Transform Transform { get => GetComponent<Transform>(); }
@@ -72,6 +74,11 @@ namespace MonoChrome.Core
         public void RemoveComponent<T>() where T : Component
         {
             RemoveComponent(typeof(T));
+        }
+
+        public bool HasComponent<T>(bool inherit = false) where T : Component
+        {
+            return Registry.HasComponent<T>(this, inherit);
         }
 
         public Component GetComponent(Type componentType, bool inherit = false)
@@ -192,7 +199,7 @@ namespace MonoChrome.Core
             }
         }
 
-        public void Awake()
+        internal void Awake()
         {
             var components = Registry.GetComponents(this);
             foreach (var component in components)
@@ -203,6 +210,29 @@ namespace MonoChrome.Core
             foreach (var child in transform.Childrens)
             {
                 child.GameObject.Awake();
+            }
+        }
+
+        internal void OnMouseClick(PointerEventData pointerData)
+        {
+            var components = GetComponents();
+            foreach (var component in components)
+            {
+                if (component is IMouseClickHandler mouseClickHandler)
+                {
+                    mouseClickHandler.OnMouseClick(pointerData);
+                }
+                if (component is IPointerClickHandler pointerClickHandler)
+                {
+                    var collider = GetComponent<Collider>(true);
+                    if (collider != null)
+                    {
+                        if (collider.Contains(pointerData.Position))
+                        {
+                            pointerClickHandler.OnPointerClick(pointerData);
+                        }
+                    }
+                }
             }
         }
     }

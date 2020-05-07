@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
 using MonoChrome.Core.Components;
+using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.Core.Helpers;
 using System;
@@ -20,7 +21,8 @@ namespace MonoChrome.SceneSystem
         private EntityStore _store = new EntityStore();
         private CachedComponents _cachedComponents = new CachedComponents();
         private CachedMethods _cachedMethods = new CachedMethods();
-        private Type _rendererType = typeof(Renderer2D);
+        private Type _rendererType = typeof(SpriteRenderer);
+        private Type _colliderType = typeof(SpriteRenderer);
 
         public SceneController(Type sceneType, GraphicsDevice device)
         {
@@ -58,12 +60,22 @@ namespace MonoChrome.SceneSystem
         public void Update()
         {
             _cachedMethods["Update"]?.Invoke();
+            foreach (Collider colliderA in _cachedComponents[_colliderType])
+            {
+                foreach (Collider colliderB in _cachedComponents[_colliderType])
+                {
+                    if (colliderA != colliderB)
+                    {
+                        colliderA.CheckCollisionWith(colliderB);
+                    }
+                }
+            }
         }
 
         public void Draw()
         {
             _spriteBatch.Begin();
-            foreach (Renderer2D renderer in _cachedComponents[_rendererType])
+            foreach (SpriteRenderer renderer in _cachedComponents[_rendererType])
             {
                 renderer.Draw(_spriteBatch);
             }
@@ -79,14 +91,19 @@ namespace MonoChrome.SceneSystem
         #region Store Events
         private void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
         {
-            CacheComponent(typeof(Renderer2D), componentArgs.Component);
+            CacheComponent(typeof(SpriteRenderer), componentArgs.Component);
+            CacheComponent(typeof(BoxCollider2D), componentArgs.Component);
             CacheMethod("Update", componentArgs.Component.UpdateMethod);
             CacheMethod("OnDestroy", componentArgs.Component.OnDestroyMethod);
             CacheMethod("OnFinalise", componentArgs.Component.OnFinaliseMethod);
         }
         private void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
         {
-            if (componentArgs.Component is Renderer2D)
+            if (componentArgs.Component is SpriteRenderer)
+            {
+                _cachedComponents.Remove(componentArgs.Component.GetType());
+            }
+            if (componentArgs.Component is BoxCollider2D)
             {
                 _cachedComponents.Remove(componentArgs.Component.GetType());
             }
@@ -97,7 +114,7 @@ namespace MonoChrome.SceneSystem
         private void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
         {
             CacheMethod("Update", componentArgs.Component.UpdateMethod);
-            CacheComponent(typeof(Renderer2D), componentArgs.Component);
+            CacheComponent(typeof(SpriteRenderer), componentArgs.Component);
         }
         private void OnComponentDisabled(object sender, ComponentEventArgs componentArgs)
         {

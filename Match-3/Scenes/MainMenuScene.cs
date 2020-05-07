@@ -19,6 +19,11 @@ namespace Match_3.Scenes
 
         public int A;
 
+        public TestComponent2()
+        {
+
+        }
+
         public TestComponent2(int a)
         {
             A = a;
@@ -44,6 +49,7 @@ namespace Match_3.Scenes
         {
             Console.WriteLine("Awake");
             Console.WriteLine(GameObject.Name);
+
         }
 
         void Update()
@@ -76,14 +82,10 @@ namespace Match_3.Scenes
         public override void Setup()
         {
             var c = Entity.Create("Ho");
-            c.AddComponent(new TestComponent2(100));
-            var b = Entity.Create();
-            b.AddComponent<TestComponent3>();
-            Entity.Synchronize();
-            var b1 = b.GetComponent<TestComponent3>();
-            Console.WriteLine(b1.testetst.A);
-            Add(b);
-            b.Enabled = false;
+            c.AddComponent(new TestComponent2());
+            var d = new TestComponent();
+            Add(c);
+            c.Enabled = false;
         }
     }
 }

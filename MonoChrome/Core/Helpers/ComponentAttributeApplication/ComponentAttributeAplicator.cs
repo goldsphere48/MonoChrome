@@ -11,21 +11,12 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
     {
         private static FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
         
-        public static bool Apply(IEnumerable<Component> components)
+        public static IEnumerable<AttributeError> Apply(Component component)
         {
-            _fieldAttributeVisitor.Components = components;
-            foreach (var component in components)
-            {
-                ProceedComponentFields(component);
-            }
-            return true;
-        }
-
-        public static bool Apply(Component component, IEnumerable<Component> components)
-        {
-            _fieldAttributeVisitor.Components = components;
+            _fieldAttributeVisitor.CheckResults.Clear();
+            _fieldAttributeVisitor.Components = component.GameObject.GetComponents();
             ProceedComponentFields(component);
-            return true;
+            return _fieldAttributeVisitor.CheckResults;
         }
 
         private static void ProceedComponentFields(Component component)

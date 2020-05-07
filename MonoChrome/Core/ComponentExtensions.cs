@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    static class ComponentExtensions
+    public static class ComponentExtensions
     {
         public static void AddComponent(this Component component, Type componentType)
         {
@@ -27,6 +27,10 @@ namespace MonoChrome.Core
         public static void RemoveComponent<T>(this Component component) where T : Component
         {
             component.GameObject.RemoveComponent<T>();
+        }
+        public static bool HasComponent<T>(this Component component, bool inherit = false) where T : Component
+        {
+            return component.GameObject.HasComponent<T>(inherit);
         }
         public static Component GetComponent(this Component component, Type componentType, bool inherit = false)
         {

@@ -14,6 +14,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         public Component CurrentComponent { private get; set; }
         public FieldInfo CurrentField { private get; set; }
         public IEnumerable<Component> Components { private get; set; }
+        public ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
 
         public void VisitInsertComponentAttribute(string from)
         {
@@ -36,7 +37,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
                     return;
                 }
             }
-            throw new UnfoundRequiredComponentsException($"Unfound required component {CurrentField.FieldType.Name}");
+            CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
         }
     }
 }

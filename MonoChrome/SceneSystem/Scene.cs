@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem.Input;
 using System;
 
 namespace MonoChrome.SceneSystem
 {
-    public abstract class Scene : IScene
+    public abstract class Scene : InputListener, IScene
     {
         public Type SceneType => GetType();
         protected GameObject Root { get; } = Entity.Create("Root");
@@ -20,6 +21,13 @@ namespace MonoChrome.SceneSystem
         {
             Root.Transform.Parent = null;
             gameObject.Dispose();
+        }
+        public override void OnMouseClick(PointerEventData data)
+        {
+            foreach (var gameObject in Entity.Registry)
+            {
+                gameObject.OnMouseClick(data);
+            }
         }
         public virtual void OnDisable()
         {

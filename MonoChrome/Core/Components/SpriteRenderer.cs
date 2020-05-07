@@ -4,7 +4,7 @@ using MonoChrome.Core.Attributes;
 
 namespace MonoChrome.Core.Components
 {
-    public class Renderer2D : Renderer
+    public class SpriteRenderer : Renderer
     {
         public Texture2D Texture { get; set; }
         public override Vector2 Size => new Vector2(Texture.Width, Texture.Height);
