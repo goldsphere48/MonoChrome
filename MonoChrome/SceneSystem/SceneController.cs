@@ -26,6 +26,7 @@ namespace MonoChrome.SceneSystem
         {
             _store = new EntityStore();
             _layerManager = new LayerManager(_store);
+            _spriteBatch = new SpriteBatch(device);
             Entity.Registry = _store;
             _scene = CreateScene(sceneType);
             _scene.Added += OnAdd;

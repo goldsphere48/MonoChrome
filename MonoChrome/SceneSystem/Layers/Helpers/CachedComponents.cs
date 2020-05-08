@@ -1,5 +1,6 @@
 ﻿using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,16 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 {
     class CachedComponents
     {
-        private IDictionary<Type, IList<Component>> _cached = new Dictionary<Type, IList<Component>>();
+        private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
+        private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
         private IDictionary<Type, CacheRule> _rules = new Dictionary<Type, CacheRule>();
         private EntityStore _store;
 
-        public IList<Component> this[Type type]
+        public ICollection<Component> this[Type type]
         {
             get
             {
-                _cached.TryGetValue(type, out IList<Component> result);
+                _cached.TryGetValue(type, out ICollection<Component> result);
                 if (result == null)
                 {
                     return Enumerable.Empty<Component>() as IList<Component>;
@@ -39,7 +41,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(typeof(T)))
             {
                 _rules.Add(typeof(T), rule);
-                _cached.Add(typeof(T), new List<Component>());
+                _cached.Add(typeof(T), new SortedSet<Component>(componentZIndexComporator));
             }
         }
 
@@ -73,6 +75,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[type] & rule;
                 if (cacheRule == rule)
                 {
+                    Console.WriteLine("In Cache " + type);
                     Add(type, component);
                 }
             }
@@ -99,6 +102,24 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 if (!components.Contains(component))
                 {
                     components.Add(component);
+                    component.GameObject.ZIndexChanged += OnZIndexChanged;
+                }
+            }
+        }
+
+        private void OnZIndexChanged(object sender, EventArgs e)
+        {
+            var gameObject = sender as GameObject;
+            var components = gameObject.GetComponents();
+            foreach (var key in _cached.Keys)
+            {
+                foreach (var component in components)
+                {
+                    if (key.IsAssignableFrom(component.GetType()))
+                    {
+                        _cached[key].Remove(component);
+                        _cached[key].Add(component);
+                    }
                 }
             }
         }
@@ -107,6 +128,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         {
             if (_cached.ContainsKey(key))
             {
+                component.GameObject.ZIndexChanged -= OnZIndexChanged;
                 return _cached[key].Remove(component);
             }
             return false;

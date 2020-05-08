@@ -1,5 +1,6 @@
 ﻿using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,18 +14,18 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
     
     class CachedMethods
     {
-
-        private IDictionary<string, Action> _cached = new Dictionary<string, Action>();
+        private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
+        private IDictionary<string, IDictionary<Component, Action>> _cached = new Dictionary<string, IDictionary<Component, Action>>();
         private IDictionary<string, CacheRule> _rules = new Dictionary<string, CacheRule>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
         private EntityStore _store;
 
-        public Action this[string type]
+        public ICollection<Action> this[string type]
         {
             get
             {
-                _cached.TryGetValue(type, out Action result);
-                return result;
+                _cached.TryGetValue(type, out IDictionary<Component, Action> result);
+                return result.Values;
             }
         }
 
@@ -42,7 +43,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(methodName))
             {
                 _rules.Add(methodName, rule);
-                _cached.Add(methodName, null);
+                _cached.Add(methodName, new SortedList<Component, Action>(componentZIndexComporator));
                 _methodRecievers.Add(methodName, methodReciever);
             }
         }
@@ -72,7 +73,8 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    Add(key, methodReciever.Value?.Invoke(component));
+                    //Console.WriteLine("In Cache " + key);
+                    Add(key, methodReciever.Value?.Invoke(component), component);
                 }
             }
         }
@@ -85,24 +87,50 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    Remove(key, methodReciever.Value?.Invoke(component));
+                    Remove(key, methodReciever.Value?.Invoke(component), component);
                 }
             }
         }
 
-        public void Add(string key, Action action)
+        private void OnZIndexChanged(object sender, EventArgs e)
         {
+            var gameObject = sender as GameObject;
+            var components = gameObject.GetComponents();
+            foreach (var value in _cached.Values)
+            {
+                foreach (var component in components)
+                {
+                    if (value.Keys.Contains(component))
+                    {
+                        var values = value[component];
+                        value.Remove(component);
+                        value.Add(component, values);
+                    }
+                }
+            }
+        }
+
+        public void Add(string key, Action action, Component component)
+        {
+            //Console.WriteLine("In Add " + key);
             if (action == null)
             {
                 return;
             }
             if (_cached.ContainsKey(key))
             {
-                _cached[key] -= action;
-                _cached[key] += action;
-            } else
-            {
-                _cached[key] = action;
+                var values = _cached[key];
+                if (!values.Keys.Contains(component))
+                {
+                    values.Add(component, action);
+                } else
+                {
+                    var component1 = values.Keys.First();
+                    var hasCoed1 = component1.GetHashCode();
+                    var hasCoed2 = component.GetHashCode();
+                }
+                //_cached[key].Add(component, action);
+                component.ZIndexChanged += OnZIndexChanged;
             }
         }
 
@@ -113,12 +141,11 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             _methodRecievers.Clear();
         }
 
-        public bool Remove(string key, Action action)
+        public bool Remove(string key, Action action, Component component)
         {
-            if (key != null && action != null)
+            if (key != null && action != null && component != null)
             {
-                _cached[key] -= action;
-                return true;
+                return _cached[key].Remove(component);
             }
             return false;
         }

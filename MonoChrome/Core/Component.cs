@@ -1,4 +1,5 @@
 ﻿using MonoChrome.Core.Components.CollisionDetection;
+using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    public abstract class Component : IDisposable
+    public abstract class Component : IDisposable, IZIndex
     {
-        private bool _disposed = false;
-
         public static Component Create(Type componentType)
         {
             Component result = null;
@@ -27,9 +26,20 @@ namespace MonoChrome.Core
             return result;
         }
 
+        public event EventHandler<EventArgs> ZIndexChanged
+        {
+            add
+            {
+                GameObject.ZIndexChanged += value;
+            }
+            remove
+            {
+                GameObject.ZIndexChanged -= value;
+            }
+        }
+
         public GameObject GameObject { get; private set; }
 
-        private bool _enabled = true;
         public bool Enabled 
         {
             get => _enabled;
@@ -52,6 +62,8 @@ namespace MonoChrome.Core
             } 
         }
 
+        public int ZIndex { get => GameObject.ZIndex; set => GameObject.ZIndex = value; }
+
         internal Action AwakeMethod;
         internal Action UpdateMethod;
         internal Action OnEnableMethod;
@@ -59,6 +71,9 @@ namespace MonoChrome.Core
         internal Action OnFinaliseMethod;
         internal Action OnDestroyMethod;
         internal Action<Collision> OnCollision;
+
+        private bool _enabled = true;
+        private bool _disposed = false;
 
         protected Component()
         {
@@ -122,6 +137,16 @@ namespace MonoChrome.Core
         ~Component()
         {
             Dispose(false);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

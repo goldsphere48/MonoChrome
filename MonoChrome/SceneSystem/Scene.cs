@@ -26,7 +26,7 @@ namespace MonoChrome.SceneSystem
         }
     }
 
-    public abstract class Scene : InputListener, IScene
+    public abstract class Scene : IScene
     {
         internal event EventHandler<AddGameObjectEventArgs> Added;
         internal event EventHandler<RemoveGameObjectEventArgs> Drop;
@@ -54,13 +54,6 @@ namespace MonoChrome.SceneSystem
         {
             Drop?.Invoke(this, new RemoveGameObjectEventArgs(gameObject));
             gameObject.Dispose();
-        }
-        public override void OnMouseClick(PointerEventData data)
-        {
-            foreach (var gameObject in Entity.Registry)
-            {
-                gameObject.MouseClickHandle(data);
-            }
         }
         public virtual void OnDisable()
         {

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.Core.Attributes;
+using MonoChrome.SceneSystem.Layers;
 
 namespace Match_3.Scenes
 {
@@ -29,9 +30,9 @@ namespace Match_3.Scenes
             A = a;
         }
 
-        private void Awake()
+        private void OnDestroy()
         {
-            Console.WriteLine("You");
+            Console.WriteLine("You11 " + A);
         }
     }
 
@@ -77,15 +78,17 @@ namespace Match_3.Scenes
             Console.WriteLine("OnFinalise");
         }
     }
+
     class MainMenuScene : Scene
     {
         public override void Setup()
         {
-            var c = Entity.Create("Ho");
-            c.AddComponent(new TestComponent2());
-            var d = new TestComponent();
-            Add(c);
+            var c = Entity.Create("Ho", new TestComponent2(1));
+            var c1 = Entity.Create("Ho1", new TestComponent2(2));
+            Add(c, DefaultLayers.UI);
+            Add(c1, DefaultLayers.Background);
             c.Enabled = false;
+            c1.Enabled = false;
         }
     }
 }

@@ -8,11 +8,25 @@ using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using MonoChrome.Core.Components.CollisionDetection;
+using MonoChrome.SceneSystem.Layers.Helpers;
 
 namespace MonoChrome.Core
 {
-    public sealed class GameObject : IDisposable
+    public sealed class GameObject : IDisposable, IZIndex
     {
+        public event EventHandler<EventArgs> ZIndexChanged
+        { 
+            add 
+            {
+                _zIndexChanged -= value;
+                _zIndexChanged += value;
+            } 
+            remove
+            {
+                _zIndexChanged -= value;
+            }
+        }
+
         public const string DefaultName = "GameObject";
         public Transform Transform { get => GetComponent<Transform>(); }
         public string Name { get; }
@@ -35,10 +49,21 @@ namespace MonoChrome.Core
                 }
             }
         }
+        public int ZIndex
+        {
+            get => _zIndex;
+            set
+            {
+                _zIndex = value;
+                _zIndexChanged?.Invoke(this, new EventArgs());
+            }
+        }
 
         internal EntityStore Registry { get; set; }
-
+        private int _zIndex;
         private bool _enabled = true;
+        private EventHandler<EventArgs> _zIndexChanged;
+
 
         internal GameObject(string name, EntityStore store)
         {
@@ -211,29 +236,6 @@ namespace MonoChrome.Core
             foreach (var child in transform.Childrens)
             {
                 child.GameObject.Awake();
-            }
-        }
-
-        internal void MouseClickHandle(PointerEventData pointerData)
-        {
-            var components = GetComponents();
-            foreach (var component in components)
-            {
-                if (component is IMouseClickHandler mouseClickHandler)
-                {
-                    mouseClickHandler.OnMouseClick(pointerData);
-                }
-                if (component is IPointerClickHandler pointerClickHandler)
-                {
-                    var collider = GetComponent<Collider>(true);
-                    if (collider != null)
-                    {
-                        if (collider.Contains(pointerData.Position))
-                        {
-                            pointerClickHandler.OnPointerClick(pointerData);
-                        }
-                    }
-                }
             }
         }
     }

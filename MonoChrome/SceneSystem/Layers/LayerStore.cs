@@ -1,4 +1,5 @@
 ﻿using MonoChrome.Core;
+using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,21 +9,13 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class LayerComparer : IComparer<Layer>
-    {
-        public int Compare(Layer x, Layer y)
-        {
-            return y.ZIndex - x.ZIndex;
-        }
-    }
-
     class LayerStore : ILayerCollection
     {
         private SortedSet<Layer> _layers;
 
         public LayerStore()
         {
-            _layers = new SortedSet<Layer>(new LayerComparer());
+            _layers = new SortedSet<Layer>(new ZIndexComparator());
         }
 
         public void Add(Layer layer)

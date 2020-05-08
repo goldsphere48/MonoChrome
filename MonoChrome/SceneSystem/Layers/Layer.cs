@@ -16,16 +16,26 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class Layer : ICollection<GameObject>
+    class Layer : ICollection<GameObject>, IZIndex
     {
         public string Name { get; }
-        public int ZIndex { get; set; }
         public int Count => _gameObjects.Count;
         public bool IsReadOnly => false;
         public bool CollisionDetectionEnable { get; set; } = true;
         public bool HandleClickEnable { get; set; } = true;
         public bool AllowThroughHandling { get; set; } = false;
         public object CachedRule { get; }
+        public int ZIndex
+        {
+            get => _zIndex;
+            set
+            {
+                _zIndex = value;
+                ZIndexChanged?.Invoke(this, new EventArgs());
+            }
+        }
+
+        public event EventHandler<EventArgs> ZIndexChanged;
 
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
         private CachedComponents _cachedComponents;
@@ -34,6 +44,7 @@ namespace MonoChrome.SceneSystem.Layers
         private Type _collider = typeof(Collider);
         private Type _mouseClickHandler = typeof(IMouseClickHandler);
         private Type _pointerClickHandler = typeof(IPointerClickHandler);
+        private int _zIndex;
 
         public Layer(string name, int zIndex, EntityStore store)
         {
@@ -64,7 +75,10 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void Update()
         {
-            _cachedMethods["Update"]?.Invoke();
+            foreach (var updateMethod in _cachedMethods["Update"])
+            {
+                updateMethod();
+            }
             if (CollisionDetectionEnable)
             {
                 foreach (Collider colliderA in _cachedComponents[_collider])
@@ -82,12 +96,18 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void OnDestroy()
         {
-            _cachedMethods["OnDestroy"]?.Invoke();
+            foreach (var updateMethod in _cachedMethods["OnDestroy"])
+            {
+                updateMethod();
+            }
         }
 
         public void OnFinalise()
         {
-            _cachedMethods["OnFinalise"]?.Invoke();
+            foreach (var updateMethod in _cachedMethods["OnFinalise"])
+            {
+                updateMethod();
+            }
         }
 
         public void Add(GameObject item)

@@ -83,6 +83,23 @@ namespace MonoChrome.SceneSystem.Layers
             return Remove(gameObject);
         }
 
+        public void SetZIndex(string layerName, int zIndex)
+        {
+            if (!string.IsNullOrEmpty(layerName))
+            {
+                var layer = _layers.GetLayer(layerName);
+                layer.ZIndex = zIndex;
+            } else
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        public void SetZIndex(DefaultLayers layerName, int zIndex)
+        {
+            SetZIndex(layerName.ToString(), zIndex);
+        }
+
         public Layer CreateLayer(string layerName, int zIndex)
         {
             if (!string.IsNullOrEmpty(layerName))
@@ -91,6 +108,7 @@ namespace MonoChrome.SceneSystem.Layers
                 if (layer == null)
                 {
                     layer = new Layer(layerName, zIndex, _store);
+                    layer.ZIndexChanged += OnZIndexChanged;
                     _layers.Add(layer);
                 } else
                 {
@@ -159,6 +177,13 @@ namespace MonoChrome.SceneSystem.Layers
         private Layer CreateLayer(DefaultLayers layerName, int zIndex)
         {
             return CreateLayer(layerName.ToString(), zIndex);
+        }
+
+        private void OnZIndexChanged(object sender, EventArgs args)
+        {
+            var layer = sender as Layer;
+            _layers.Remove(layer);
+            _layers.Add(layer);
         }
     }
 }
