@@ -119,17 +119,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             if (_cached.ContainsKey(key))
             {
-                var values = _cached[key];
-                if (!values.Keys.Contains(component))
-                {
-                    values.Add(component, action);
-                } else
-                {
-                    var component1 = values.Keys.First();
-                    var hasCoed1 = component1.GetHashCode();
-                    var hasCoed2 = component.GetHashCode();
-                }
-                //_cached[key].Add(component, action);
+                _cached[key].Add(component, action);
                 component.ZIndexChanged += OnZIndexChanged;
             }
         }
