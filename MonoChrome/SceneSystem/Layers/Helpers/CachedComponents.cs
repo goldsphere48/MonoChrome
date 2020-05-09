@@ -7,11 +7,27 @@ using System.Linq;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
+    class ComponentCacheRule : CacheRule
+    {
+        public Type ComponentType { get; }
+        public ComponentCacheRule(CacheMode mode, Type componentType) : base(mode)
+        {
+            ComponentType = componentType;
+        }
+    }
+
+    class ComponentCacheItem : CacheItem<Type>
+    {
+        public ComponentCacheItem(Component component, Type key) : base(component, key)
+        {
+        }
+    }
+
     class CachedComponents : CachedCollection<Type, Component>
     {
         private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
-        private IDictionary<Type, CacheRule> _rules = new Dictionary<Type, CacheRule>();
+        private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
 
         public override ICollection<Component> this[Type type]
         {
@@ -26,12 +42,13 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        public override void AddCacheRule<T>(CacheRule rule)
+        public override void AddCacheRule(CacheRule cacheRule)
         {
-            if (!_cached.ContainsKey(typeof(T)))
+            var rule = cacheRule as ComponentCacheRule;
+            if (!_cached.ContainsKey(rule.ComponentType))
             {
-                _rules.Add(typeof(T), rule);
-                _cached.Add(typeof(T), new SortedSet<Component>(componentZIndexComporator));
+                _rules.Add(rule.ComponentType, rule.CacheMode);
+                _cached.Add(rule.ComponentType, new SortedSet<Component>(componentZIndexComporator));
             }
         }
 
@@ -40,7 +57,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             _cached.Clear();
         }
 
-        protected override void Cache(Component component, CacheRule rule)
+        protected override void Cache(Component component, CacheMode rule)
         {
             var type = GetBaseType(component);
             if (type != null)
@@ -48,12 +65,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[type] & rule;
                 if (cacheRule == rule)
                 {
-                    Add(type, component);
+                    Add(new ComponentCacheItem(component, type));
                 }
             }
         }
 
-        protected override void Uncache(Component component, CacheRule rule)
+        protected override void Uncache(Component component, CacheMode rule)
         {
             var type = GetBaseType(component);
             if (type != null)
@@ -61,20 +78,21 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[type] & rule;
                 if (cacheRule == rule)
                 {
-                    Remove(type, component);
+                    Remove(new ComponentCacheItem(component, type));
                 }
             }
         }
 
-        protected override void Add(Type key, Component component)
+        protected override void Add(CacheItem<Type> cacheItem)
         {
-            if (_cached.ContainsKey(key))
+            var item = cacheItem as ComponentCacheItem;
+            if (_cached.ContainsKey(item.Key))
             {
-                var components = _cached[key];
-                if (!components.Contains(component))
+                var components = _cached[item.Key];
+                if (!components.Contains(item.Component))
                 {
-                    components.Add(component);
-                    component.GameObject.ZIndexChanged += OnZIndexChanged;
+                    components.Add(item.Component);
+                    item.Component.GameObject.ZIndexChanged += OnZIndexChanged;
                 }
             }
         }
@@ -96,12 +114,13 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        protected override bool Remove(Type key, Component component)
+        protected override bool Remove(CacheItem<Type> cacheItem)
         {
-            if (_cached.ContainsKey(key))
+            var item = cacheItem as ComponentCacheItem;
+            if (_cached.ContainsKey(item.Key))
             {
-                component.GameObject.ZIndexChanged -= OnZIndexChanged;
-                return _cached[key].Remove(component);
+                item.Component.GameObject.ZIndexChanged -= OnZIndexChanged;
+                return _cached[item.Key].Remove(item.Component);
             }
             return false;
         }

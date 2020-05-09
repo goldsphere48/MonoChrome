@@ -58,7 +58,6 @@
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
     <Compile Include="Core\EntityManager\EntityStore.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\AttributeError.cs" />
-    <Compile Include="Core\Helpers\ICachedCollection.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
@@ -84,7 +83,7 @@
     <Compile Include="SceneSystem\IScene.cs" />
     <Compile Include="SceneSystem\ISceneManager.cs" />
     <Compile Include="SceneSystem\Layers\DefaultLayers.cs" />
-    <Compile Include="SceneSystem\Layers\Helpers\CacheRule.cs" />
+    <Compile Include="SceneSystem\Layers\Helpers\ICachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\IZIndex.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexComparator.cs" />
     <Compile Include="SceneSystem\Layers\ILayerCollection.cs" />

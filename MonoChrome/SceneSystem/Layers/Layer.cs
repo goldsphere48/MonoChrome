@@ -38,8 +38,8 @@ namespace MonoChrome.SceneSystem.Layers
         public event EventHandler<EventArgs> ZIndexChanged;
 
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
-        private CachedComponents _cachedComponents;
-        private CachedMethods _cachedMethods;
+        private ICachedCollection<Type, Component> _cachedComponents;
+        private ICachedCollection<string, Action> _cachedMethods;
         private Type _renderer = typeof(Renderer);
         private Type _collider = typeof(Collider);
         private Type _mouseClickHandler = typeof(IMouseClickHandler);
@@ -50,19 +50,24 @@ namespace MonoChrome.SceneSystem.Layers
         {
             Name = name;
             ZIndex = zIndex;
-            var allCahceRules = CacheRule.CacheOnAdd | 
-                                CacheRule.CacheOnEnable |
-                                CacheRule.UncacheOnDisable | 
-                                CacheRule.UnchacheOnRemove;
+            var allCacheModes = 
+                CacheMode.CacheOnAdd | 
+                CacheMode.CacheOnEnable |
+                CacheMode.UncacheOnDisable | 
+                CacheMode.UnchacheOnRemove;
+            var onlyEntryCacheModes = 
+                CacheMode.CacheOnAdd | 
+                CacheMode.UnchacheOnRemove;
+
             _cachedComponents = new CachedComponents();
             _cachedMethods = new CachedMethods();
-            _cachedComponents.AddCacheRule<Renderer>(allCahceRules);
-            _cachedComponents.AddCacheRule<Collider>(allCahceRules);
-            _cachedComponents.AddCacheRule<IMouseClickHandler>(allCahceRules);
-            _cachedComponents.AddCacheRule<IPointerClickHandler>(allCahceRules);
-            _cachedMethods.AddCacheRule("Update", allCahceRules, component => component.UpdateMethod);
-            _cachedMethods.AddCacheRule("OnDestroy", CacheRule.CacheOnAdd | CacheRule.UnchacheOnRemove, component => component.OnDestroyMethod);
-            _cachedMethods.AddCacheRule("OnFinalise", CacheRule.CacheOnAdd | CacheRule.UnchacheOnRemove, component => component.OnFinaliseMethod);
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Renderer)));
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Collider)));
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IMouseClickHandler)));
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IPointerClickHandler)));
+            _cachedMethods.AddCacheRule(new MethodCacheRule(allCacheModes, "Update", component => component.UpdateMethod));
+            _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnDestroy", component => component.OnDestroyMethod));
+            _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
         }
 
         public void Draw(SpriteBatch _spriteBatch)

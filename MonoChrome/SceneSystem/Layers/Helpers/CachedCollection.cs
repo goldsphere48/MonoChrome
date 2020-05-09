@@ -8,7 +8,37 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    abstract class CachedCollection<TKey, TCached>
+
+    [Flags]
+    enum CacheMode
+    {
+        CacheOnAdd = 0,
+        CacheOnEnable = 2,
+        UnchacheOnRemove = 4,
+        UncacheOnDisable = 16
+    }
+
+    class CacheRule 
+    {
+        public CacheMode CacheMode { get; }
+        public CacheRule(CacheMode cacheMode)
+        {
+            CacheMode = cacheMode;
+        }
+    }
+
+    class CacheItem<TKey>
+    {
+        public Component Component { get; }
+        public TKey Key { get; }
+        public CacheItem(Component component, TKey key)
+        {
+            Component = component;
+            Key = key;
+        }
+    }
+
+    abstract class CachedCollection<TKey, TCached> : ICachedCollection<TKey, TCached>
     {
         public abstract ICollection<TCached> this[TKey type] { get; }
 
@@ -19,7 +49,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             {
                 if (component.Enabled)
                 {
-                    Cache(component, CacheRule.CacheOnAdd);
+                    Cache(component, CacheMode.CacheOnAdd);
                 }
             }
         }
@@ -31,12 +61,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             {
                 if (component.Enabled)
                 {
-                    Uncache(component, CacheRule.UnchacheOnRemove);
+                    Uncache(component, CacheMode.UnchacheOnRemove);
                 }
             }
         }
 
-        public abstract void AddCacheRule<T>(CacheRule rule);
+        public abstract void AddCacheRule(CacheRule rule);
         public abstract void Clear();
         protected void RegisterHandlers(GameObject gameObject)
         {
@@ -54,26 +84,26 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         }
         protected void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
         {
-            Cache(componentArgs.Component, CacheRule.CacheOnAdd);
+            Cache(componentArgs.Component, CacheMode.CacheOnAdd);
         }
         protected void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
         {
-            Uncache(componentArgs.Component, CacheRule.UnchacheOnRemove);
+            Uncache(componentArgs.Component, CacheMode.UnchacheOnRemove);
         }
         protected void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
         {
-            Cache(componentArgs.Component, CacheRule.CacheOnEnable);
+            Cache(componentArgs.Component, CacheMode.CacheOnEnable);
         }
         protected void OnComponentDisabled(object sender, ComponentEventArgs componentArgs)
         {
-            Uncache(componentArgs.Component, CacheRule.UncacheOnDisable);
+            Uncache(componentArgs.Component, CacheMode.UncacheOnDisable);
         }
 
-        protected abstract void Cache(Component component, CacheRule rule);
-        protected abstract void Uncache(Component component, CacheRule rule);
-        protected abstract void Add(Type key, Component component);
+        protected abstract void Cache(Component component, CacheMode rule);
+        protected abstract void Uncache(Component component, CacheMode rule);
+        protected abstract void Add(CacheItem<TKey> item);
         protected abstract void OnZIndexChanged(object sender, EventArgs e);
-        protected abstract bool Remove(Type key, Component component);
+        protected abstract bool Remove(CacheItem<TKey> item);
 
     }
 }

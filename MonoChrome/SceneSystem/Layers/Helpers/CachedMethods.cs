@@ -11,12 +11,32 @@ using System.Threading.Tasks;
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
     delegate Action MethodReciver(Component component);
-    
+
+    class MethodCacheRule : CacheRule
+    {
+        public string MethodName { get; }
+        public MethodReciver MethodReciever { get; }
+        public MethodCacheRule(CacheMode mode, string methodName, MethodReciver methodReciever) : base(mode)
+        {
+            MethodName = methodName;
+            MethodReciever = methodReciever;
+        }
+    }
+
+    class MethodCacheItem : CacheItem<string>
+    {
+        public Action Action { get; }
+        public MethodCacheItem(Component component, string key, Action action) : base(component, key)
+        {
+            Action = action;
+        }
+    }
+
     class CachedMethods : CachedCollection<string, Action>
     {
         private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<string, IDictionary<Component, Action>> _cached = new Dictionary<string, IDictionary<Component, Action>>();
-        private IDictionary<string, CacheRule> _rules = new Dictionary<string, CacheRule>();
+        private IDictionary<string, CacheMode> _rules = new Dictionary<string, CacheMode>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
 
         public override ICollection<Action> this[string type]
@@ -28,26 +48,29 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        public void AddCacheRule(string methodName, CacheRule rule, MethodReciver methodReciever)
+        public override void AddCacheRule(CacheRule cacheRule)
         {
+            var rule = cacheRule as MethodCacheRule;
+            var methodName = rule.MethodName;
             if (!_cached.ContainsKey(methodName))
             {
-                _rules.Add(methodName, rule);
+                _rules.Add(methodName, rule.CacheMode);
                 _cached.Add(methodName, new SortedList<Component, Action>(componentZIndexComporator));
-                _methodRecievers.Add(methodName, methodReciever);
+                _methodRecievers.Add(methodName, rule.MethodReciever);
             }
         }
 
-        public override void Add(string key, Action action, Component component)
+        protected override void Add(CacheItem<string> cacheItem)
         {
-            if (action == null)
+            var item = cacheItem as MethodCacheItem;
+            if (item.Action == null)
             {
                 return;
             }
-            if (_cached.ContainsKey(key))
+            if (_cached.ContainsKey(item.Key))
             {
-                _cached[key].Add(component, action);
-                component.ZIndexChanged += OnZIndexChanged;
+                _cached[item.Key].Add(item.Component, item.Action);
+                item.Component.ZIndexChanged += OnZIndexChanged;
             }
         }
 
@@ -58,16 +81,17 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             _methodRecievers.Clear();
         }
 
-        public override bool Remove(string key, Action action, Component component)
+        protected override bool Remove(CacheItem<string> cacheItem)
         {
-            if (key != null && action != null && component != null)
+            var item = cacheItem as MethodCacheItem;
+            if (item.Key != null && item.Action != null && item.Component != null)
             {
-                return _cached[key].Remove(component);
+                return _cached[item.Key].Remove(item.Component);
             }
             return false;
         }
 
-        protected override void Cache(Component component, CacheRule rule)
+        protected override void Cache(Component component, CacheMode rule)
         {
             foreach (var methodReciever in _methodRecievers)
             {
@@ -75,13 +99,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    //Console.WriteLine("In Cache " + key);
-                    Add(key, methodReciever.Value?.Invoke(component), component);
+                    Add(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
                 }
             }
         }
 
-        protected override void Uncache(Component component, CacheRule rule)
+        protected override void Uncache(Component component, CacheMode rule)
         {
             foreach (var methodReciever in _methodRecievers)
             {
@@ -89,7 +112,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    Remove(key, methodReciever.Value?.Invoke(component), component);
+                    Remove(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
                 }
             }
         }
