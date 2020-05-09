@@ -8,11 +8,6 @@ namespace MonoChrome.Core.EntityManager
 {
     interface IEntityCollection<TEntity> : IEnumerable<TEntity>
     {
-        event ComponentEventHandler ComponentAdded;
-        event ComponentEventHandler ComponentRemoved;
-        event ComponentEventHandler ComponentEnabled;
-        event ComponentEventHandler ComponentDisabled;
-
         bool Add(TEntity entity, Component component);
         bool Remove(TEntity entity, Component component);
         bool Contains(TEntity entity);

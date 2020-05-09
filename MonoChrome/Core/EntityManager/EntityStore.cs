@@ -7,11 +7,6 @@ namespace MonoChrome.Core.EntityManager
 {
     public class EntityStore : IEntityCollection<GameObject>
     {
-        public event ComponentEventHandler ComponentAdded;
-        public event ComponentEventHandler ComponentRemoved;
-        public event ComponentEventHandler ComponentEnabled;
-        public event ComponentEventHandler ComponentDisabled;
-
         private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
             new Dictionary<GameObject, IDictionary<Type, Component>>();
         private ICollection<Component> _unsynchronizedComponents =
@@ -50,7 +45,6 @@ namespace MonoChrome.Core.EntityManager
             {
                 components.Add(component.GetType(), component);
                 entity.Attach(component);
-                OnAdd(component, entity);
                 componentSuccessfullyAttached = true;
                 _unsynchronizedComponents.Add(component);
             }
@@ -72,7 +66,6 @@ namespace MonoChrome.Core.EntityManager
                 }
                 return false;
             }
-            OnRemove(component, entity);
             entity.Dettach(component);
             component.Dispose();
             return components.Remove(component.GetType());
@@ -213,33 +206,9 @@ namespace MonoChrome.Core.EntityManager
             _unsynchronizedComponents.Clear();
         }
 
-        internal void OnComponentEnabled(Component component, GameObject gameObject)
-        {
-            var args = new ComponentEventArgs(component, gameObject);
-            ComponentEnabled?.Invoke(this, args);
-        }
-
-        internal void OnComponentDisabled(Component component, GameObject gameObject)
-        {
-            var args = new ComponentEventArgs(component, gameObject);
-            ComponentDisabled?.Invoke(this, args);
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private void OnAdd(Component component, GameObject gameObject)
-        {
-            var args = new ComponentEventArgs(component, gameObject);
-            ComponentAdded?.Invoke(this, args);
-        }
-
-        private void OnRemove(Component component, GameObject gameObject)
-        {
-            var args = new ComponentEventArgs(component, gameObject);
-            ComponentRemoved?.Invoke(this, args);
         }
     }
 }
