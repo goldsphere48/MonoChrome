@@ -7,14 +7,13 @@ using System.Linq;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    class CachedComponents
+    class CachedComponents : CachedCollection<Type, Component>
     {
         private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
         private IDictionary<Type, CacheRule> _rules = new Dictionary<Type, CacheRule>();
-        private EntityStore _store;
 
-        public ICollection<Component> this[Type type]
+        public override ICollection<Component> this[Type type]
         {
             get
             {
@@ -27,16 +26,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        public CachedComponents(EntityStore store)
-        {
-            _store = store;
-            _store.ComponentAdded += OnComponentAdded;
-            _store.ComponentRemoved += OnComponentRemoved;
-            _store.ComponentEnabled += OnComponentEnabled;
-            _store.ComponentDisabled += OnComponentDisabled;
-        }
-
-        public void AddCacheRule<T>(CacheRule rule)
+        public override void AddCacheRule<T>(CacheRule rule)
         {
             if (!_cached.ContainsKey(typeof(T)))
             {
@@ -45,29 +35,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        public void Clear()
+        public override void Clear()
         {
             _cached.Clear();
         }
 
-        private void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
-        {
-            Cache(componentArgs.Component, CacheRule.CacheOnAdd);
-        }
-        private void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
-        {
-            Uncache(componentArgs.Component, CacheRule.UnchacheOnRemove);
-        }
-        private void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
-        {
-            Cache(componentArgs.Component, CacheRule.CacheOnEnable);
-        }
-        private void OnComponentDisabled(object sender, ComponentEventArgs componentArgs)
-        {
-            Uncache(componentArgs.Component, CacheRule.UncacheOnDisable);
-        }
-
-        private void Cache(Component component, CacheRule rule)
+        protected override void Cache(Component component, CacheRule rule)
         {
             var type = GetBaseType(component);
             if (type != null)
@@ -75,13 +48,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[type] & rule;
                 if (cacheRule == rule)
                 {
-                    Console.WriteLine("In Cache " + type);
                     Add(type, component);
                 }
             }
         }
 
-        private void Uncache(Component component, CacheRule rule)
+        protected override void Uncache(Component component, CacheRule rule)
         {
             var type = GetBaseType(component);
             if (type != null)
@@ -94,7 +66,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private void Add(Type key, Component component)
+        protected override void Add(Type key, Component component)
         {
             if (_cached.ContainsKey(key))
             {
@@ -107,7 +79,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private void OnZIndexChanged(object sender, EventArgs e)
+        protected override void OnZIndexChanged(object sender, EventArgs e)
         {
             var gameObject = sender as GameObject;
             var components = gameObject.GetComponents();
@@ -124,7 +96,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private bool Remove(Type key, Component component)
+        protected override bool Remove(Type key, Component component)
         {
             if (_cached.ContainsKey(key))
             {

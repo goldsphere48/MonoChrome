@@ -12,30 +12,20 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 {
     delegate Action MethodReciver(Component component);
     
-    class CachedMethods
+    class CachedMethods : CachedCollection<string, Action>
     {
         private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<string, IDictionary<Component, Action>> _cached = new Dictionary<string, IDictionary<Component, Action>>();
         private IDictionary<string, CacheRule> _rules = new Dictionary<string, CacheRule>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
-        private EntityStore _store;
 
-        public ICollection<Action> this[string type]
+        public override ICollection<Action> this[string type]
         {
             get
             {
                 _cached.TryGetValue(type, out IDictionary<Component, Action> result);
                 return result.Values;
             }
-        }
-
-        public CachedMethods(EntityStore store)
-        {
-            _store = store;
-            _store.ComponentAdded += OnComponentAdded;
-            _store.ComponentRemoved += OnComponentRemoved;
-            _store.ComponentEnabled += OnComponentEnabled;
-            _store.ComponentDisabled += OnComponentDisabled;
         }
 
         public void AddCacheRule(string methodName, CacheRule rule, MethodReciver methodReciever)
@@ -48,24 +38,36 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
+        public override void Add(string key, Action action, Component component)
         {
-            Cache(componentArgs.Component, CacheRule.CacheOnAdd);
-        }
-        private void OnComponentRemoved(object sender, ComponentEventArgs componentArgs)
-        {
-            Uncache(componentArgs.Component, CacheRule.UnchacheOnRemove);
-        }
-        private void OnComponentEnabled(object sender, ComponentEventArgs componentArgs)
-        {
-            Cache(componentArgs.Component, CacheRule.CacheOnEnable);
-        }
-        private void OnComponentDisabled(object sender, ComponentEventArgs componentArgs)
-        {
-            Uncache(componentArgs.Component, CacheRule.UncacheOnDisable);
+            if (action == null)
+            {
+                return;
+            }
+            if (_cached.ContainsKey(key))
+            {
+                _cached[key].Add(component, action);
+                component.ZIndexChanged += OnZIndexChanged;
+            }
         }
 
-        private void Cache(Component component, CacheRule rule)
+        public override void Clear()
+        {
+            _cached.Clear();
+            _rules.Clear();
+            _methodRecievers.Clear();
+        }
+
+        public override bool Remove(string key, Action action, Component component)
+        {
+            if (key != null && action != null && component != null)
+            {
+                return _cached[key].Remove(component);
+            }
+            return false;
+        }
+
+        protected override void Cache(Component component, CacheRule rule)
         {
             foreach (var methodReciever in _methodRecievers)
             {
@@ -79,7 +81,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private void Uncache(Component component, CacheRule rule)
+        protected override void Uncache(Component component, CacheRule rule)
         {
             foreach (var methodReciever in _methodRecievers)
             {
@@ -92,7 +94,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
         }
 
-        private void OnZIndexChanged(object sender, EventArgs e)
+        protected override void OnZIndexChanged(object sender, EventArgs e)
         {
             var gameObject = sender as GameObject;
             var components = gameObject.GetComponents();
@@ -108,36 +110,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                     }
                 }
             }
-        }
-
-        public void Add(string key, Action action, Component component)
-        {
-            //Console.WriteLine("In Add " + key);
-            if (action == null)
-            {
-                return;
-            }
-            if (_cached.ContainsKey(key))
-            {
-                _cached[key].Add(component, action);
-                component.ZIndexChanged += OnZIndexChanged;
-            }
-        }
-
-        public void Clear()
-        {
-            _cached.Clear();
-            _rules.Clear();
-            _methodRecievers.Clear();
-        }
-
-        public bool Remove(string key, Action action, Component component)
-        {
-            if (key != null && action != null && component != null)
-            {
-                return _cached[key].Remove(component);
-            }
-            return false;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace MonoChrome.SceneSystem.Layers
         private Type _pointerClickHandler = typeof(IPointerClickHandler);
         private int _zIndex;
 
-        public Layer(string name, int zIndex, EntityStore store)
+        public Layer(string name, int zIndex)
         {
             Name = name;
             ZIndex = zIndex;
@@ -54,8 +54,8 @@ namespace MonoChrome.SceneSystem.Layers
                                 CacheRule.CacheOnEnable |
                                 CacheRule.UncacheOnDisable | 
                                 CacheRule.UnchacheOnRemove;
-            _cachedComponents = new CachedComponents(store);
-            _cachedMethods = new CachedMethods(store);
+            _cachedComponents = new CachedComponents();
+            _cachedMethods = new CachedMethods();
             _cachedComponents.AddCacheRule<Renderer>(allCahceRules);
             _cachedComponents.AddCacheRule<Collider>(allCahceRules);
             _cachedComponents.AddCacheRule<IMouseClickHandler>(allCahceRules);
@@ -113,6 +113,8 @@ namespace MonoChrome.SceneSystem.Layers
         public void Add(GameObject item)
         {
             item.LayerName = Name;
+            _cachedComponents.Register(item);
+            _cachedMethods.Register(item);
             _gameObjects.Add(item);
         }
 
@@ -120,7 +122,7 @@ namespace MonoChrome.SceneSystem.Layers
         {
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.LayerName = null;
+                Remove(gameObject);
             }
             _cachedComponents.Clear();
             _cachedMethods.Clear();
@@ -140,6 +142,8 @@ namespace MonoChrome.SceneSystem.Layers
         public bool Remove(GameObject item)
         {
             item.LayerName = null;
+            _cachedComponents.Erase(item);
+            _cachedMethods.Erase(item);
             return _gameObjects.Remove(item);
         }
 

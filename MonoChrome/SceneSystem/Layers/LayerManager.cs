@@ -14,11 +14,9 @@ namespace MonoChrome.SceneSystem.Layers
     class LayerManager
     {
         private ILayerCollection _layers = new LayerStore();
-        private EntityStore _store;
 
-        public LayerManager(EntityStore store)
+        public LayerManager()
         {
-            _store = store;
             CreateLayer(DefaultLayers.Default, 0);
             var backgroundLayer = CreateLayer(DefaultLayers.Background, int.MinValue + 1000);
             var uiLayer = CreateLayer(DefaultLayers.UI, int.MaxValue - 100);
@@ -107,7 +105,7 @@ namespace MonoChrome.SceneSystem.Layers
                 var layer = _layers.GetLayer(layerName);
                 if (layer == null)
                 {
-                    layer = new Layer(layerName, zIndex, _store);
+                    layer = new Layer(layerName, zIndex);
                     layer.ZIndexChanged += OnZIndexChanged;
                     _layers.Add(layer);
                 } else

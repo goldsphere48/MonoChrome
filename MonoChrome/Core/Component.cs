@@ -1,4 +1,6 @@
-﻿using MonoChrome.Core.Components.CollisionDetection;
+﻿using Microsoft.Xna.Framework;
+using MonoChrome.Core.Components.CollisionDetection;
+using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,7 @@ namespace MonoChrome.Core
     {
         public static Component Create(Type componentType)
         {
-            Component result = null;
+            Component result;
             try
             {
                 result = Activator.CreateInstance(componentType) as Component;
@@ -38,7 +40,7 @@ namespace MonoChrome.Core
             }
         }
 
-        public GameObject GameObject { get; private set; }
+        public GameObject GameObject { get; internal set; }
 
         public bool Enabled 
         {
@@ -52,17 +54,23 @@ namespace MonoChrome.Core
                 if (value)
                 {
                     OnEnableMethod?.Invoke();
-                    GameObject.Registry.OnComponentEnabled(this, GameObject);
+                    ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
+                    //GameObject.Registry.OnComponentEnabled(this, GameObject);
                 } else
                 {
                     OnDisableMethod?.Invoke();
-                    GameObject.Registry.OnComponentDisabled(this, GameObject);
+                    ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
+                    //GameObject.Registry.OnComponentDisabled(this, GameObject);
                 }
                 _enabled = value;
             } 
         }
 
         public int ZIndex { get => GameObject.ZIndex; set => GameObject.ZIndex = value; }
+        public string LayerName => GameObject.LayerName;
+
+        internal ComponentEventHandler ComponentEnabled;
+        internal ComponentEventHandler ComponentDisabled;
 
         internal Action AwakeMethod;
         internal Action UpdateMethod;
@@ -84,16 +92,6 @@ namespace MonoChrome.Core
             OnFinaliseMethod = CreateDelegate("OnFinalise");
             OnDestroyMethod = CreateDelegate("OnDestroy");
             OnCollision = CreateDelegate<Collision>("OnCollision");
-        }
-
-        internal void Attach(GameObject gameObject)
-        {
-            GameObject = gameObject;
-        }
-
-        internal void Dettach()
-        {
-            GameObject = null;
         }
 
         private Action CreateDelegate(string name)

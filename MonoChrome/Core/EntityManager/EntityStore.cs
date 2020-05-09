@@ -49,7 +49,7 @@ namespace MonoChrome.Core.EntityManager
             if (!components.ContainsKey(component.GetType()))
             {
                 components.Add(component.GetType(), component);
-                component.Attach(entity);
+                entity.Attach(component);
                 OnAdd(component, entity);
                 componentSuccessfullyAttached = true;
                 _unsynchronizedComponents.Add(component);
@@ -73,7 +73,7 @@ namespace MonoChrome.Core.EntityManager
                 return false;
             }
             OnRemove(component, entity);
-            component.Dettach();
+            entity.Dettach(component);
             component.Dispose();
             return components.Remove(component.GetType());
         }

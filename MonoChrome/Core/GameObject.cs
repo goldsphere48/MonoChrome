@@ -12,8 +12,19 @@ using MonoChrome.SceneSystem.Layers.Helpers;
 
 namespace MonoChrome.Core
 {
+    class ComponentAttachEventArgs : EventArgs
+    {
+        public Component Component { get; set; }
+        public ComponentAttachEventArgs(Component component)
+        {
+            Component = component;
+        }
+
+    }
+
     public sealed class GameObject : IDisposable, IZIndex
     {
+        public const string DefaultName = "GameObject";
         public event EventHandler<EventArgs> ZIndexChanged
         { 
             add 
@@ -26,11 +37,9 @@ namespace MonoChrome.Core
                 _zIndexChanged -= value;
             }
         }
-
-        public const string DefaultName = "GameObject";
-        public Transform Transform { get => GetComponent<Transform>(); }
         public string Name { get; }
         public string LayerName { get; internal set; }
+        public Transform Transform { get => GetComponent<Transform>(); }
         public bool Enabled
         {
             get => _enabled;
@@ -58,6 +67,11 @@ namespace MonoChrome.Core
                 _zIndexChanged?.Invoke(this, new EventArgs());
             }
         }
+
+        internal event ComponentEventHandler ComponentAttached;
+        internal event ComponentEventHandler ComponentDetach;
+        internal event ComponentEventHandler ComponentEnabled;
+        internal event ComponentEventHandler ComponentDisabled;
 
         internal EntityStore Registry { get; set; }
         private int _zIndex;
@@ -237,6 +251,32 @@ namespace MonoChrome.Core
             {
                 child.GameObject.Awake();
             }
+        }
+
+        internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
+        {
+            ComponentEnabled?.Invoke(this, componentEventArgs);
+        }
+
+        internal void OnComponentDisabled(object sender, ComponentEventArgs componentEventArgs)
+        {
+            ComponentDisabled?.Invoke(this, componentEventArgs);
+        }
+
+        internal void Attach(Component component)
+        {
+            component.GameObject = this;
+            component.ComponentEnabled += OnComponentEnabled;
+            component.ComponentDisabled += OnComponentDisabled;
+            ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
+        }
+
+        internal void Dettach(Component component)
+        {
+            ComponentDetach?.Invoke(this, new ComponentEventArgs(component, this));
+            component.GameObject = null;
+            component.ComponentEnabled -= OnComponentEnabled;
+            component.ComponentDisabled -= OnComponentDisabled;
         }
     }
 }
