@@ -85,8 +85,11 @@ namespace Match_3.Scenes
         {
             var c = Entity.Create("Ho", new TestComponent2(1));
             var c1 = Entity.Create("Ho1", new TestComponent2(2));
-            Add(c, DefaultLayers.UI);
+            c.ZIndex = 1;
+            c1.ZIndex = 0;
+            Add(c, DefaultLayers.Background);
             Add(c1, DefaultLayers.Background);
+            c1.ZIndex = 2;
             c.Enabled = false;
             c1.Enabled = false;
         }

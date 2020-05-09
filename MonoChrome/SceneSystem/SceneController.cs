@@ -25,7 +25,7 @@ namespace MonoChrome.SceneSystem
         public SceneController(Type sceneType, GraphicsDevice device)
         {
             _store = new EntityStore();
-            _layerManager = new LayerManager(_store);
+            _layerManager = new LayerManager();
             _spriteBatch = new SpriteBatch(device);
             Entity.Registry = _store;
             _scene = CreateScene(sceneType);
@@ -112,8 +112,8 @@ namespace MonoChrome.SceneSystem
         private void OnFinalize()
         {
             _layerManager.OnFinalise();
-            _store.Clear();
             _layerManager.Clear();
+            _store.Clear();
         }
 
         public override void OnMouseClick(PointerEventData pointerEventData)

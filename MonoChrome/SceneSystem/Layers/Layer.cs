@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class Layer : ICollection<GameObject>, IZIndex
+    class Layer : ICollection<GameObject>, IComparable<Layer>, IEquatable<Layer>
     {
         public string Name { get; }
         public int Count => _gameObjects.Count;
@@ -127,7 +127,7 @@ namespace MonoChrome.SceneSystem.Layers
         {
             foreach (var gameObject in _gameObjects)
             {
-                Remove(gameObject);
+                EraseItem(gameObject);
             }
             _cachedComponents.Clear();
             _cachedMethods.Clear();
@@ -146,9 +146,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public bool Remove(GameObject item)
         {
-            item.LayerName = null;
-            _cachedComponents.Erase(item);
-            _cachedMethods.Erase(item);
+            EraseItem(item);
             return _gameObjects.Remove(item);
         }
 
@@ -171,6 +169,13 @@ namespace MonoChrome.SceneSystem.Layers
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private void EraseItem(GameObject item)
+        {
+            item.LayerName = null;
+            _cachedComponents.Erase(item);
+            _cachedMethods.Erase(item);
         }
 
         private bool HandleSampleMouseClick(PointerEventData pointerEventData)
@@ -201,6 +206,16 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
             return clickWasHandled;
+        }
+
+        public int CompareTo(Layer other)
+        {
+            return other.ZIndex - ZIndex;
+        }
+
+        public bool Equals(Layer other)
+        {
+            return base.Equals(other);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public LayerStore()
         {
-            _layers = new SortedSet<Layer>(new ZIndexComparator());
+            _layers = new SortedSet<Layer>();
         }
 
         public void Add(Layer layer)

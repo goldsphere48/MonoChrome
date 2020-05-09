@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    public abstract class Component : IDisposable, IZIndex
+    public abstract class Component : IDisposable, IEquatable<Component>, IComparable<Component>
     {
         public static Component Create(Type componentType)
         {
@@ -55,12 +55,10 @@ namespace MonoChrome.Core
                 {
                     OnEnableMethod?.Invoke();
                     ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
-                    //GameObject.Registry.OnComponentEnabled(this, GameObject);
                 } else
                 {
                     OnDisableMethod?.Invoke();
                     ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
-                    //GameObject.Registry.OnComponentDisabled(this, GameObject);
                 }
                 _enabled = value;
             } 
@@ -130,6 +128,16 @@ namespace MonoChrome.Core
                 OnFinaliseMethod?.Invoke();
                 _disposed = true;
             }
+        }
+
+        public bool Equals(Component other)
+        {
+            return base.Equals(other);
+        }
+
+        public int CompareTo(Component other)
+        {
+            return other.ZIndex - ZIndex;
         }
 
         ~Component()

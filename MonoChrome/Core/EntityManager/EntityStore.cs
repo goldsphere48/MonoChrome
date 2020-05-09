@@ -150,7 +150,7 @@ namespace MonoChrome.Core.EntityManager
 
         public IEnumerable<Component> GetComponents(GameObject entity)
         {
-            return GetComponentsForEntity(entity).Values;
+            return GetComponentsForEntity(entity)?.Values;
         }
 
         public IEnumerable<T> GetComponents<T>() where T : Component

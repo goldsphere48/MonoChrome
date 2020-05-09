@@ -25,7 +25,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
     class CachedComponents : CachedCollection<Type, Component>
     {
-        private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
         private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
 
@@ -48,7 +47,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(rule.ComponentType))
             {
                 _rules.Add(rule.ComponentType, rule.CacheMode);
-                _cached.Add(rule.ComponentType, new SortedSet<Component>(componentZIndexComporator));
+                _cached.Add(rule.ComponentType, new SortedSet<Component>());
             }
         }
 
@@ -91,6 +90,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var components = _cached[item.Key];
                 if (!components.Contains(item.Component))
                 {
+                    Console.WriteLine(cacheItem.Key);
                     components.Add(item.Component);
                     item.Component.GameObject.ZIndexChanged += OnZIndexChanged;
                 }

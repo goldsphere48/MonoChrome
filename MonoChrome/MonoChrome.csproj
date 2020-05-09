@@ -84,8 +84,6 @@
     <Compile Include="SceneSystem\ISceneManager.cs" />
     <Compile Include="SceneSystem\Layers\DefaultLayers.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ICachedCollection.cs" />
-    <Compile Include="SceneSystem\Layers\Helpers\IZIndex.cs" />
-    <Compile Include="SceneSystem\Layers\Helpers\ZIndexComparator.cs" />
     <Compile Include="SceneSystem\Layers\ILayerCollection.cs" />
     <Compile Include="SceneSystem\Layers\Layer.cs" />
     <Compile Include="SceneSystem\Layers\LayerManager.cs" />

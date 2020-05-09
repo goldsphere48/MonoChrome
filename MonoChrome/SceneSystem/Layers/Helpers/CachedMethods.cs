@@ -34,7 +34,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
     class CachedMethods : CachedCollection<string, Action>
     {
-        private static ZIndexComparator componentZIndexComporator = new ZIndexComparator();
         private IDictionary<string, IDictionary<Component, Action>> _cached = new Dictionary<string, IDictionary<Component, Action>>();
         private IDictionary<string, CacheMode> _rules = new Dictionary<string, CacheMode>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
@@ -55,7 +54,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(methodName))
             {
                 _rules.Add(methodName, rule.CacheMode);
-                _cached.Add(methodName, new SortedList<Component, Action>(componentZIndexComporator));
+                _cached.Add(methodName, new SortedList<Component, Action>());
                 _methodRecievers.Add(methodName, rule.MethodReciever);
             }
         }
@@ -69,6 +68,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             if (_cached.ContainsKey(item.Key))
             {
+                Console.WriteLine("Method " + item.Key);
                 _cached[item.Key].Add(item.Component, item.Action);
                 item.Component.ZIndexChanged += OnZIndexChanged;
             }

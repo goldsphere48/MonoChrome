@@ -22,7 +22,7 @@ namespace MonoChrome.Core
 
     }
 
-    public sealed class GameObject : IDisposable, IZIndex
+    public sealed class GameObject : IDisposable
     {
         public const string DefaultName = "GameObject";
         public event EventHandler<EventArgs> ZIndexChanged
