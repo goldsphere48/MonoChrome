@@ -83,6 +83,7 @@
     <Compile Include="SceneSystem\IScene.cs" />
     <Compile Include="SceneSystem\ISceneManager.cs" />
     <Compile Include="SceneSystem\Layers\DefaultLayers.cs" />
+    <Compile Include="SceneSystem\Layers\Helpers\DescendingComparer.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ICachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ILayerItem.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexEventArgs.cs" />

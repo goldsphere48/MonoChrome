@@ -67,14 +67,10 @@ namespace MonoChrome.Core
 
         public int ZIndex 
         { 
-            get => GameObject.ZIndex; 
-            set
-            {
-                var oldValue = GameObject.ZIndex;
-                GameObject.ZIndex = value;
-                _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
-            }
+            get => GameObject.ZIndex;
+            set => GameObject.ZIndex = value;
         }
+
         public string LayerName => GameObject.LayerName;
 
         internal ComponentEventHandler ComponentEnabled;
@@ -88,9 +84,9 @@ namespace MonoChrome.Core
         internal Action OnDestroyMethod;
         internal Action<Collision> OnCollision;
 
-        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         private bool _enabled = true;
         private bool _disposed = false;
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
 
         protected Component()
         {
@@ -144,6 +140,11 @@ namespace MonoChrome.Core
         ~Component()
         {
             Dispose(false);
+        }
+
+        internal void OnZIndexChanged(object sender, ZIndexEventArgs e)
+        {
+            _zIndexChanged?.Invoke(this, e);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 {
     interface ICachedCollection<TKey, TCached>
     {
-        ICollection<TCached> this[TKey type] { get; }
+        IEnumerable<TCached> this[TKey type] { get; }
         void Register(GameObject gameObject);
         void Erase(GameObject gameObject);
         void AddCacheRule(CacheRule rule);

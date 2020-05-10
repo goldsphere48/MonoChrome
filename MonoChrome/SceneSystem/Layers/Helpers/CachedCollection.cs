@@ -40,7 +40,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
     abstract class CachedCollection<TKey, TCached> : ICachedCollection<TKey, TCached>
     {
-        public abstract ICollection<TCached> this[TKey type] { get; }
+        public abstract IEnumerable<TCached> this[TKey type] { get; }
 
         public void Register(GameObject gameObject)
         {
@@ -102,8 +102,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         protected abstract void Cache(Component component, CacheMode rule);
         protected abstract void Uncache(Component component, CacheMode rule);
         protected abstract void Add(CacheItem<TKey> item);
-        protected abstract void OnZIndexChanged(object sender, EventArgs e);
         protected abstract bool Remove(CacheItem<TKey> item);
-
     }
 }

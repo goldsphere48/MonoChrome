@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    class ZIndexSortedSet<TValue> : IEnumerable<TValue>
+    class ZIndexSortedSet<TValue> : ICollection<TValue>
             where TValue : class, ILayerItem
     {
-        private SortedList<int, HashSet<TValue>> _list = new SortedList<int, HashSet<TValue>>();
+        private SortedList<int, HashSet<TValue>> _list = new SortedList<int, HashSet<TValue>>(new DescendingComparer());
+
+        public int Count => _list.Count;
+
+        public bool IsReadOnly => false;
 
         public void Add(TValue value)
         {
@@ -83,7 +87,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 container.Remove(item);
                 if (container.Count == 0)
                 {
-                    _list.Remove(item.ZIndex);
+                    _list.Remove(args.OldZIndex);
                 }
                 Add(item);
             }
@@ -92,6 +96,11 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void CopyTo(TValue[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
         }
     }
 }

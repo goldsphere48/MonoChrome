@@ -22,12 +22,24 @@ namespace MonoChrome.Core
 
     }
 
-    public sealed class GameObject : IDisposable
+    public sealed class GameObject : IDisposable, ILayerItem
     {
         public const string DefaultName = "GameObject";
         public string Name { get; }
         public string LayerName { get; internal set; }
         public Transform Transform { get => GetComponent<Transform>(); }
+        public event EventHandler<ZIndexEventArgs> ZIndexChanged
+        {
+            add
+            {
+                _zIndexChanged -= value;
+                _zIndexChanged += value;
+            }
+            remove
+            {
+                _zIndexChanged -= value;
+            }
+        }
         public bool Enabled
         {
             get => _enabled;
@@ -46,12 +58,15 @@ namespace MonoChrome.Core
                 }
             }
         }
+
         public int ZIndex
         {
             get => _zIndex;
             set
             {
+                var oldValue = _zIndex;
                 _zIndex = value;
+                _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
 
@@ -60,6 +75,7 @@ namespace MonoChrome.Core
         internal event ComponentEventHandler ComponentEnabled;
         internal event ComponentEventHandler ComponentDisabled;
 
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         internal EntityStore Registry { get; set; }
         private int _zIndex;
         private bool _enabled = true;
@@ -254,6 +270,7 @@ namespace MonoChrome.Core
             component.GameObject = this;
             component.ComponentEnabled += OnComponentEnabled;
             component.ComponentDisabled += OnComponentDisabled;
+            ZIndexChanged += component.OnZIndexChanged;
             ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
         }
 

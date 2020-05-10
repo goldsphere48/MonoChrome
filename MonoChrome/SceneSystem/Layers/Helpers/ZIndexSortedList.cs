@@ -9,8 +9,23 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 {
     class ZIndexSortedList<TKey, TValue> : IEnumerable<TValue>
         where TKey : class, ILayerItem
+        where TValue : class
     {
-        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>();
+        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>(new DescendingComparer());
+
+        public IEnumerable<TValue> Values 
+        { 
+            get
+            {
+                foreach (var dictionary in _list)
+                {
+                    foreach (var value in dictionary.Value)
+                    {
+                        yield return value.Value;
+                    }
+                }
+            } 
+        }
 
         public void Add(TKey key, TValue value)
         {
@@ -71,7 +86,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 container.Remove(item);
                 if (container.Count == 0)
                 {
-                    _list.Remove(item.ZIndex);
+                    _list.Remove(args.OldZIndex);
                 }
                 Add(item, value);
             }
@@ -90,6 +105,19 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             _list.Clear();
         }
 
+        public bool TryGetValue(TKey key, out TValue outValue)
+        {
+            foreach (var dictionary in _list.Values)
+            {
+                foreach (var value in dictionary.Values)
+                {
+                    outValue = value;
+                    return true;
+                }
+            }
+            outValue = null;
+            return false;
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

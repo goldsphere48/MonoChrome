@@ -34,15 +34,15 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
     class CachedMethods : CachedCollection<string, Action>
     {
-        private IDictionary<string, IDictionary<Component, Action>> _cached = new Dictionary<string, IDictionary<Component, Action>>();
+        private IDictionary<string, ZIndexSortedList<Component, Action>> _cached = new Dictionary<string, ZIndexSortedList<Component, Action>>();
         private IDictionary<string, CacheMode> _rules = new Dictionary<string, CacheMode>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
 
-        public override ICollection<Action> this[string type]
+        public override IEnumerable<Action> this[string type]
         {
             get
             {
-                _cached.TryGetValue(type, out IDictionary<Component, Action> result);
+                _cached.TryGetValue(type, out ZIndexSortedList<Component, Action> result);
                 return result.Values;
             }
         }
@@ -54,7 +54,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(methodName))
             {
                 _rules.Add(methodName, rule.CacheMode);
-                _cached.Add(methodName, new SortedList<Component, Action>());
+                _cached.Add(methodName, new ZIndexSortedList<Component, Action>());
                 _methodRecievers.Add(methodName, rule.MethodReciever);
             }
         }
@@ -68,9 +68,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             if (_cached.ContainsKey(item.Key))
             {
-                Console.WriteLine("Method " + item.Key);
                 _cached[item.Key].Add(item.Component, item.Action);
-                item.Component.ZIndexChanged += OnZIndexChanged;
             }
         }
 
@@ -113,24 +111,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 if (cacheRule == rule)
                 {
                     Remove(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
-                }
-            }
-        }
-
-        protected override void OnZIndexChanged(object sender, EventArgs e)
-        {
-            var gameObject = sender as GameObject;
-            var components = gameObject.GetComponents();
-            foreach (var value in _cached.Values)
-            {
-                foreach (var component in components)
-                {
-                    if (value.Keys.Contains(component))
-                    {
-                        var values = value[component];
-                        value.Remove(component);
-                        value.Add(component, values);
-                    }
                 }
             }
         }

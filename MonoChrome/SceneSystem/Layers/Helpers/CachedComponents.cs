@@ -28,7 +28,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
         private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
 
-        public override ICollection<Component> this[Type type]
+        public override IEnumerable<Component> this[Type type]
         {
             get
             {
@@ -47,7 +47,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (!_cached.ContainsKey(rule.ComponentType))
             {
                 _rules.Add(rule.ComponentType, rule.CacheMode);
-                _cached.Add(rule.ComponentType, new SortedSet<Component>());
+                _cached.Add(rule.ComponentType, new ZIndexSortedSet<Component>());
             }
         }
 
@@ -92,24 +92,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 {
                     Console.WriteLine(cacheItem.Key);
                     components.Add(item.Component);
-                    item.Component.ZIndexChanged += OnZIndexChanged;
-                }
-            }
-        }
-
-        protected override void OnZIndexChanged(object sender, EventArgs e)
-        {
-            var gameObject = sender as GameObject;
-            var components = gameObject.GetComponents();
-            foreach (var key in _cached.Keys)
-            {
-                foreach (var component in components)
-                {
-                    if (key.IsAssignableFrom(component.GetType()))
-                    {
-                        _cached[key].Remove(component);
-                        _cached[key].Add(component);
-                    }
                 }
             }
         }
@@ -119,7 +101,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             var item = cacheItem as ComponentCacheItem;
             if (_cached.ContainsKey(item.Key))
             {
-                item.Component.ZIndexChanged -= OnZIndexChanged;
                 return _cached[item.Key].Remove(item.Component);
             }
             return false;
