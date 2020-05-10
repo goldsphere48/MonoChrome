@@ -18,6 +18,7 @@ namespace MonoChrome.SceneSystem.Layers
         public LayerManager()
         {
             CreateLayer(DefaultLayers.Default, 0);
+            CreateLayer("2", 0);
             var backgroundLayer = CreateLayer(DefaultLayers.Background, int.MinValue + 1000);
             var uiLayer = CreateLayer(DefaultLayers.UI, int.MaxValue - 100);
             var foregroundLayer = CreateLayer(DefaultLayers.Foreground, int.MaxValue - 1000);

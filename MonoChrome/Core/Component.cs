@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
-    public abstract class Component : IDisposable, IEquatable<Component>, IComparable<Component>
+    public abstract class Component : IDisposable, ILayerItem
     {
         public static Component Create(Type componentType)
         {
@@ -28,15 +28,16 @@ namespace MonoChrome.Core
             return result;
         }
 
-        public event EventHandler<EventArgs> ZIndexChanged
+        public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
             add
             {
-                GameObject.ZIndexChanged += value;
+                _zIndexChanged -= value;
+                _zIndexChanged += value;
             }
             remove
             {
-                GameObject.ZIndexChanged -= value;
+                _zIndexChanged -= value;
             }
         }
 
@@ -64,7 +65,16 @@ namespace MonoChrome.Core
             } 
         }
 
-        public int ZIndex { get => GameObject.ZIndex; set => GameObject.ZIndex = value; }
+        public int ZIndex 
+        { 
+            get => GameObject.ZIndex; 
+            set
+            {
+                var oldValue = GameObject.ZIndex;
+                GameObject.ZIndex = value;
+                _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
+            }
+        }
         public string LayerName => GameObject.LayerName;
 
         internal ComponentEventHandler ComponentEnabled;
@@ -78,6 +88,7 @@ namespace MonoChrome.Core
         internal Action OnDestroyMethod;
         internal Action<Collision> OnCollision;
 
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         private bool _enabled = true;
         private bool _disposed = false;
 
@@ -128,16 +139,6 @@ namespace MonoChrome.Core
                 OnFinaliseMethod?.Invoke();
                 _disposed = true;
             }
-        }
-
-        public bool Equals(Component other)
-        {
-            return base.Equals(other);
-        }
-
-        public int CompareTo(Component other)
-        {
-            return other.ZIndex - ZIndex;
         }
 
         ~Component()

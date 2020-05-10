@@ -25,18 +25,6 @@ namespace MonoChrome.Core
     public sealed class GameObject : IDisposable
     {
         public const string DefaultName = "GameObject";
-        public event EventHandler<EventArgs> ZIndexChanged
-        { 
-            add 
-            {
-                _zIndexChanged -= value;
-                _zIndexChanged += value;
-            } 
-            remove
-            {
-                _zIndexChanged -= value;
-            }
-        }
         public string Name { get; }
         public string LayerName { get; internal set; }
         public Transform Transform { get => GetComponent<Transform>(); }
@@ -64,7 +52,6 @@ namespace MonoChrome.Core
             set
             {
                 _zIndex = value;
-                _zIndexChanged?.Invoke(this, new EventArgs());
             }
         }
 
@@ -76,7 +63,6 @@ namespace MonoChrome.Core
         internal EntityStore Registry { get; set; }
         private int _zIndex;
         private bool _enabled = true;
-        private EventHandler<EventArgs> _zIndexChanged;
 
 
         internal GameObject(string name, EntityStore store)
