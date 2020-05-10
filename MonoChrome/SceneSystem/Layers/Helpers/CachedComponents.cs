@@ -92,7 +92,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 {
                     Console.WriteLine(cacheItem.Key);
                     components.Add(item.Component);
-                    item.Component.GameObject.ZIndexChanged += OnZIndexChanged;
+                    item.Component.ZIndexChanged += OnZIndexChanged;
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             var item = cacheItem as ComponentCacheItem;
             if (_cached.ContainsKey(item.Key))
             {
-                item.Component.GameObject.ZIndexChanged -= OnZIndexChanged;
+                item.Component.ZIndexChanged -= OnZIndexChanged;
                 return _cached[item.Key].Remove(item.Component);
             }
             return false;

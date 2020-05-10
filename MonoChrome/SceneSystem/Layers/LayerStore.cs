@@ -11,11 +11,11 @@ namespace MonoChrome.SceneSystem.Layers
 {
     class LayerStore : ILayerCollection
     {
-        private SortedSet<Layer> _layers;
+        private ZIndexSortedSet<Layer> _layers;
 
         public LayerStore()
         {
-            _layers = new SortedSet<Layer>();
+            _layers = new ZIndexSortedSet<Layer>();
         }
 
         public void Add(Layer layer)

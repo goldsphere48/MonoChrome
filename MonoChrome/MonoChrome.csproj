@@ -85,9 +85,9 @@
     <Compile Include="SceneSystem\Layers\DefaultLayers.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ICachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ILayerItem.cs" />
-    <Compile Include="SceneSystem\Layers\Helpers\ZIndexContainer.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexEventArgs.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexSortedList.cs" />
+    <Compile Include="SceneSystem\Layers\Helpers\ZIndexSortedSet.cs" />
     <Compile Include="SceneSystem\Layers\ILayerCollection.cs" />
     <Compile Include="SceneSystem\Layers\Layer.cs" />
     <Compile Include="SceneSystem\Layers\LayerManager.cs" />

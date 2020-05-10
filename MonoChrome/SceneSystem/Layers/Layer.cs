@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class Layer : ICollection<GameObject>, IComparable<Layer>, IEquatable<Layer>
+    class Layer : ICollection<GameObject>, ILayerItem
     {
         public string Name { get; }
         public int Count => _gameObjects.Count;
@@ -30,12 +30,13 @@ namespace MonoChrome.SceneSystem.Layers
             get => _zIndex;
             set
             {
+                var oldValue = _zIndex;
                 _zIndex = value;
-                ZIndexChanged?.Invoke(this, new EventArgs());
+                ZIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
 
-        public event EventHandler<EventArgs> ZIndexChanged;
+        public event EventHandler<ZIndexEventArgs> ZIndexChanged;
 
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
         private ICachedCollection<Type, Component> _cachedComponents;
