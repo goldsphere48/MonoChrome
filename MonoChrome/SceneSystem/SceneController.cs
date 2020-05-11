@@ -68,7 +68,7 @@ namespace MonoChrome.SceneSystem
         #region Scene Controller Interface
         public void Update()
         {
-            HandleMouseClick();
+            HandleMouseEvents();
             _layerManager.Update();
         }
 
@@ -122,6 +122,11 @@ namespace MonoChrome.SceneSystem
         public override void OnMouseClick(PointerEventData pointerEventData)
         {
             _layerManager.HandleMouseClick(pointerEventData);
+        }
+
+        public override void OnMouseMove(PointerEventData pointerEventData)
+        {
+            _layerManager.HandleMouseMove(pointerEventData);
         }
 
         ~SceneController()

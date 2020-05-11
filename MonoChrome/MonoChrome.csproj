@@ -50,6 +50,7 @@
     <Compile Include="Core\Components\CollisionDetection\BoxCollider2D.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collider.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
+    <Compile Include="SceneSystem\Input\IMouseOverHandler.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedComponents.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedMethods.cs" />
@@ -75,7 +76,6 @@
     <Compile Include="Core\Exceptions\SceneAlreadyExistException.cs" />
     <Compile Include="Core\Exceptions\SceneNotFoundException.cs" />
     <Compile Include="Core\Exceptions\SceneNotInitializedException.cs" />
-    <Compile Include="SceneSystem\Input\IMouseClickHandler.cs" />
     <Compile Include="SceneSystem\Input\InputListener.cs" />
     <Compile Include="SceneSystem\Input\IPointerClickHandler.cs" />
     <Compile Include="SceneSystem\Input\MouseButton.cs" />

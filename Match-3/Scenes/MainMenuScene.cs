@@ -17,11 +17,30 @@ using MonoChrome.SceneSystem.Input;
 
 namespace Match_3.Scenes
 {
-    class TestComponent : Component, IPointerClickHandler
+    class TestComponent : Component, IPointerClickHandler, IMouseOverHandler
     {
+
+        [InsertComponent]
+        private Transform _transform;
+
+        public void OnMouseExit()
+        {
+            Console.WriteLine("Exit");
+        }
+
+        public void OnMouseOver()
+        {
+            Console.WriteLine("Over");
+        }
+
         public void OnPointerClick(PointerEventData pointerEventData)
         {
             Console.WriteLine(pointerEventData.Position);
+        }
+
+        private void OnCollision(Collision collision)
+        {
+            Console.WriteLine(collision.GameObject.Name);
         }
     }
 
@@ -32,12 +51,10 @@ namespace Match_3.Scenes
         public override void Setup()
         {
             var s = Content.Load<Texture2D>("1");
-            var collider = new BoxCollider2D();
-            collider.DebugDraw = true;
-            var sprite = Entity.Create("Sprite",  collider, new TestComponent(),  new SpriteRenderer(s));
-            sprite.Transform.Position = new Vector2(100, 100);
+            var sprite1 = Entity.Create("Sprite1", new BoxCollider2D(), new SpriteRenderer(s), new TestComponent());
+            sprite1.Transform.Position = new Vector2(100, 100);
             Entity.Synchronize();
-            Add(sprite, DefaultLayers.UI);
+            Add(sprite1);
         }
     }
 }

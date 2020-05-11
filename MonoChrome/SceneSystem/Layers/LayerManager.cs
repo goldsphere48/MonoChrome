@@ -22,10 +22,10 @@ namespace MonoChrome.SceneSystem.Layers
             var uiLayer = CreateLayer(DefaultLayers.UI, int.MaxValue - 100);
             var foregroundLayer = CreateLayer(DefaultLayers.Foreground, int.MaxValue - 1000);
             backgroundLayer.CollisionDetectionEnable = false;
-            backgroundLayer.HandleClickEnable = false;
+            backgroundLayer.HandleInput = false;
             uiLayer.CollisionDetectionEnable = false;
             foregroundLayer.CollisionDetectionEnable = false;
-            foregroundLayer.HandleClickEnable = false;
+            foregroundLayer.HandleInput = false;
         }
 
         public void Add(string layerName, GameObject gameObject)
@@ -157,6 +157,18 @@ namespace MonoChrome.SceneSystem.Layers
             {
                 var clickWasHandled = layer.HandleMouseClick(pointerEventData);
                 if (clickWasHandled && !layer.AllowThroughHandling)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void HandleMouseMove(PointerEventData pointerEventData)
+        {
+            foreach (var layer in _layers)
+            {
+                var isMouseOver = layer.HandleMouseMove(pointerEventData);
+                if (isMouseOver && !layer.AllowThroughHandling)
                 {
                     break;
                 }

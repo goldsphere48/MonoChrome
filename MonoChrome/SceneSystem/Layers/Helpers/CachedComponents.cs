@@ -58,26 +58,32 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
         protected override void Cache(Component component, CacheMode rule)
         {
-            var type = GetBaseType(component);
-            if (type != null)
+            var types = GetBaseType(component);
+            foreach (var type in types)
             {
-                var cacheRule = _rules[type] & rule;
-                if (cacheRule == rule)
+                if (type != null)
                 {
-                    Add(new ComponentCacheItem(component, type));
+                    var cacheRule = _rules[type] & rule;
+                    if (cacheRule == rule)
+                    {
+                        Add(new ComponentCacheItem(component, type));
+                    }
                 }
             }
         }
 
         protected override void Uncache(Component component, CacheMode rule)
         {
-            var type = GetBaseType(component);
-            if (type != null)
+            var types = GetBaseType(component);
+            foreach (var type in types)
             {
-                var cacheRule = _rules[type] & rule;
-                if (cacheRule == rule)
+                if (type != null)
                 {
-                    Remove(new ComponentCacheItem(component, type));
+                    var cacheRule = _rules[type] & rule;
+                    if (cacheRule == rule)
+                    {
+                        Remove(new ComponentCacheItem(component, type));
+                    }
                 }
             }
         }
@@ -106,21 +112,20 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             return false;
         }
 
-        private Type GetBaseType(Component component)
+        private IEnumerable<Type> GetBaseType(Component component)
         {
             var componentType = component.GetType();
             foreach (var key in _cached.Keys)
             {
                 if (componentType.IsSubclassOf(key) || componentType == key)
                 {
-                    return key;
+                    yield return key;
                 }
                 if (key.IsAssignableFrom(componentType))
                 {
-                    return key;
+                    yield return key;
                 }
             }
-            return null;
         }
     }
 }

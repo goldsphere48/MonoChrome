@@ -22,7 +22,7 @@ namespace MonoChrome.SceneSystem.Layers
         public int Count => _gameObjects.Count;
         public bool IsReadOnly => false;
         public bool CollisionDetectionEnable { get; set; } = true;
-        public bool HandleClickEnable { get; set; } = true;
+        public bool HandleInput { get; set; } = true;
         public bool AllowThroughHandling { get; set; } = false;
         public object CachedRule { get; }
         public int ZIndex
@@ -43,8 +43,8 @@ namespace MonoChrome.SceneSystem.Layers
         private ICachedCollection<string, Action> _cachedMethods;
         private Type _renderer = typeof(Renderer);
         private Type _collider = typeof(Collider);
-        private Type _mouseClickHandler = typeof(IMouseClickHandler);
         private Type _pointerClickHandler = typeof(IPointerClickHandler);
+        private Type _mouseOverHandler = typeof(IMouseOverHandler);
         private int _zIndex;
 
         public Layer(string name, int zIndex)
@@ -64,8 +64,8 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods = new CachedMethods();
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Renderer)));
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Collider)));
-            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IMouseClickHandler)));
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IPointerClickHandler)));
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IMouseOverHandler)));
             _cachedMethods.AddCacheRule(new MethodCacheRule(allCacheModes, "Update", component => component.UpdateMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnDestroy", component => component.OnDestroyMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
@@ -151,13 +151,20 @@ namespace MonoChrome.SceneSystem.Layers
             return _gameObjects.Remove(item);
         }
 
+        internal bool HandleMouseMove(PointerEventData pointerEventData)
+        {
+            if (HandleInput)
+            {
+                return HandleMouseOver(pointerEventData);
+            }
+            return false;
+        }
+
         public bool HandleMouseClick(PointerEventData pointerEventData)
         {
-            if (HandleClickEnable)
+            if (HandleInput)
             {
-                var clickWasHandled = HandleSampleMouseClick(pointerEventData);
-                clickWasHandled = HandlePointerClick(pointerEventData) || clickWasHandled;
-                return clickWasHandled;
+                return HandlePointerClick(pointerEventData);
             }
             return false;
         }
@@ -179,17 +186,6 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.Erase(item);
         }
 
-        private bool HandleSampleMouseClick(PointerEventData pointerEventData)
-        {
-            var clickWasHandled = false;
-            foreach (IMouseClickHandler mouseClickHandler in _cachedComponents[_mouseClickHandler])
-            {
-                mouseClickHandler.OnMouseClick(pointerEventData);
-                clickWasHandled = true;
-            }
-            return clickWasHandled;
-        }
-
         private bool HandlePointerClick(PointerEventData pointerEventData)
         {
             var clickWasHandled = false;
@@ -207,6 +203,30 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
             return clickWasHandled;
+        }
+
+        private bool HandleMouseOver(PointerEventData pointerEventData)
+        {
+            var handled = false;
+            foreach (Component component in _cachedComponents[_mouseOverHandler])
+            {
+                var collider = component.GetComponent<Collider>(true);
+                if (collider != null)
+                {
+                    var contains = collider.Contains(pointerEventData.Position);
+                    if (contains)
+                    {
+                        (component as IMouseOverHandler).OnMouseOver();
+                        collider.IsMouseOver = true;
+                        handled = true;
+                    } else if (collider.IsMouseOver)
+                    {
+                        collider.IsMouseOver = false;
+                        (component as IMouseOverHandler).OnMouseExit();
+                    }
+                }
+            }
+            return handled;
         }
 
         public int CompareTo(Layer other)

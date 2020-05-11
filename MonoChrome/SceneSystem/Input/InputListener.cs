@@ -8,11 +8,21 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Input
 {
-    public abstract class InputListener : IMouseClickHandler
+    public abstract class InputListener
     {
         private MouseState oldState = Mouse.GetState();
+        private Point previousMousePosition;
 
-        public void HandleMouseClick()
+        public void HandleMouseEvents()
+        {
+            HandleMouseClick();
+            HandleMouseMove();
+        }
+
+        public abstract void OnMouseClick(PointerEventData pointerEventData);
+        public abstract void OnMouseMove(PointerEventData pointerEventData);
+
+        private void HandleMouseClick()
         {
             MouseState newState = Mouse.GetState();
             if (newState.LeftButton == ButtonState.Released && oldState.LeftButton == ButtonState.Pressed)
@@ -30,6 +40,14 @@ namespace MonoChrome.SceneSystem.Input
             oldState = newState;
         }
 
-        public abstract void OnMouseClick(PointerEventData pointerEventData);
+        private void HandleMouseMove()
+        {
+            MouseState newState = Mouse.GetState();
+            if (previousMousePosition != newState.Position)
+            {
+                OnMouseMove(new PointerEventData { Position = newState.Position.ToVector2() });
+            }
+            previousMousePosition = newState.Position;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem;
+using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
