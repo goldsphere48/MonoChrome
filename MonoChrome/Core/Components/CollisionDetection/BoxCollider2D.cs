@@ -13,7 +13,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
     public class BoxCollider2D : Collider
     {
         [InsertComponent]
-        private Transform transform;
+        private Transform _transform;
         private Rectangle _box;
         private bool _useRendererBounds = true;
         private Texture2D _debugTexture;
@@ -93,8 +93,8 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         private void Update()
         {
-            _box.X = (int)transform.Position.X;
-            _box.Y = (int)transform.Position.Y;
+            _box.X = (int)_transform.Position.X;
+            _box.Y = (int)_transform.Position.Y;
         }
 
         private void OnFinalise()
