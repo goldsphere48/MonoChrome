@@ -15,6 +15,7 @@ namespace MonoChrome.Core.EntityManager
         {
             var gameObject = new GameObject(name, store);
             gameObject.AddComponent<Transform>();
+            gameObject.Transform = gameObject.GetComponent<Transform>();
             return gameObject;
         }
 

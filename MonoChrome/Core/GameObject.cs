@@ -28,7 +28,7 @@ namespace MonoChrome.Core
         public const string DefaultName = "GameObject";
         public string Name { get; }
         public string LayerName { get; internal set; }
-        public Transform Transform { get => GetComponent<Transform>(); }
+        public Transform Transform { get; internal set; }
         public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
             add
