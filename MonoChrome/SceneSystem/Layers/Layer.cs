@@ -73,7 +73,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            foreach (SpriteRenderer renderer in _cachedComponents[_renderer])
+            foreach (Renderer renderer in _cachedComponents[_renderer])
             {
                 renderer.Draw(_spriteBatch);
             }

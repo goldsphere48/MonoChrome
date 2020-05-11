@@ -16,7 +16,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         public IEnumerable<Component> Components { private get; set; }
         public ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
 
-        public void VisitInsertComponentAttribute(string from, bool inherit)
+        public void VisitInsertComponentAttribute(string from, bool inherit, bool required)
         {
             if (!string.IsNullOrEmpty(from))
             {
@@ -37,7 +37,10 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
                     return;
                 }
             }
-            CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
+            if (required == true)
+            {
+                CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
+            }
         }
     }
 }

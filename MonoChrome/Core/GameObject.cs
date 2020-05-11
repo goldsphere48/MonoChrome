@@ -28,7 +28,6 @@ namespace MonoChrome.Core
         public const string DefaultName = "GameObject";
         public string Name { get; }
         public string LayerName { get; internal set; }
-        public Scene Scene { get; internal set; }
         public Transform Transform { get => GetComponent<Transform>(); }
         public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
@@ -61,6 +60,19 @@ namespace MonoChrome.Core
             }
         }
 
+        public Scene Scene
+        {
+            get => _scene;
+            internal set
+            {
+                _scene = value;
+                foreach (var child in Transform.Childrens)
+                {
+                    child.GameObject.Scene = _scene;
+                }
+            }
+        }
+
         public int ZIndex
         {
             get => _zIndex;
@@ -76,9 +88,10 @@ namespace MonoChrome.Core
         internal event ComponentEventHandler ComponentDetach;
         internal event ComponentEventHandler ComponentEnabled;
         internal event ComponentEventHandler ComponentDisabled;
-
-        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         internal EntityStore Registry { get; set; }
+
+        private Scene _scene;
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         private int _zIndex;
         private bool _enabled = true;
 
@@ -134,6 +147,15 @@ namespace MonoChrome.Core
             return GetComponent(typeof(T), inherit) as T;
         }
 
+        public IEnumerable<Component> GetComponents(Type componentType, bool inherit = true)
+        {
+            return Registry.GetComponents(this, componentType, inherit);
+        }
+        public IEnumerable<T> GetComponents<T>(bool inherit = true) where T : Component
+        {
+            return GetComponents(typeof(T), inherit) as IEnumerable<T>;
+        }
+
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
@@ -159,11 +181,14 @@ namespace MonoChrome.Core
 
         public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
         {
-            var currentComponent = GetComponent(componentType, inherit);
+            var currentComponents = GetComponents(componentType, inherit);
             var transform = Transform;
-            if (currentComponent != null)
+            if (currentComponents != null)
             {
-                yield return currentComponent;
+                foreach (var component in currentComponents)
+                {
+                    yield return component;
+                }
             }
             foreach (var child in transform.Childrens)
             {
@@ -177,7 +202,7 @@ namespace MonoChrome.Core
 
         public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
         {
-            return GetComponentsInChildren(typeof(T), inherit) as List<T>;
+            return GetComponentsInChildren(typeof(T), inherit) as IEnumerable<T>;
         }
 
         public Component GetComponentInParent(Type componentType, bool inherit = false)
@@ -201,11 +226,14 @@ namespace MonoChrome.Core
 
         public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
         {
-            var currentComponent = GetComponent(componentType, inherit);
+            var currentComponents = GetComponents(componentType, inherit);
             var transform = Transform;
-            if (currentComponent != null)
+            if (currentComponents != null)
             {
-                yield return currentComponent;
+                foreach (var component in currentComponents)
+                {
+                    yield return component;
+                }
             }
             if (transform.Parent != null)
             {

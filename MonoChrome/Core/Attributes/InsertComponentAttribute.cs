@@ -12,10 +12,11 @@ namespace MonoChrome.Core.Attributes
     {
         public string From { get; set; }
         public bool Inherit { get; set; } = false;
+        public bool Required { get; set; } = false;
 
         public void AcceptFieldVisitor(FieldAttributeVisitor visitor)
         {
-            visitor.VisitInsertComponentAttribute(From, Inherit);
+            visitor.VisitInsertComponentAttribute(From, Inherit, Required);
         }
     }
 }

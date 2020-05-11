@@ -8,10 +8,10 @@ namespace MonoChrome.Core.Components
     public class SpriteRenderer : Renderer
     {
         public Texture2D Texture { get; set; }
-        public override Vector2 Size => new Vector2(Texture.Width, Texture.Height);
+        public override Vector2 Size => Texture == null ? new Vector2() : new Vector2(Texture.Width, Texture.Height);
 
-        [InsertComponent(Inherit = true)]
-        private Collider Collider;
+        [InsertComponent]
+        private Transform _transform;
 
         public SpriteRenderer()
         {
@@ -27,11 +27,7 @@ namespace MonoChrome.Core.Components
         {
             if (Texture != null)
             {
-                spriteBatch.Draw(Texture, GameObject.Transform.Position, Color);
-            }
-            if (Collider.DebugDraw)
-            {
-                Collider.DrawBounds(spriteBatch);
+                spriteBatch.Draw(Texture, _transform.Position, Color);
             }
         }
     }

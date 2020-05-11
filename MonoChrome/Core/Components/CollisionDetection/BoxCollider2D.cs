@@ -15,7 +15,6 @@ namespace MonoChrome.Core.Components.CollisionDetection
         [InsertComponent]
         private Transform _transform;
         private Rectangle _box;
-        private bool _useRendererBounds = true;
         private Texture2D _debugTexture;
 
         public override void CheckCollisionWith(Collider collider)
@@ -41,7 +40,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         public void Awake()
         {
-            if (_useRendererBounds)
+            if (IsUseRendererBounds)
             {
                 UseRendererBounds();
             }
@@ -64,23 +63,14 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         public void UseRendererBounds()
         {
-            _box = new Rectangle();
-            var renderer = this.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                _box = new Rectangle(0, 0, (int)renderer.Size.X, (int)renderer.Size.Y);
-            }
-            else
-            {
-                _box = new Rectangle(0, 0, 0, 0);
-            }
-            _useRendererBounds = true;
+            CalculateBounds();
+            IsUseRendererBounds = true;
         }
 
         public void UseCustomBounds(int width, int height)
         {
             _box = new Rectangle(0, 0, width, height);
-            _useRendererBounds = false;
+            IsUseRendererBounds = false;
         }
 
         internal override void DrawBounds(SpriteBatch batch)
@@ -91,10 +81,35 @@ namespace MonoChrome.Core.Components.CollisionDetection
             batch.Draw(_debugTexture, new Rectangle(_box.Left, _box.Bottom, _box.Width + 2, 2), Color.Black); // Bottom
         }
 
-        private void Update()
+        private void CalculateBounds()
         {
-            _box.X = (int)_transform.Position.X;
-            _box.Y = (int)_transform.Position.Y;
+            var renderers = GameObject.GetComponentsInChildren(typeof(Renderer), true);
+            var left = int.MaxValue;
+            var top = int.MaxValue;
+            var width = 0;
+            var height = 0;
+            foreach (Renderer renderer in renderers)
+            {
+                if (renderer is DebugRenderer)
+                {
+                    continue;
+                }
+                var size = renderer.Size;
+                var collider = renderer.GetComponent<Collider>();
+                if (collider != null && !collider.IsUseRendererBounds && collider is BoxCollider2D boxCollider)
+                {
+                    size = new Vector2(boxCollider._box.Width, boxCollider._box.Width);
+                }
+                var position = renderer.Transform.Position;
+
+                left = (int)(position.X < left ? position.X : left);
+                top = (int)(position.Y < top ? position.Y : top);
+                int possibleWidth = (int)(position.X + size.X - left);
+                width = possibleWidth > width ? possibleWidth : width;
+                int possibleHeight = (int)(position.Y + size.Y - top);
+                height = possibleHeight > width ? possibleHeight : height;
+            }
+            _box = new Rectangle(left, top, width, height);
         }
 
         private void OnFinalise()
@@ -104,6 +119,12 @@ namespace MonoChrome.Core.Components.CollisionDetection
                 _debugTexture.Dispose();
                 _debugTexture = null;
             }
+        }
+
+        private void Update()
+        {
+            _box.X = (int)_transform.Position.X;
+            _box.Y = (int)_transform.Position.Y;
         }
     }
 }

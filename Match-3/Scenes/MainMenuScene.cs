@@ -37,11 +37,6 @@ namespace Match_3.Scenes
         {
             Console.WriteLine(pointerEventData.Position);
         }
-
-        private void OnCollision(Collision collision)
-        {
-            Console.WriteLine(collision.GameObject.Name);
-        }
     }
 
 
@@ -50,11 +45,29 @@ namespace Match_3.Scenes
 
         public override void Setup()
         {
-            var s = Content.Load<Texture2D>("1");
-            var sprite1 = Entity.Create("Sprite1", new BoxCollider2D(), new SpriteRenderer(s), new TestComponent());
+            var s1 = Content.Load<Texture2D>("1");
+            var s2 = Content.Load<Texture2D>("2");
+            var f = Content.Load<SpriteFont>("font");
+            var sprite1 = Entity.Create("Sprite1", 
+                new BoxCollider2D(),
+                new SpriteRenderer
+                {
+                    Texture = s1
+                },
+                new TextRenderer 
+                { 
+                    SpriteFont = f, 
+                    Text = "Scor11111111111111111111111111111111111111111111111111111111111111111111111e",
+                    Color = Color.Red
+                });
             sprite1.Transform.Position = new Vector2(100, 100);
+            var compose = Entity.Create("Compose", new BoxCollider2D(), new DebugRenderer(), new TestComponent());
+            var sprite2 = Entity.Create("Sp2", new TextRenderer { SpriteFont = f, Text = "Hello" });
+            sprite2.Transform.Position = new Vector2(10, 10);
+            sprite2.Transform.Parent = compose.Transform;
+            sprite1.Transform.Parent = compose.Transform;
             Entity.Synchronize();
-            Add(sprite1);
+            Add(compose);
         }
     }
 }

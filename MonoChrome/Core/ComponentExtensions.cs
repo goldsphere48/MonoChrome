@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoChrome.Core.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +55,8 @@ namespace MonoChrome.Core
         }
         public static IEnumerable<T> GetComponentsInChildren<T>(this Component component, bool inherit = false) where T : Component
         {
-            return component.GameObject.GetComponentsInChildren(typeof(T), inherit) as List<T>;
+            var c = component.GameObject.GetComponentsInChildren(typeof(T), inherit);
+            return c as IEnumerable<T>;
         }
         public static Component GetComponentInParent(this Component component, Type componentType, bool inherit = false)
         {

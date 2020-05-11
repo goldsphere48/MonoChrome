@@ -96,7 +96,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var components = _cached[item.Key];
                 if (!components.Contains(item.Component))
                 {
-                    Console.WriteLine(cacheItem.Key);
                     components.Add(item.Component);
                 }
             }

@@ -153,6 +153,23 @@ namespace MonoChrome.Core.EntityManager
             return GetComponentsForEntity(entity)?.Values;
         }
 
+        public IEnumerable<Component> GetComponents(GameObject entity, Type type, bool inherit)
+        {
+            if (!inherit)
+            {
+                yield return GetComponent(entity, type);
+                yield break;
+            }
+            var componentsTypes = GetComponentsForEntity(entity)?.Keys;
+            foreach (var componentType in componentsTypes)
+            {
+                if (type.IsAssignableFrom(componentType))
+                {
+                    yield return _gameObjects[entity][componentType];
+                }
+            }
+        }
+
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
             return GetComponents(typeof(T), false) as IEnumerable<T>;

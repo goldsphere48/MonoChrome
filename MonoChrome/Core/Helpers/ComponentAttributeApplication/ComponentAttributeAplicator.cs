@@ -22,11 +22,21 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         private static void ProceedComponentFields(Component component)
         {
             _fieldAttributeVisitor.CurrentComponent = component;
-            var fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var fields = GetAllFields(component.GetType());
             foreach (var field in fields)
             {
                 ProceedField(field);
             }
+        }
+
+        private static IEnumerable<FieldInfo> GetAllFields(Type type)
+        {
+            if (type == null && !typeof(Component).IsAssignableFrom(type))
+            {
+                return Enumerable.Empty<FieldInfo>();
+            }
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                .Concat(GetAllFields(type.BaseType));
         }
 
         private static void ProceedField(FieldInfo field)
@@ -35,8 +45,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
             var attributes = field.GetCustomAttributes(false);
             foreach (var attribute in attributes)
             {
-                var accepltableAttribute = attribute as IComponentApplicatorAcceptable;
-                if (accepltableAttribute != null)
+                if (attribute is IComponentApplicatorAcceptable accepltableAttribute)
                 {
                     ProceedFieldAttribute(accepltableAttribute);
                 }

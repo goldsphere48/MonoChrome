@@ -28,19 +28,34 @@ namespace MonoChrome.SceneSystem.Layers
             foregroundLayer.HandleInput = false;
         }
 
-        public void Add(string layerName, GameObject gameObject)
+        public void Add(string layerName, GameObject gameObject, bool replace = true)
         {
             if (string.IsNullOrEmpty(layerName) || gameObject == null)
             {
                 throw new ArgumentNullException();
             }
-            var layer = _layers.GetLayer(layerName);
-            if (layer != null)
+            if (gameObject.LayerName != layerName)
             {
-                layer.Add(gameObject);
-            } else
-            {
-                throw new ArgumentException($"Can't find layer with name {layerName}");
+                if (string.IsNullOrEmpty(gameObject.LayerName))
+                {
+                    var layer = _layers.GetLayer(layerName);
+                    if (layer != null)
+                    {
+                        layer.Add(gameObject);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Can't find layer with name {layerName}");
+                    }
+                    foreach (var child in gameObject.Transform.Childrens)
+                    {
+                        Add(layerName, child.GameObject, false);
+                    }
+                } else if (replace)
+                {
+                    Remove(gameObject);
+                    Add(layerName, gameObject);
+                }
             }
         }
 
@@ -54,7 +69,7 @@ namespace MonoChrome.SceneSystem.Layers
             Add(DefaultLayers.Default.ToString(), gameObject);
         }
 
-        public bool Remove(GameObject gameObject)
+        public void Remove(GameObject gameObject)
         {
             string layerName = null;
             if (gameObject != null)
@@ -68,17 +83,16 @@ namespace MonoChrome.SceneSystem.Layers
             var layer = _layers.GetLayer(layerName);
             if (layer != null)
             {
-                return layer.Remove(gameObject);
+                layer.Remove(gameObject);
+                foreach (var child in gameObject.Transform.Childrens)
+                {
+                    Remove(child.GameObject);
+                }
             }
             else
             {
                 throw new ArgumentException($"Can't find layer which contains gameObject {gameObject.Name}");
             }
-        }
-
-        public bool Remove(DefaultLayers layerName, GameObject gameObject)
-        {
-            return Remove(gameObject);
         }
 
         public void SetZIndex(string layerName, int zIndex)

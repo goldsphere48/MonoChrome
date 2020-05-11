@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core.Attributes;
+using MonoChrome.Core.Components.CollisionDetection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
