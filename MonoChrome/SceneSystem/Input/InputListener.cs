@@ -12,23 +12,21 @@ namespace MonoChrome.SceneSystem.Input
     {
         private MouseState oldState = Mouse.GetState();
 
-        public void HandleInput()
+        public void HandleMouseClick()
         {
             MouseState newState = Mouse.GetState();
-            MouseButton button = MouseButton.Left;
             if (newState.LeftButton == ButtonState.Released && oldState.LeftButton == ButtonState.Pressed)
             {
-                button = MouseButton.Left;
+                OnMouseClick(new PointerEventData { Button = MouseButton.Left, Position = newState.Position.ToVector2() });
             }
             if (newState.MiddleButton == ButtonState.Released && oldState.MiddleButton == ButtonState.Pressed)
             {
-                button = MouseButton.Middle;
+                OnMouseClick(new PointerEventData { Button = MouseButton.Middle, Position = newState.Position.ToVector2() });
             }
             if (newState.RightButton == ButtonState.Released && oldState.RightButton == ButtonState.Pressed)
             {
-                button = MouseButton.Right;
+                OnMouseClick(new PointerEventData { Button = MouseButton.Right, Position = newState.Position.ToVector2() });
             }
-            OnMouseClick(new PointerEventData { Button = button, Position = newState.Position.ToVector2()});
             oldState = newState;
         }
 

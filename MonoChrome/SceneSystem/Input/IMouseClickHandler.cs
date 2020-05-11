@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Input
 {
-    interface IMouseClickHandler
+    public interface IMouseClickHandler
     {
         void OnMouseClick(PointerEventData pointerEventData);
     }

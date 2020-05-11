@@ -12,11 +12,13 @@ namespace Match_3
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
             SceneManager.Instance.GraphicsDevice = GraphicsDevice;
+            SceneManager.Instance.Content = Content;
             SceneManager.Instance.LoadScene<MainMenuScene>();
             SceneManager.Instance.SetActiveScene<MainMenuScene>();
             base.Initialize();

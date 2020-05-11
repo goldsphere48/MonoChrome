@@ -9,6 +9,7 @@ using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.SceneSystem.Layers.Helpers;
+using MonoChrome.SceneSystem;
 
 namespace MonoChrome.Core
 {
@@ -27,6 +28,7 @@ namespace MonoChrome.Core
         public const string DefaultName = "GameObject";
         public string Name { get; }
         public string LayerName { get; internal set; }
+        public Scene Scene { get; internal set; }
         public Transform Transform { get => GetComponent<Transform>(); }
         public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {

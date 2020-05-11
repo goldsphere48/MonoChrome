@@ -11,10 +11,11 @@ namespace MonoChrome.Core.Attributes
     public class InsertComponentAttribute : Attribute, IComponentApplicatorAcceptable
     {
         public string From { get; set; }
+        public bool Inherit { get; set; } = false;
 
         public void AcceptFieldVisitor(FieldAttributeVisitor visitor)
         {
-            visitor.VisitInsertComponentAttribute(From);
+            visitor.VisitInsertComponentAttribute(From, Inherit);
         }
     }
 }

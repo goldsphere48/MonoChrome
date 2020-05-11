@@ -8,6 +8,7 @@ using MonoChrome.Core.Helpers;
 using System;
 using MonoChrome.SceneSystem.Layers;
 using MonoChrome.SceneSystem.Input;
+using Microsoft.Xna.Framework.Content;
 
 namespace MonoChrome.SceneSystem
 {
@@ -22,13 +23,14 @@ namespace MonoChrome.SceneSystem
         private EntityStore _store;
         private LayerManager _layerManager;
 
-        public SceneController(Type sceneType, GraphicsDevice device)
+        public SceneController(Type sceneType, GraphicsDevice device, ContentManager content)
         {
             _store = new EntityStore();
             _layerManager = new LayerManager();
             _spriteBatch = new SpriteBatch(device);
             Entity.Registry = _store;
             _scene = CreateScene(sceneType);
+            _scene.Initialize(_layerManager, content, device);
             _scene.Added += OnAdd;
             _scene.Drop += OnRemove;
         }
@@ -66,6 +68,7 @@ namespace MonoChrome.SceneSystem
         #region Scene Controller Interface
         public void Update()
         {
+            HandleMouseClick();
             _layerManager.Update();
         }
 

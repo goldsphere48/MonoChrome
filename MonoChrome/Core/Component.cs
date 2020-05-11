@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,7 @@ namespace MonoChrome.Core
         }
 
         public GameObject GameObject { get; internal set; }
+        public Scene Scene => GameObject.Scene;
 
         public bool Enabled 
         {

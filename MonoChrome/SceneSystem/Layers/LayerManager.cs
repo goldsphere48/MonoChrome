@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class LayerManager
+    public class LayerManager
     {
         private ILayerCollection _layers = new LayerStore();
 

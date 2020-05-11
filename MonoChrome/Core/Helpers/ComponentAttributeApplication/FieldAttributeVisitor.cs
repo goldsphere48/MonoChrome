@@ -16,7 +16,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         public IEnumerable<Component> Components { private get; set; }
         public ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
 
-        public void VisitInsertComponentAttribute(string from)
+        public void VisitInsertComponentAttribute(string from, bool inherit)
         {
             if (!string.IsNullOrEmpty(from))
             {
@@ -31,7 +31,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
             }
             foreach (var component in Components)
             {
-                if (component.GetType() == CurrentField.FieldType)
+                if (component.GetType() == CurrentField.FieldType || (inherit && CurrentField.FieldType.IsAssignableFrom(component.GetType())))
                 {
                     CurrentField.SetValue(CurrentComponent, component, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
                     return;

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    class Layer : ICollection<GameObject>, ILayerItem
+    public class Layer : ICollection<GameObject>, ILayerItem
     {
         public string Name { get; }
         public int Count => _gameObjects.Count;
@@ -195,7 +195,7 @@ namespace MonoChrome.SceneSystem.Layers
             var clickWasHandled = false;
             foreach (Component component in _cachedComponents[_pointerClickHandler])
             {
-                var collider = component.GetComponent<Collider>();
+                var collider = component.GetComponent<Collider>(true);
                 if (collider != null)
                 {
                     var contains = collider.Contains(pointerEventData.Position);

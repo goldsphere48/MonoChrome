@@ -7,12 +7,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
 
 namespace MonoChrome.SceneSystem
 {
     public sealed class SceneManager : ISceneManager
     {
         public GraphicsDevice GraphicsDevice { get; set; }
+        public ContentManager Content { get; set; }
         public static SceneManager Instance
         {
             get
@@ -44,7 +46,7 @@ namespace MonoChrome.SceneSystem
             var scene = GetSceneController(type);
             if (scene == null)
             {
-                scene = new SceneController(type, GraphicsDevice);
+                scene = new SceneController(type, GraphicsDevice, Content);
                 _scenes.Add(scene);
             }
             if (!scene.Initialized)

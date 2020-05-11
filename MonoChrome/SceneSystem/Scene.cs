@@ -1,4 +1,6 @@
-﻿using MonoChrome.Core;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers;
@@ -31,12 +33,24 @@ namespace MonoChrome.SceneSystem
         internal event EventHandler<AddGameObjectEventArgs> Added;
         internal event EventHandler<RemoveGameObjectEventArgs> Drop;
 
+        protected LayerManager LayerManager { get; private set; }
+        protected ContentManager Content { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
+        internal void Initialize(LayerManager layerManager, ContentManager content, GraphicsDevice device)
+        {
+            LayerManager = layerManager;
+            Content = content;
+            GraphicsDevice = device;
+        }
+
         public void Add(GameObject gameObject, string layerName)
         {
             if (gameObject == null || layerName == null)
             {
                 throw new ArgumentNullException();
             }
+            gameObject.Scene = this;
             gameObject.Awake();
             Added?.Invoke(this, new AddGameObjectEventArgs(gameObject, layerName));
         }

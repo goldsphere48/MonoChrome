@@ -115,6 +115,10 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 {
                     return key;
                 }
+                if (key.IsAssignableFrom(componentType))
+                {
+                    return key;
+                }
             }
             return null;
         }

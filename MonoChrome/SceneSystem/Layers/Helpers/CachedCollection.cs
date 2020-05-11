@@ -45,7 +45,8 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         public void Register(GameObject gameObject)
         {
             RegisterHandlers(gameObject);
-            foreach (var component in gameObject.GetComponents())
+            var components = gameObject.GetComponents();
+            foreach (var component in components)
             {
                 if (component.Enabled)
                 {
