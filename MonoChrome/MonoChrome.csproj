@@ -55,6 +55,7 @@
     <Compile Include="Core\Components\DebugRenderer.cs" />
     <Compile Include="Core\Components\TextRenderer.cs" />
     <Compile Include="Core\Time.cs" />
+    <Compile Include="SceneSystem\Input\IKeyboardHandler.cs" />
     <Compile Include="SceneSystem\Input\IMouseOverHandler.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedComponents.cs" />

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoChrome.Core;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.Components.CollisionDetection;
@@ -50,10 +51,20 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Collider)));
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IPointerClickHandler)));
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IMouseOverHandler)));
+            _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IKeyboardHandler)));
             _cachedMethods.AddCacheRule(new MethodCacheRule(allCacheModes, "Update", component => component.UpdateMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnDestroy", component => component.OnDestroyMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
         }
+
+        internal void KeyboardHandle(KeyboardState state)
+        {
+            foreach (IKeyboardHandler component in _cachedComponents[_keyboardHandler])
+            {
+                component.KeyboardHandle(state);
+            }
+        }
+
         public void Add(GameObject item)
         {
             item.LayerName = Name;
@@ -162,9 +173,11 @@ namespace MonoChrome.SceneSystem.Layers
         private Type _collider = typeof(Collider);
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
         private Type _mouseOverHandler = typeof(IMouseOverHandler);
+        private Type _keyboardHandler = typeof(IKeyboardHandler);
         private Type _pointerClickHandler = typeof(IPointerClickHandler);
         private Type _renderer = typeof(Renderer);
         private int _zIndex;
+
         private void EraseItem(GameObject item)
         {
             item.LayerName = null;

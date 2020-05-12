@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoChrome.Core;
 using MonoChrome.SceneSystem.Input;
 using System;
@@ -50,6 +51,15 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
+
+        internal void KeyboardHandle(KeyboardState state)
+        {
+            foreach (var layer in _layers)
+            {
+                layer.KeyboardHandle(state);
+            }
+        }
+
         public void Add(DefaultLayers layerName, GameObject gameObject)
         {
             Add(layerName.ToString(), gameObject);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers;
@@ -51,6 +52,10 @@ namespace MonoChrome.SceneSystem
         public override void OnMouseMove(PointerEventData pointerEventData)
         {
             _layerManager.HandleMouseMove(pointerEventData);
+        }
+        public override void KeyboardHandle(KeyboardState state)
+        {
+            _layerManager.KeyboardHandle(state);
         }
         public void Setup()
         {

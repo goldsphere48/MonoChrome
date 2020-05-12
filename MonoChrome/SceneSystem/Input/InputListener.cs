@@ -9,11 +9,15 @@ namespace MonoChrome.SceneSystem.Input
         {
             HandleMouseClick();
             HandleMouseMove();
+            HandleKeyboardKeyPressed();
         }
         public abstract void OnMouseClick(PointerEventData pointerEventData);
         public abstract void OnMouseMove(PointerEventData pointerEventData);
+        public abstract void KeyboardHandle(KeyboardState state);
+
         private MouseState oldState = Mouse.GetState();
         private Point previousMousePosition;
+
         private void HandleMouseClick()
         {
             MouseState newState = Mouse.GetState();
@@ -30,6 +34,14 @@ namespace MonoChrome.SceneSystem.Input
                 OnMouseClick(new PointerEventData { Button = MouseButton.Right, Position = newState.Position.ToVector2() });
             }
             oldState = newState;
+        }
+        private void HandleKeyboardKeyPressed()
+        {
+            var state = Keyboard.GetState();
+            if (state.GetPressedKeys().Length > 0)
+            {
+                KeyboardHandle(state);
+            }
         }
         private void HandleMouseMove()
         {
