@@ -7,19 +7,22 @@ namespace MonoChrome.Core.EntityManager
     public static class Entity
     {
         public static EntityStore Registry { get; set; }
-        private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
-        private static EntityFactory _entityFactory = new EntityFactory();
-        public static void Define(string definition, params Type[] componentTypes)
+        public static GameObject Compose(GameObject parent, params GameObject[] childrens)
         {
-            Define(definition, null, componentTypes);
-        }
-        public static void Define(string definition, string inheritFromDefinition, params Type[] componentTypes)
-        {
-            if (definition == null || componentTypes == null)
+            foreach (var child in childrens)
             {
-                throw new ArgumentNullException();
+                child.Transform.Parent = parent.Transform;
             }
-            _definitions.Define(definition, inheritFromDefinition, componentTypes);
+            return parent;
+        }
+        public static GameObject Compose(string name, params GameObject[] childrens)
+        {
+            var parent = _entityFactory.CreateEmpty(Registry);
+            return Compose(parent, childrens);
+        }
+        public static GameObject Compose(params GameObject[] childrens)
+        {
+            return Compose(GameObject.DefaultName, childrens);
         }
         public static GameObject Create(params Component[] components)
         {
@@ -45,26 +48,17 @@ namespace MonoChrome.Core.EntityManager
             var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
             return gameObject;
         }
-        public static GameObject Compose(GameObject parent, params GameObject[] childrens)
+        public static void Define(string definition, params Type[] componentTypes)
         {
-            foreach (var child in childrens)
+            Define(definition, null, componentTypes);
+        }
+        public static void Define(string definition, string inheritFromDefinition, params Type[] componentTypes)
+        {
+            if (definition == null || componentTypes == null)
             {
-                child.Transform.Parent = parent.Transform;
+                throw new ArgumentNullException();
             }
-            return parent;
-        }
-        public static GameObject Compose(string name, params GameObject[] childrens)
-        {
-            var parent = _entityFactory.CreateEmpty(Registry);
-            return Compose(parent, childrens);
-        }
-        public static GameObject Compose(params GameObject[] childrens)
-        {
-            return Compose(GameObject.DefaultName, childrens);
-        }
-        public static void Synchronize()
-        {
-            Registry.Synchronize();
+            _definitions.Define(definition, inheritFromDefinition, componentTypes);
         }
         public static GameObject Find(string name)
         {
@@ -89,6 +83,12 @@ namespace MonoChrome.Core.EntityManager
             }
             return result;
         }
+        public static void Synchronize()
+        {
+            Registry.Synchronize();
+        }
+        private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
+        private static EntityFactory _entityFactory = new EntityFactory();
         private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)
         {
             foreach (var component in components)

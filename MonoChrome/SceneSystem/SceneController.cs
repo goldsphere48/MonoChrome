@@ -10,13 +10,9 @@ namespace MonoChrome.SceneSystem
 {
     internal class SceneController : InputListener, IScene, IDisposable
     {
-        public bool Initialized { get; private set; } = false;
         public bool Disposed { get; private set; } = false;
+        public bool Initialized { get; private set; } = false;
         public Type SceneType => _scene.GetType();
-        private Scene _scene;
-        private SpriteBatch _spriteBatch;
-        private EntityStore _store;
-        private LayerManager _layerManager;
         public SceneController(Type sceneType, GraphicsDevice device, ContentManager content, Game game)
         {
             _store = new EntityStore();
@@ -28,13 +24,33 @@ namespace MonoChrome.SceneSystem
             _scene.Added += OnAdd;
             _scene.Drop += OnRemove;
         }
-        private void OnAdd(object sender, AddGameObjectEventArgs args)
+        public void Dispose()
         {
-            _layerManager.Add(args.LayerName, args.GameObject);
+            Dispose(true);
+            GC.SuppressFinalize(true);
         }
-        private void OnRemove(object sender, RemoveGameObjectEventArgs args)
+        public void Draw()
         {
-            _layerManager.Remove(args.GameObject);
+            _spriteBatch.Begin();
+            _layerManager.Draw(_spriteBatch);
+            _spriteBatch.End();
+        }
+        public void OnDisable()
+        {
+            _scene.OnDisable();
+        }
+        public void OnEnable()
+        {
+            Entity.Registry = _store;
+            _scene.OnEnable();
+        }
+        public override void OnMouseClick(PointerEventData pointerEventData)
+        {
+            _layerManager.HandleMouseClick(pointerEventData);
+        }
+        public override void OnMouseMove(PointerEventData pointerEventData)
+        {
+            _layerManager.HandleMouseMove(pointerEventData);
         }
         public void Setup()
         {
@@ -43,26 +59,19 @@ namespace MonoChrome.SceneSystem
             Initialized = true;
             Disposed = false;
         }
-        public void OnEnable()
-        {
-            Entity.Registry = _store;
-            _scene.OnEnable();
-        }
-        public void OnDisable()
-        {
-            _scene.OnDisable();
-        }
         public void Update()
         {
             HandleMouseEvents();
             _layerManager.Update();
         }
-        public void Draw()
+        ~SceneController()
         {
-            _spriteBatch.Begin();
-            _layerManager.Draw(_spriteBatch);
-            _spriteBatch.End();
+            Dispose(false);
         }
+        private LayerManager _layerManager;
+        private Scene _scene;
+        private SpriteBatch _spriteBatch;
+        private EntityStore _store;
         private Scene CreateScene(Type type)
         {
             return Activator.CreateInstance(type) as Scene;
@@ -81,10 +90,9 @@ namespace MonoChrome.SceneSystem
                 Initialized = false;
             }
         }
-        public void Dispose()
+        private void OnAdd(object sender, AddGameObjectEventArgs args)
         {
-            Dispose(true);
-            GC.SuppressFinalize(true);
+            _layerManager.Add(args.LayerName, args.GameObject);
         }
         private void OnDestroy()
         {
@@ -96,17 +104,9 @@ namespace MonoChrome.SceneSystem
             _layerManager.Clear();
             _store.Clear();
         }
-        public override void OnMouseClick(PointerEventData pointerEventData)
+        private void OnRemove(object sender, RemoveGameObjectEventArgs args)
         {
-            _layerManager.HandleMouseClick(pointerEventData);
-        }
-        public override void OnMouseMove(PointerEventData pointerEventData)
-        {
-            _layerManager.HandleMouseMove(pointerEventData);
-        }
-        ~SceneController()
-        {
-            Dispose(false);
+            _layerManager.Remove(args.GameObject);
         }
     }
 }

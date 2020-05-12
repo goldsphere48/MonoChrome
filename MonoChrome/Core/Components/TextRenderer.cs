@@ -6,6 +6,7 @@ namespace MonoChrome.Core.Components
 {
     public class TextRenderer : Renderer
     {
+        public override Vector2 Size => _size;
         public SpriteFont SpriteFont { get; set; }
         public string Text
         {
@@ -19,11 +20,6 @@ namespace MonoChrome.Core.Components
                 }
             }
         }
-        public override Vector2 Size => _size;
-        [InsertComponent]
-        private Transform _transform;
-        private string _text = "";
-        private Vector2 _size;
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (SpriteFont != null)
@@ -31,5 +27,8 @@ namespace MonoChrome.Core.Components
                 spriteBatch.DrawString(SpriteFont, Text, _transform.Position, Color);
             }
         }
+        private Vector2 _size;
+        private string _text = "";
+        [InsertComponent] private Transform _transform;
     }
 }

@@ -17,18 +17,6 @@ namespace MonoChrome.Core
         {
             component.GameObject.AddComponent<T>();
         }
-        public static void RemoveComponent(this Component component, Type type)
-        {
-            component.GameObject.RemoveComponent(type);
-        }
-        public static void RemoveComponent<T>(this Component component) where T : Component
-        {
-            component.GameObject.RemoveComponent<T>();
-        }
-        public static bool HasComponent<T>(this Component component, bool inherit = false) where T : Component
-        {
-            return component.GameObject.HasComponent<T>(inherit);
-        }
         public static Component GetComponent(this Component component, Type componentType, bool inherit = false)
         {
             return component.GameObject.GetComponent(componentType, inherit);
@@ -45,6 +33,18 @@ namespace MonoChrome.Core
         {
             return component.GameObject.GetComponentInChildren<T>(inherit);
         }
+        public static Component GetComponentInParent(this Component component, Type componentType, bool inherit = false)
+        {
+            return component.GameObject.GetComponentInParent(componentType, inherit);
+        }
+        public static T GetComponentInParent<T>(this Component component, bool inherit = false) where T : Component
+        {
+            return component.GameObject.GetComponentInParent<T>(inherit);
+        }
+        public static IEnumerable<Component> GetComponents(this Component component)
+        {
+            return component.GameObject.GetComponents();
+        }
         public static IEnumerable<Component> GetComponentsInChildren(this Component component, Type componentType, bool inherit = false)
         {
             return component.GameObject.GetComponentsInChildren(componentType, inherit);
@@ -54,14 +54,6 @@ namespace MonoChrome.Core
             var c = component.GameObject.GetComponentsInChildren(typeof(T), inherit);
             return c as IEnumerable<T>;
         }
-        public static Component GetComponentInParent(this Component component, Type componentType, bool inherit = false)
-        {
-            return component.GameObject.GetComponentInParent(componentType, inherit);
-        }
-        public static T GetComponentInParent<T>(this Component component, bool inherit = false) where T : Component
-        {
-            return component.GameObject.GetComponentInParent<T>(inherit);
-        }
         public static IEnumerable<Component> GetComponentsInParent(this Component component, Type componentType, bool inherit = false)
         {
             return component.GameObject.GetComponentsInParent(componentType, inherit);
@@ -70,9 +62,17 @@ namespace MonoChrome.Core
         {
             return component.GameObject.GetComponentsInParent<T>(inherit);
         }
-        public static IEnumerable<Component> GetComponents(this Component component)
+        public static bool HasComponent<T>(this Component component, bool inherit = false) where T : Component
         {
-            return component.GameObject.GetComponents();
+            return component.GameObject.HasComponent<T>(inherit);
+        }
+        public static void RemoveComponent(this Component component, Type type)
+        {
+            component.GameObject.RemoveComponent(type);
+        }
+        public static void RemoveComponent<T>(this Component component) where T : Component
+        {
+            component.GameObject.RemoveComponent<T>();
         }
     }
 }

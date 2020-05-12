@@ -1,5 +1,4 @@
-﻿
-namespace MonoChrome.Core.Components.CollisionDetection
+﻿namespace MonoChrome.Core.Components.CollisionDetection
 {
     public class Collision
     {

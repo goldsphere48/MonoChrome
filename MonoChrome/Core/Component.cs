@@ -12,36 +12,6 @@ namespace MonoChrome.Core
 {
     public abstract class Component : IDisposable, ILayerItem
     {
-        public static Component Create(Type componentType)
-        {
-            Component result;
-            try
-            {
-                result = Activator.CreateInstance(componentType) as Component;
-            }
-            catch (MissingMethodException)
-            {
-                throw new MissingMethodException(string.Format(
-                    "The component type '{0}' does not provide a parameter-less constructor.", componentType.ToString()));
-            }
-            return result;
-        }
-        public event EventHandler<ZIndexEventArgs> ZIndexChanged
-        {
-            add
-            {
-                _zIndexChanged -= value;
-                _zIndexChanged += value;
-            }
-            remove
-            {
-                _zIndexChanged -= value;
-            }
-        }
-        public GameObject GameObject { get; internal set; }
-        public Transform Transform => GameObject.Transform;
-        public Scene Scene => GameObject.Scene;
-        public GraphicsDevice GraphicsDevice => Scene.GraphicsDevice;
         public ContentManager Content => Scene.Content;
         public bool Enabled
         {
@@ -65,49 +35,43 @@ namespace MonoChrome.Core
                 _enabled = value;
             }
         }
+        public GameObject GameObject { get; internal set; }
+        public GraphicsDevice GraphicsDevice => Scene.GraphicsDevice;
+        public string LayerName => GameObject.LayerName;
+        public Scene Scene => GameObject.Scene;
+        public Transform Transform => GameObject.Transform;
         public int ZIndex
         {
             get => GameObject.ZIndex;
             set => GameObject.ZIndex = value;
         }
-        internal bool IsAwaked { get; set; }
-        internal bool IsStarted { get; set; }
-        public string LayerName => GameObject.LayerName;
-        internal ComponentEventHandler ComponentEnabled;
-        internal ComponentEventHandler ComponentDisabled;
-        internal Action AwakeMethod;
-        internal Action StartMethod;
-        internal Action UpdateMethod;
-        internal Action OnEnableMethod;
-        internal Action OnDisableMethod;
-        internal Action OnFinaliseMethod;
-        internal Action OnDestroyMethod;
-        internal Action<Collision> OnCollision;
-        private bool _enabled = true;
-        private bool _disposed = false;
-        private EventHandler<ZIndexEventArgs> _zIndexChanged;
-        protected Component()
+
+        public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
-            AwakeMethod = CreateDelegate("Awake");
-            StartMethod = CreateDelegate("Start");
-            UpdateMethod = CreateDelegate("Update");
-            OnEnableMethod = CreateDelegate("OnEnable");
-            OnDisableMethod = CreateDelegate("OnDisable");
-            OnFinaliseMethod = CreateDelegate("OnFinalise");
-            OnDestroyMethod = CreateDelegate("OnDestroy");
-            OnCollision = CreateDelegate<Collision>("OnCollision");
+            add
+            {
+                _zIndexChanged -= value;
+                _zIndexChanged += value;
+            }
+            remove
+            {
+                _zIndexChanged -= value;
+            }
         }
-        private Action CreateDelegate(string name)
+
+        public static Component Create(Type componentType)
         {
-            return GetMethod(name)?.CreateDelegate(typeof(Action), this) as Action;
-        }
-        private Action<T> CreateDelegate<T>(string name)
-        {
-            return GetMethod(name)?.CreateDelegate(typeof(Action<T>), this) as Action<T>;
-        }
-        private MethodInfo GetMethod(string name)
-        {
-            return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Component result;
+            try
+            {
+                result = Activator.CreateInstance(componentType) as Component;
+            }
+            catch (MissingMethodException)
+            {
+                throw new MissingMethodException(string.Format(
+                    "The component type '{0}' does not provide a parameter-less constructor.", componentType.ToString()));
+            }
+            return result;
         }
         public void Dispose()
         {
@@ -130,13 +94,51 @@ namespace MonoChrome.Core
                 _disposed = true;
             }
         }
+        internal bool IsAwaked { get; set; }
+        internal bool IsStarted { get; set; }
+        internal Action AwakeMethod;
+        internal ComponentEventHandler ComponentDisabled;
+        internal ComponentEventHandler ComponentEnabled;
+        internal Action<Collision> OnCollision;
+        internal Action OnDestroyMethod;
+        internal Action OnDisableMethod;
+        internal Action OnEnableMethod;
+        internal Action OnFinaliseMethod;
+        internal Action StartMethod;
+        internal Action UpdateMethod;
+        internal void OnZIndexChanged(object sender, ZIndexEventArgs e)
+        {
+            _zIndexChanged?.Invoke(this, e);
+        }
+        protected Component()
+        {
+            AwakeMethod = CreateDelegate("Awake");
+            StartMethod = CreateDelegate("Start");
+            UpdateMethod = CreateDelegate("Update");
+            OnEnableMethod = CreateDelegate("OnEnable");
+            OnDisableMethod = CreateDelegate("OnDisable");
+            OnFinaliseMethod = CreateDelegate("OnFinalise");
+            OnDestroyMethod = CreateDelegate("OnDestroy");
+            OnCollision = CreateDelegate<Collision>("OnCollision");
+        }
         ~Component()
         {
             Dispose(false);
         }
-        internal void OnZIndexChanged(object sender, ZIndexEventArgs e)
+        private bool _disposed = false;
+        private bool _enabled = true;
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
+        private Action CreateDelegate(string name)
         {
-            _zIndexChanged?.Invoke(this, e);
+            return GetMethod(name)?.CreateDelegate(typeof(Action), this) as Action;
+        }
+        private Action<T> CreateDelegate<T>(string name)
+        {
+            return GetMethod(name)?.CreateDelegate(typeof(Action<T>), this) as Action<T>;
+        }
+        private MethodInfo GetMethod(string name)
+        {
+            return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
     }
 }

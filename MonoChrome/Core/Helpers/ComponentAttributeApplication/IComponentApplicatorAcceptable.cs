@@ -1,7 +1,6 @@
-﻿
-namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
+﻿namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
-    interface IComponentApplicatorAcceptable
+    internal interface IComponentApplicatorAcceptable
     {
         void AcceptFieldVisitor(FieldAttributeVisitor visitor);
     }

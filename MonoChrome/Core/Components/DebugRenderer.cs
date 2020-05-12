@@ -8,8 +8,6 @@ namespace MonoChrome.Core.Components
     public class DebugRenderer : Renderer
     {
         public override Vector2 Size => new Vector2();
-        [InsertComponent(Inherit = true, Required = false)]
-        private Collider _collider;
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (_collider != null)
@@ -17,5 +15,6 @@ namespace MonoChrome.Core.Components
                 _collider.DrawBounds(spriteBatch);
             }
         }
+        [InsertComponent(Inherit = true, Required = false)] private Collider _collider;
     }
 }

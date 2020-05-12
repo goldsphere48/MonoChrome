@@ -5,8 +5,6 @@ namespace MonoChrome.SceneSystem.Input
 {
     public abstract class InputListener
     {
-        private MouseState oldState = Mouse.GetState();
-        private Point previousMousePosition;
         public void HandleMouseEvents()
         {
             HandleMouseClick();
@@ -14,6 +12,8 @@ namespace MonoChrome.SceneSystem.Input
         }
         public abstract void OnMouseClick(PointerEventData pointerEventData);
         public abstract void OnMouseMove(PointerEventData pointerEventData);
+        private MouseState oldState = Mouse.GetState();
+        private Point previousMousePosition;
         private void HandleMouseClick()
         {
             MouseState newState = Mouse.GetState();

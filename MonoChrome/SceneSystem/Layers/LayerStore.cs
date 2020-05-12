@@ -7,7 +7,6 @@ namespace MonoChrome.SceneSystem.Layers
 {
     internal class LayerStore : ILayerCollection
     {
-        private ZIndexSortedSet<Layer> _layers;
         public LayerStore()
         {
             _layers = new ZIndexSortedSet<Layer>();
@@ -38,6 +37,10 @@ namespace MonoChrome.SceneSystem.Layers
         {
             return _layers.GetEnumerator();
         }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         public Layer GetLayer(string layerName)
         {
             foreach (var layer in _layers)
@@ -62,9 +65,6 @@ namespace MonoChrome.SceneSystem.Layers
             var layer = GetLayer(layerName);
             return Remove(layer);
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        private ZIndexSortedSet<Layer> _layers;
     }
 }

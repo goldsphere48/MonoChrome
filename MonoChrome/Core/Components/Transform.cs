@@ -12,15 +12,24 @@ namespace MonoChrome.Core.Components
             GameObject = gameObject;
         }
     }
+
     public class Transform : Component
     {
-        public event EventHandler<GameObjectEventArgs> ChildAdded;
-        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;
-        public event EventHandler<GameObjectEventArgs> ChildRemove;
-        public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
-        private Vector2 _position = Vector2.Zero;
-        private Transform _parent;
         public List<Transform> Childrens { get; } = new List<Transform>();
+
+        public Vector2 LocalPosition
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return _position;
+                }
+                return _position - Parent.Position;
+            }
+            set => HandleLocalPositionChange(value);
+        }
+
         public Transform Parent
         {
             get => _parent;
@@ -45,30 +54,19 @@ namespace MonoChrome.Core.Components
                 _parent = value;
             }
         }
-        public Vector2 LocalPosition
-        {
-            get
-            {
-                if (Parent == null)
-                {
-                    return _position;
-                }
-                return _position - Parent.Position;
-            }
-            set => HandleLocalPositionChange(value);
-        }
+
         public Vector2 Position { get => _position; set => HandleAbsolutePositionChange(value); }
-        private void HandleLocalPositionChange(Vector2 newLocalPosition)
-        {
-            if (Parent != null)
-            {
-                Position = newLocalPosition + Parent.Position;
-            }
-            else
-            {
-                Position = newLocalPosition;
-            }
-        }
+
+        public event EventHandler<GameObjectEventArgs> ChildAdded;
+
+        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;
+
+        public event EventHandler<GameObjectEventArgs> ChildRemove;
+
+        public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
+
+        private Transform _parent;
+        private Vector2 _position = Vector2.Zero;
         private void HandleAbsolutePositionChange(Vector2 newAbsolutePosition)
         {
             if (newAbsolutePosition != _position)
@@ -79,6 +77,17 @@ namespace MonoChrome.Core.Components
                 {
                     child.Position += dv;
                 }
+            }
+        }
+        private void HandleLocalPositionChange(Vector2 newLocalPosition)
+        {
+            if (Parent != null)
+            {
+                Position = newLocalPosition + Parent.Position;
+            }
+            else
+            {
+                Position = newLocalPosition;
             }
         }
         private void OnChildAdded(GameObjectEventArgs args)

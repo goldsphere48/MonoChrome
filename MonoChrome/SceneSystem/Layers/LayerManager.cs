@@ -7,7 +7,6 @@ namespace MonoChrome.SceneSystem.Layers
 {
     public class LayerManager
     {
-        private ILayerCollection _layers = new LayerStore();
         public LayerManager()
         {
             CreateLayer(DefaultLayers.Default, 0);
@@ -59,6 +58,79 @@ namespace MonoChrome.SceneSystem.Layers
         {
             Add(DefaultLayers.Default.ToString(), gameObject);
         }
+        public void Clear()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.Clear();
+            }
+            _layers.Clear();
+        }
+        public Layer CreateLayer(string layerName, int zIndex)
+        {
+            if (!string.IsNullOrEmpty(layerName))
+            {
+                var layer = _layers.GetLayer(layerName);
+                if (layer == null)
+                {
+                    layer = new Layer(layerName, zIndex);
+                    layer.ZIndexChanged += OnZIndexChanged;
+                    _layers.Add(layer);
+                }
+                else
+                {
+                    layer.ZIndex = zIndex;
+                }
+                return layer;
+            }
+            else
+            {
+                throw new ArgumentNullException();
+            }
+        }
+        public void Draw(SpriteBatch batch)
+        {
+            foreach (var layer in _layers)
+            {
+                layer.Draw(batch);
+            }
+        }
+        public void HandleMouseClick(PointerEventData pointerEventData)
+        {
+            foreach (var layer in _layers)
+            {
+                var clickWasHandled = layer.HandleMouseClick(pointerEventData);
+                if (clickWasHandled && !layer.AllowThroughHandling)
+                {
+                    break;
+                }
+            }
+        }
+        public void HandleMouseMove(PointerEventData pointerEventData)
+        {
+            foreach (var layer in _layers)
+            {
+                var isMouseOver = layer.HandleMouseMove(pointerEventData);
+                if (isMouseOver && !layer.AllowThroughHandling)
+                {
+                    break;
+                }
+            }
+        }
+        public void OnDestroy()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnDestroy();
+            }
+        }
+        public void OnFinalise()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnFinalise();
+            }
+        }
         public void Remove(GameObject gameObject)
         {
             string layerName = null;
@@ -100,35 +172,6 @@ namespace MonoChrome.SceneSystem.Layers
         {
             SetZIndex(layerName.ToString(), zIndex);
         }
-        public Layer CreateLayer(string layerName, int zIndex)
-        {
-            if (!string.IsNullOrEmpty(layerName))
-            {
-                var layer = _layers.GetLayer(layerName);
-                if (layer == null)
-                {
-                    layer = new Layer(layerName, zIndex);
-                    layer.ZIndexChanged += OnZIndexChanged;
-                    _layers.Add(layer);
-                }
-                else
-                {
-                    layer.ZIndex = zIndex;
-                }
-                return layer;
-            }
-            else
-            {
-                throw new ArgumentNullException();
-            }
-        }
-        public void Draw(SpriteBatch batch)
-        {
-            foreach (var layer in _layers)
-            {
-                layer.Draw(batch);
-            }
-        }
         public void Update()
         {
             foreach (var layer in _layers)
@@ -136,50 +179,7 @@ namespace MonoChrome.SceneSystem.Layers
                 layer.Update();
             }
         }
-        public void OnDestroy()
-        {
-            foreach (var layer in _layers)
-            {
-                layer.OnDestroy();
-            }
-        }
-        public void OnFinalise()
-        {
-            foreach (var layer in _layers)
-            {
-                layer.OnFinalise();
-            }
-        }
-        public void HandleMouseClick(PointerEventData pointerEventData)
-        {
-            foreach (var layer in _layers)
-            {
-                var clickWasHandled = layer.HandleMouseClick(pointerEventData);
-                if (clickWasHandled && !layer.AllowThroughHandling)
-                {
-                    break;
-                }
-            }
-        }
-        public void HandleMouseMove(PointerEventData pointerEventData)
-        {
-            foreach (var layer in _layers)
-            {
-                var isMouseOver = layer.HandleMouseMove(pointerEventData);
-                if (isMouseOver && !layer.AllowThroughHandling)
-                {
-                    break;
-                }
-            }
-        }
-        public void Clear()
-        {
-            foreach (var layer in _layers)
-            {
-                layer.Clear();
-            }
-            _layers.Clear();
-        }
+        private ILayerCollection _layers = new LayerStore();
         private Layer CreateLayer(DefaultLayers layerName, int zIndex)
         {
             return CreateLayer(layerName.ToString(), zIndex);

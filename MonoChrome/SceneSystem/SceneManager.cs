@@ -10,9 +10,6 @@ namespace MonoChrome.SceneSystem
 {
     public sealed class SceneManager : ISceneManager
     {
-        public GraphicsDevice GraphicsDevice { get; set; }
-        public ContentManager Content { get; set; }
-        public Game Game { get; set; }
         public static SceneManager Instance
         {
             get
@@ -24,50 +21,9 @@ namespace MonoChrome.SceneSystem
                 return _instance;
             }
         }
-        private static SceneManager _instance;
-        private SceneController _currentScreen;
-        private List<SceneController> _scenes = new List<SceneController>();
-        private SceneManager()
-        {
-        }
-        public void LoadScene(Type type)
-        {
-            if (!IsScene(type))
-            {
-                throw new ArgumentException($"{type.Name} is not subclass of IScene");
-            }
-            var scene = GetSceneController(type);
-            if (scene == null)
-            {
-                scene = new SceneController(type, GraphicsDevice, Content, Game);
-                _scenes.Add(scene);
-            }
-            if (!scene.Initialized)
-            {
-                scene.Setup();
-            }
-        }
-        public void LoadScene<T>() where T : IScene
-        {
-            LoadScene(typeof(T));
-        }
-        public void UnloadScene(Type type)
-        {
-            if (!IsScene(type) && !Contains(type))
-            {
-                throw new ArgumentException($"{type.Name} is not subclass of IScene or this scene doesn't exist");
-            }
-            var scene = GetSceneController(type);
-            if (scene.Initialized)
-            {
-                scene.Dispose();
-            }
-            _scenes.Remove(scene);
-        }
-        public void UnloadScene<T>() where T : IScene
-        {
-            UnloadScene(typeof(T));
-        }
+        public ContentManager Content { get; set; }
+        public Game Game { get; set; }
+        public GraphicsDevice GraphicsDevice { get; set; }
         public void Clear()
         {
             foreach (var value in _scenes)
@@ -101,6 +57,39 @@ namespace MonoChrome.SceneSystem
                 _scenes.Remove(scene);
             }
         }
+        public void Draw()
+        {
+            _currentScreen?.Draw();
+        }
+        public bool IsLoaded(Type type)
+        {
+            return _scenes.Find(scene => scene.SceneType == type).Initialized;
+        }
+        public bool IsLoaded<T>() where T : IScene
+        {
+            return IsLoaded(typeof(T));
+        }
+        public void LoadScene(Type type)
+        {
+            if (!IsScene(type))
+            {
+                throw new ArgumentException($"{type.Name} is not subclass of IScene");
+            }
+            var scene = GetSceneController(type);
+            if (scene == null)
+            {
+                scene = new SceneController(type, GraphicsDevice, Content, Game);
+                _scenes.Add(scene);
+            }
+            if (!scene.Initialized)
+            {
+                scene.Setup();
+            }
+        }
+        public void LoadScene<T>() where T : IScene
+        {
+            LoadScene(typeof(T));
+        }
         public void SetActiveScene(Type type)
         {
             var scene = GetSceneController(type);
@@ -121,17 +110,22 @@ namespace MonoChrome.SceneSystem
         {
             SetActiveScene(typeof(T));
         }
-        public bool IsLoaded(Type type)
+        public void UnloadScene(Type type)
         {
-            return _scenes.Find(scene => scene.SceneType == type).Initialized;
+            if (!IsScene(type) && !Contains(type))
+            {
+                throw new ArgumentException($"{type.Name} is not subclass of IScene or this scene doesn't exist");
+            }
+            var scene = GetSceneController(type);
+            if (scene.Initialized)
+            {
+                scene.Dispose();
+            }
+            _scenes.Remove(scene);
         }
-        public bool IsLoaded<T>() where T : IScene
+        public void UnloadScene<T>() where T : IScene
         {
-            return IsLoaded(typeof(T));
-        }
-        public void Draw()
-        {
-            _currentScreen?.Draw();
+            UnloadScene(typeof(T));
         }
         public void Update(GameTime gameTime)
         {
@@ -146,6 +140,12 @@ namespace MonoChrome.SceneSystem
         {
             return GetSceneController(typeof(T));
         }
+        private SceneManager()
+        {
+        }
+        private static SceneManager _instance;
+        private SceneController _currentScreen;
+        private List<SceneController> _scenes = new List<SceneController>();
         private static bool IsScene(Type type)
         {
             return typeof(IScene).IsAssignableFrom(type);

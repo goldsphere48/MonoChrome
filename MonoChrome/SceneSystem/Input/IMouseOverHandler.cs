@@ -1,9 +1,8 @@
-﻿
-namespace MonoChrome.SceneSystem.Input
+﻿namespace MonoChrome.SceneSystem.Input
 {
     public interface IMouseOverHandler
     {
-        void OnMouseOver();
         void OnMouseExit();
+        void OnMouseOver();
     }
 }

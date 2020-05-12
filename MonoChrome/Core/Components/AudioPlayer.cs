@@ -5,15 +5,6 @@ namespace MonoChrome.Core.Components
 {
     public class AudioPlayer : Component
     {
-        public SoundEffect Source
-        {
-            get => _soundEffect;
-            set
-            {
-                _soundEffect = value;
-                _instance = _soundEffect.CreateInstance();
-            }
-        }
         public bool IsLooped
         {
             get => _isLooped;
@@ -24,6 +15,15 @@ namespace MonoChrome.Core.Components
             }
         }
         public bool PlayOnStart { get; set; }
+        public SoundEffect Source
+        {
+            get => _soundEffect;
+            set
+            {
+                _soundEffect = value;
+                _instance = _soundEffect.CreateInstance();
+            }
+        }
         public float Volume
         {
             get => _volume;
@@ -33,10 +33,17 @@ namespace MonoChrome.Core.Components
                 _instance.Volume = _volume;
             }
         }
-        private SoundEffect _soundEffect;
-        private SoundEffectInstance _instance;
-        private bool _isLooped = false;
-        private float _volume;
+        public void Pause()
+        {
+            if (_instance != null && !_instance.IsDisposed)
+            {
+                _instance.Pause();
+            }
+            else
+            {
+                throw new InvalidOperationException("Can't pause play sound, sound effect is null or disposed");
+            }
+        }
         public void Play()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -59,16 +66,13 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't stop play sound, sound effect is null or disposed");
             }
         }
-        public void Pause()
+        private SoundEffectInstance _instance;
+        private bool _isLooped = false;
+        private SoundEffect _soundEffect;
+        private float _volume;
+        private void OnDestroy()
         {
-            if (_instance != null && !_instance.IsDisposed)
-            {
-                _instance.Pause();
-            }
-            else
-            {
-                throw new InvalidOperationException("Can't pause play sound, sound effect is null or disposed");
-            }
+            _instance.Dispose();
         }
         private void Start()
         {
@@ -76,10 +80,6 @@ namespace MonoChrome.Core.Components
             {
                 Play();
             }
-        }
-        private void OnDestroy()
-        {
-            _instance.Dispose();
         }
     }
 }

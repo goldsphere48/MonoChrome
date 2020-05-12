@@ -1,5 +1,4 @@
-﻿
-namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
+﻿namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
     public struct AttributeError
     {

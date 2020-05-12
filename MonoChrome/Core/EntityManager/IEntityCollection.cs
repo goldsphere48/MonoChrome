@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace MonoChrome.Core.EntityManager
 {
-    interface IEntityCollection<TEntity> : IEnumerable<TEntity>
+    internal interface IEntityCollection<TEntity> : IEnumerable<TEntity>
     {
         bool Add(TEntity entity, Component component);
-        bool Remove(TEntity entity, Component component);
-        bool Contains(TEntity entity);
         void Clear();
+        bool Contains(TEntity entity);
         T GetComponent<T>(TEntity entity) where T : Component;
         T GetComponent<T>(TEntity entity, bool allowDerivedComponents) where T : Component;
         Component GetComponent(TEntity entity, Type componentType);
@@ -18,5 +17,6 @@ namespace MonoChrome.Core.EntityManager
         IEnumerable<T> GetComponents<T>(bool allowDerivedComponents) where T : Component;
         IEnumerable<Component> GetComponents(Type component);
         IEnumerable<Component> GetComponents(Type component, bool allowDerivedComponents);
+        bool Remove(TEntity entity, Component component);
     }
 }

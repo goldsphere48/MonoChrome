@@ -1,5 +1,4 @@
-﻿
-namespace MonoChrome.SceneSystem.Layers
+﻿namespace MonoChrome.SceneSystem.Layers
 {
     public enum DefaultLayers
     {

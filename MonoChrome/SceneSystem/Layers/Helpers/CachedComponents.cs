@@ -5,24 +5,8 @@ using System.Linq;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    internal class ComponentCacheRule : CacheRule
-    {
-        public Type ComponentType { get; }
-        public ComponentCacheRule(CacheMode mode, Type componentType) : base(mode)
-        {
-            ComponentType = componentType;
-        }
-    }
-    internal class ComponentCacheItem : CacheItem<Type>
-    {
-        public ComponentCacheItem(Component component, Type key) : base(component, key)
-        {
-        }
-    }
     internal class CachedComponents : CachedCollection<Type, Component>
     {
-        private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
-        private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
         public override IEnumerable<Component> this[Type type]
         {
             get
@@ -48,6 +32,18 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         {
             _cached.Clear();
         }
+        protected override void Add(CacheItem<Type> cacheItem)
+        {
+            var item = cacheItem as ComponentCacheItem;
+            if (_cached.ContainsKey(item.Key))
+            {
+                var components = _cached[item.Key];
+                if (!components.Contains(item.Component))
+                {
+                    components.Add(item.Component);
+                }
+            }
+        }
         protected override void Cache(Component component, CacheMode rule)
         {
             var types = GetBaseType(component);
@@ -62,6 +58,15 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                     }
                 }
             }
+        }
+        protected override bool Remove(CacheItem<Type> cacheItem)
+        {
+            var item = cacheItem as ComponentCacheItem;
+            if (_cached.ContainsKey(item.Key))
+            {
+                return _cached[item.Key].Remove(item.Component);
+            }
+            return false;
         }
         protected override void Uncache(Component component, CacheMode rule)
         {
@@ -78,27 +83,8 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-        protected override void Add(CacheItem<Type> cacheItem)
-        {
-            var item = cacheItem as ComponentCacheItem;
-            if (_cached.ContainsKey(item.Key))
-            {
-                var components = _cached[item.Key];
-                if (!components.Contains(item.Component))
-                {
-                    components.Add(item.Component);
-                }
-            }
-        }
-        protected override bool Remove(CacheItem<Type> cacheItem)
-        {
-            var item = cacheItem as ComponentCacheItem;
-            if (_cached.ContainsKey(item.Key))
-            {
-                return _cached[item.Key].Remove(item.Component);
-            }
-            return false;
-        }
+        private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
+        private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
         private IEnumerable<Type> GetBaseType(Component component)
         {
             var componentType = component.GetType();
@@ -113,6 +99,22 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                     yield return key;
                 }
             }
+        }
+    }
+
+    internal class ComponentCacheItem : CacheItem<Type>
+    {
+        public ComponentCacheItem(Component component, Type key) : base(component, key)
+        {
+        }
+    }
+
+    internal class ComponentCacheRule : CacheRule
+    {
+        public Type ComponentType { get; }
+        public ComponentCacheRule(CacheMode mode, Type componentType) : base(mode)
+        {
+            ComponentType = componentType;
         }
     }
 }

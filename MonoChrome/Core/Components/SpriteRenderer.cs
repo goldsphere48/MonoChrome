@@ -6,10 +6,8 @@ namespace MonoChrome.Core.Components
 {
     public class SpriteRenderer : Renderer
     {
-        public Texture2D Texture { get; set; }
         public override Vector2 Size => Texture == null ? new Vector2() : new Vector2(Texture.Width, Texture.Height);
-        [InsertComponent]
-        private Transform _transform;
+        public Texture2D Texture { get; set; }
         public SpriteRenderer()
         {
         }
@@ -24,5 +22,6 @@ namespace MonoChrome.Core.Components
                 spriteBatch.Draw(Texture, _transform.Position, Color);
             }
         }
+        [InsertComponent] private Transform _transform;
     }
 }

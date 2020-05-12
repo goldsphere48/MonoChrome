@@ -2,9 +2,10 @@
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    interface ILayerItem
+    internal interface ILayerItem
     {
-        event EventHandler<ZIndexEventArgs> ZIndexChanged;
         int ZIndex { get; set; }
+
+        event EventHandler<ZIndexEventArgs> ZIndexChanged;
     }
 }

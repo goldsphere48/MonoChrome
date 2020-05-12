@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    interface ICachedCollection<TKey, TCached>
+    internal interface ICachedCollection<TKey, TCached>
     {
         IEnumerable<TCached> this[TKey type] { get; }
-        void Register(GameObject gameObject);
-        void Erase(GameObject gameObject);
         void AddCacheRule(CacheRule rule);
         void Clear();
+        void Erase(GameObject gameObject);
+        void Register(GameObject gameObject);
     }
 }

@@ -2,13 +2,13 @@
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    interface ILayerCollection : IEnumerable<Layer>
+    internal interface ILayerCollection : IEnumerable<Layer>
     {
-        bool Contains(string layerName);
         void Add(Layer layer);
+        void Clear();
+        bool Contains(string layerName);
+        Layer GetLayer(string layerName);
         bool Remove(Layer layer);
         bool Remove(string layerName);
-        Layer GetLayer(string layerName);
-        void Clear();
     }
 }

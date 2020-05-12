@@ -7,12 +7,6 @@ namespace MonoChrome.Core.EntityManager
 {
     public class EntityStore : IEntityCollection<GameObject>
     {
-        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
-            new Dictionary<GameObject, IDictionary<Type, Component>>();
-        private ICollection<Component> _unsynchronizedComponents =
-            new HashSet<Component>();
-        private IDictionary<Predicate<Component>, Action<Component>> _triggers =
-            new Dictionary<Predicate<Component>, Action<Component>>();
         public EntityStore()
         {
             SetTrigger(
@@ -49,52 +43,13 @@ namespace MonoChrome.Core.EntityManager
             }
             return componentSuccessfullyAttached;
         }
-        public bool Remove(GameObject entity, Component component)
+        public void Clear()
         {
-            if (entity == null || component == null)
+            foreach (var gameObject in _gameObjects.Keys)
             {
-                throw new ArgumentNullException();
+                EraseGameObject(gameObject);
             }
-            var components = GetComponentsForEntity(entity);
-            if (components == null || components.Count == 0)
-            {
-                if (components.Count == 0)
-                {
-                    _gameObjects.Remove(entity);
-                }
-                return false;
-            }
-            entity.Dettach(component);
-            component.Dispose();
-            return components.Remove(component.GetType());
-        }
-        public bool Remove(GameObject entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException();
-            }
-            EraseGameObject(entity);
-            return _gameObjects.Remove(entity);
-        }
-        private void EraseGameObject(GameObject entity)
-        {
-            var components = GetComponentsForEntity(entity);
-            foreach (var component in components.Values)
-            {
-                component.Dispose();
-                entity.Dettach(component);
-            }
-            components.Clear();
-        }
-        internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
-        {
-            IDictionary<Type, Component> components = null;
-            if (_gameObjects.ContainsKey(gameObject))
-            {
-                components = _gameObjects[gameObject];
-            }
-            return components;
+            _gameObjects.Clear();
         }
         public bool Contains(GameObject entity)
         {
@@ -103,21 +58,6 @@ namespace MonoChrome.Core.EntityManager
                 throw new ArgumentNullException();
             }
             return _gameObjects.ContainsKey(entity);
-        }
-        public bool HasComponent<T>(GameObject gameObject, bool inherit = false) where T : Component
-        {
-            if (gameObject != null && Contains(gameObject))
-            {
-                if (inherit == false)
-                {
-                    return _gameObjects[gameObject].ContainsKey(typeof(T));
-                }
-                else
-                {
-                    return GetComponent<T>(gameObject, inherit) != null;
-                }
-            }
-            return false;
         }
         public T GetComponent<T>(GameObject entity) where T : Component
         {
@@ -196,13 +136,52 @@ namespace MonoChrome.Core.EntityManager
         {
             return _gameObjects.Keys.GetEnumerator();
         }
-        public void Clear()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var gameObject in _gameObjects.Keys)
+            return GetEnumerator();
+        }
+        public bool HasComponent<T>(GameObject gameObject, bool inherit = false) where T : Component
+        {
+            if (gameObject != null && Contains(gameObject))
             {
-                EraseGameObject(gameObject);
+                if (inherit == false)
+                {
+                    return _gameObjects[gameObject].ContainsKey(typeof(T));
+                }
+                else
+                {
+                    return GetComponent<T>(gameObject, inherit) != null;
+                }
             }
-            _gameObjects.Clear();
+            return false;
+        }
+        public bool Remove(GameObject entity, Component component)
+        {
+            if (entity == null || component == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var components = GetComponentsForEntity(entity);
+            if (components == null || components.Count == 0)
+            {
+                if (components.Count == 0)
+                {
+                    _gameObjects.Remove(entity);
+                }
+                return false;
+            }
+            entity.Dettach(component);
+            component.Dispose();
+            return components.Remove(component.GetType());
+        }
+        public bool Remove(GameObject entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException();
+            }
+            EraseGameObject(entity);
+            return _gameObjects.Remove(entity);
         }
         public void SetTrigger(Predicate<Component> predicate, Action<Component> action)
         {
@@ -222,9 +201,30 @@ namespace MonoChrome.Core.EntityManager
             }
             _unsynchronizedComponents.Clear();
         }
-        IEnumerator IEnumerable.GetEnumerator()
+        internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
-            return GetEnumerator();
+            IDictionary<Type, Component> components = null;
+            if (_gameObjects.ContainsKey(gameObject))
+            {
+                components = _gameObjects[gameObject];
+            }
+            return components;
+        }
+        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
+                                                                                                                                                                                            new Dictionary<GameObject, IDictionary<Type, Component>>();
+        private IDictionary<Predicate<Component>, Action<Component>> _triggers =
+            new Dictionary<Predicate<Component>, Action<Component>>();
+        private ICollection<Component> _unsynchronizedComponents =
+                    new HashSet<Component>();
+        private void EraseGameObject(GameObject entity)
+        {
+            var components = GetComponentsForEntity(entity);
+            foreach (var component in components.Values)
+            {
+                component.Dispose();
+                entity.Dettach(component);
+            }
+            components.Clear();
         }
     }
 }

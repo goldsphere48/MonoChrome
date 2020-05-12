@@ -7,7 +7,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         where TKey : class, ILayerItem
         where TValue : class
     {
-        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>(new DescendingComparer());
         public IEnumerable<TValue> Values
         {
             get
@@ -32,20 +31,17 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             container.Add(key, value);
             key.ZIndexChanged += OnZIndexChanged;
         }
-        public bool Remove(TKey key)
+        public void Clear()
         {
-            _list.TryGetValue(key.ZIndex, out var container);
-            if (container == null)
+            foreach (var dictionary in _list)
             {
-                return false;
+                foreach (var value in dictionary.Value)
+                {
+                    value.Key.ZIndexChanged -= OnZIndexChanged;
+                }
+                dictionary.Value.Clear();
             }
-            key.ZIndexChanged -= OnZIndexChanged;
-            container.Remove(key);
-            if (container.Count == 0)
-            {
-                _list.Remove(key.ZIndex);
-            }
-            return true;
+            _list.Clear();
         }
         public bool Contains(TKey key)
         {
@@ -66,6 +62,10 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         public void OnZIndexChanged(object sender, ZIndexEventArgs args)
         {
             _list.TryGetValue(args.OldZIndex, out var container);
@@ -81,17 +81,20 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 Add(item, value);
             }
         }
-        public void Clear()
+        public bool Remove(TKey key)
         {
-            foreach (var dictionary in _list)
+            _list.TryGetValue(key.ZIndex, out var container);
+            if (container == null)
             {
-                foreach (var value in dictionary.Value)
-                {
-                    value.Key.ZIndexChanged -= OnZIndexChanged;
-                }
-                dictionary.Value.Clear();
+                return false;
             }
-            _list.Clear();
+            key.ZIndexChanged -= OnZIndexChanged;
+            container.Remove(key);
+            if (container.Count == 0)
+            {
+                _list.Remove(key.ZIndex);
+            }
+            return true;
         }
         public bool TryGetValue(TKey key, out TValue outValue)
         {
@@ -106,9 +109,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             outValue = null;
             return false;
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>(new DescendingComparer());
     }
 }

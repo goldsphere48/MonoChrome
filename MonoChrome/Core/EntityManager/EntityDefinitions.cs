@@ -6,7 +6,10 @@ namespace MonoChrome.Core.EntityManager
 {
     internal class EntityDefinitions : IEntityDefinitionCollection<string>
     {
-        private IDictionary<string, IList<Type>> _definitions = new Dictionary<string, IList<Type>>();
+        public void Clear()
+        {
+            _definitions.Clear();
+        }
         public void Define(string definition, string inheritFromDefinition, params Type[] types)
         {
             if (_definitions.ContainsKey(definition))
@@ -41,13 +44,9 @@ namespace MonoChrome.Core.EntityManager
                 _definitions[definition] = componentTypes;
             }
         }
-        public bool Undefine(string definition)
+        public IList<Type> Get(string definition)
         {
-            return _definitions.Remove(definition);
-        }
-        public void Clear()
-        {
-            _definitions.Clear();
+            return _definitions[definition];
         }
         public IEnumerator<string> GetEnumerator()
         {
@@ -57,9 +56,10 @@ namespace MonoChrome.Core.EntityManager
         {
             return GetEnumerator();
         }
-        public IList<Type> Get(string definition)
+        public bool Undefine(string definition)
         {
-            return _definitions[definition];
+            return _definitions.Remove(definition);
         }
+        private IDictionary<string, IList<Type>> _definitions = new Dictionary<string, IList<Type>>();
     }
 }

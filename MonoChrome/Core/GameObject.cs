@@ -8,32 +8,8 @@ using System.Linq;
 
 namespace MonoChrome.Core
 {
-    internal class ComponentAttachEventArgs : EventArgs
-    {
-        public Component Component { get; set; }
-        public ComponentAttachEventArgs(Component component)
-        {
-            Component = component;
-        }
-    }
     public sealed class GameObject : IDisposable, ILayerItem
     {
-        public const string DefaultName = "GameObject";
-        public string Name { get; }
-        public string LayerName { get; internal set; }
-        public Transform Transform { get; internal set; }
-        public event EventHandler<ZIndexEventArgs> ZIndexChanged
-        {
-            add
-            {
-                _zIndexChanged -= value;
-                _zIndexChanged += value;
-            }
-            remove
-            {
-                _zIndexChanged -= value;
-            }
-        }
         public bool Enabled
         {
             get => _enabled;
@@ -52,6 +28,8 @@ namespace MonoChrome.Core
                 }
             }
         }
+        public string LayerName { get; internal set; }
+        public string Name { get; }
         public Scene Scene
         {
             get => _scene;
@@ -64,6 +42,7 @@ namespace MonoChrome.Core
                 }
             }
         }
+        public Transform Transform { get; internal set; }
         public int ZIndex
         {
             get => _zIndex;
@@ -74,69 +53,59 @@ namespace MonoChrome.Core
                 _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
-        internal event ComponentEventHandler ComponentAttached;
-        internal event ComponentEventHandler ComponentDettach;
-        internal event ComponentEventHandler ComponentEnabled;
-        internal event ComponentEventHandler ComponentDisabled;
-        internal EntityStore Registry { get; set; }
-        private Scene _scene;
-        private EventHandler<ZIndexEventArgs> _zIndexChanged;
-        private int _zIndex;
-        private bool _enabled = true;
-        internal GameObject(string name, EntityStore store)
+
+        public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
-            Name = name;
-            Registry = store;
+            add
+            {
+                _zIndexChanged -= value;
+                _zIndexChanged += value;
+            }
+            remove
+            {
+                _zIndexChanged -= value;
+            }
         }
+
+        public const string DefaultName = "GameObject";
         public void AddComponent(Type componentType)
         {
             var component = Component.Create(componentType);
             Registry.Add(this, component);
         }
+
         public void AddComponent(Component component)
         {
             Registry.Add(this, component);
         }
+
         public void AddComponent<T>() where T : Component
         {
             AddComponent(typeof(T));
         }
-        public void RemoveComponent(Type type)
+
+        public void Dispose()
         {
-            var removableComponent = GetComponent(type);
-            if (removableComponent != null)
+            Registry.Remove(this);
+            var transform = Transform;
+            transform.Parent = null;
+            foreach (var child in transform.Childrens)
             {
-                Registry.Remove(this, removableComponent);
+                child.GameObject.Dispose();
+                child.GameObject = null;
             }
         }
-        public void RemoveComponent<T>() where T : Component
-        {
-            RemoveComponent(typeof(T));
-        }
-        public bool HasComponent<T>(bool inherit = false) where T : Component
-        {
-            return Registry.HasComponent<T>(this, inherit);
-        }
+
         public Component GetComponent(Type componentType, bool inherit = false)
         {
             return Registry.GetComponent(this, componentType, inherit);
         }
+
         public T GetComponent<T>(bool inherit = false) where T : Component
         {
             return GetComponent(typeof(T), inherit) as T;
         }
-        public IEnumerable<Component> GetComponents(Type componentType, bool inherit = true)
-        {
-            return Registry.GetComponents(this, componentType, inherit);
-        }
-        public IEnumerable<T> GetComponents<T>(bool inherit = true) where T : Component
-        {
-            var components = GetComponents(typeof(T), inherit);
-            foreach (var component in components)
-            {
-                yield return component as T;
-            }
-        }
+
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
@@ -154,10 +123,50 @@ namespace MonoChrome.Core
             }
             return component;
         }
+
         public T GetComponentInChildren<T>(bool inherit = false) where T : Component
         {
             return GetComponentInChildren(typeof(T), inherit) as T;
         }
+
+        public Component GetComponentInParent(Type componentType, bool inherit = false)
+        {
+            var component = GetComponent(componentType, inherit);
+            var transform = Transform;
+            if (component == null)
+            {
+                if (transform.Parent != null)
+                {
+                    return transform.Parent.GameObject.GetComponentInParent(componentType, inherit);
+                }
+            }
+            return component;
+        }
+
+        public T GetComponentInParent<T>(bool inherit = false) where T : Component
+        {
+            return GetComponentInParent(typeof(T), inherit) as T;
+        }
+
+        public IEnumerable<Component> GetComponents(Type componentType, bool inherit = true)
+        {
+            return Registry.GetComponents(this, componentType, inherit);
+        }
+
+        public IEnumerable<T> GetComponents<T>(bool inherit = true) where T : Component
+        {
+            var components = GetComponents(typeof(T), inherit);
+            foreach (var component in components)
+            {
+                yield return component as T;
+            }
+        }
+
+        public IEnumerable<Component> GetComponents()
+        {
+            return Registry.GetComponents(this);
+        }
+
         public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
         {
             var currentComponents = GetComponents(componentType, inherit);
@@ -178,6 +187,7 @@ namespace MonoChrome.Core
                 }
             }
         }
+
         public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
         {
             var components = GetComponentsInChildren(typeof(T), inherit);
@@ -186,23 +196,7 @@ namespace MonoChrome.Core
                 yield return component as T;
             }
         }
-        public Component GetComponentInParent(Type componentType, bool inherit = false)
-        {
-            var component = GetComponent(componentType, inherit);
-            var transform = Transform;
-            if (component == null)
-            {
-                if (transform.Parent != null)
-                {
-                    return transform.Parent.GameObject.GetComponentInParent(componentType, inherit);
-                }
-            }
-            return component;
-        }
-        public T GetComponentInParent<T>(bool inherit = false) where T : Component
-        {
-            return GetComponentInParent(typeof(T), inherit) as T;
-        }
+
         public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
         {
             var currentComponents = GetComponents(componentType, inherit);
@@ -223,6 +217,7 @@ namespace MonoChrome.Core
                 }
             }
         }
+
         public IEnumerable<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
         {
             var components = GetComponentsInParent(typeof(T), inherit);
@@ -231,20 +226,64 @@ namespace MonoChrome.Core
                 yield return component as T;
             }
         }
-        public IEnumerable<Component> GetComponents()
+
+        public bool HasComponent<T>(bool inherit = false) where T : Component
         {
-            return Registry.GetComponents(this);
+            return Registry.HasComponent<T>(this, inherit);
         }
-        public void Dispose()
+
+        public void RemoveComponent(Type type)
         {
-            Registry.Remove(this);
-            var transform = Transform;
-            transform.Parent = null;
-            foreach (var child in transform.Childrens)
+            var removableComponent = GetComponent(type);
+            if (removableComponent != null)
             {
-                child.GameObject.Dispose();
-                child.GameObject = null;
+                Registry.Remove(this, removableComponent);
             }
+        }
+
+        public void RemoveComponent<T>() where T : Component
+        {
+            RemoveComponent(typeof(T));
+        }
+
+        internal EntityStore Registry { get; set; }
+
+        internal event ComponentEventHandler ComponentAttached;
+
+        internal event ComponentEventHandler ComponentDettach;
+
+        internal event ComponentEventHandler ComponentDisabled;
+
+        internal event ComponentEventHandler ComponentEnabled;
+
+        internal GameObject(string name, EntityStore store)
+        {
+            Name = name;
+            Registry = store;
+        }
+        internal void Attach(Component component)
+        {
+            component.GameObject = this;
+            component.ComponentEnabled += OnComponentEnabled;
+            component.ComponentDisabled += OnComponentDisabled;
+            ZIndexChanged += component.OnZIndexChanged;
+            ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
+        }
+        internal void Awake()
+        {
+            InvokeAction(
+                component => component.AwakeMethod,
+                component => component.IsAwaked,
+                component => component.IsAwaked = true
+            );
+        }
+        internal void Dettach(Component component)
+        {
+            ComponentDettach?.Invoke(this, new ComponentEventArgs(component, this));
+            component.GameObject = null;
+            component.ComponentEnabled -= OnComponentEnabled;
+            component.ComponentDisabled -= OnComponentDisabled;
+            ZIndexChanged -= component.OnZIndexChanged;
         }
         internal void InvokeAction(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after)
         {
@@ -256,13 +295,13 @@ namespace MonoChrome.Core
                 child.GameObject.InvokeAction(reciever, predicate, after);
             }
         }
-        internal void Awake()
+        internal void OnComponentDisabled(object sender, ComponentEventArgs componentEventArgs)
         {
-            InvokeAction(
-                component => component.AwakeMethod,
-                component => component.IsAwaked,
-                component => component.IsAwaked = true
-            );
+            ComponentDisabled?.Invoke(this, componentEventArgs);
+        }
+        internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
+        {
+            ComponentEnabled?.Invoke(this, componentEventArgs);
         }
         internal void Start()
         {
@@ -272,30 +311,10 @@ namespace MonoChrome.Core
                 component => component.IsStarted = true
             );
         }
-        internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
-        {
-            ComponentEnabled?.Invoke(this, componentEventArgs);
-        }
-        internal void OnComponentDisabled(object sender, ComponentEventArgs componentEventArgs)
-        {
-            ComponentDisabled?.Invoke(this, componentEventArgs);
-        }
-        internal void Attach(Component component)
-        {
-            component.GameObject = this;
-            component.ComponentEnabled += OnComponentEnabled;
-            component.ComponentDisabled += OnComponentDisabled;
-            ZIndexChanged += component.OnZIndexChanged;
-            ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
-        }
-        internal void Dettach(Component component)
-        {
-            ComponentDettach?.Invoke(this, new ComponentEventArgs(component, this));
-            component.GameObject = null;
-            component.ComponentEnabled -= OnComponentEnabled;
-            component.ComponentDisabled -= OnComponentDisabled;
-            ZIndexChanged -= component.OnZIndexChanged;
-        }
+        private bool _enabled = true;
+        private Scene _scene;
+        private int _zIndex;
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
         private void InvokeActionForComponents(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after, List<Component> components)
         {
             for (int i = 0; i < components.Count; ++i)
@@ -312,6 +331,15 @@ namespace MonoChrome.Core
                     }
                 }
             }
+        }
+    }
+
+    internal class ComponentAttachEventArgs : EventArgs
+    {
+        public Component Component { get; set; }
+        public ComponentAttachEventArgs(Component component)
+        {
+            Component = component;
         }
     }
 }

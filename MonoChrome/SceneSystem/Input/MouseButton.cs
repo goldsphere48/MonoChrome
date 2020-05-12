@@ -1,5 +1,4 @@
-﻿
-namespace MonoChrome.SceneSystem.Input
+﻿namespace MonoChrome.SceneSystem.Input
 {
     public enum MouseButton
     {
