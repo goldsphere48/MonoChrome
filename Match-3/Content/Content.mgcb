@@ -37,6 +37,12 @@
 /processorParam:TextureFormat=Color
 /build:2.png
 
+#begin 3.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:3.mp3
+
 #begin font.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

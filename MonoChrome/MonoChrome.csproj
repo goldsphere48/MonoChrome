@@ -48,6 +48,7 @@
     <Compile Include="Core\Attributes\InsertComponentAttribute.cs" />
     <Compile Include="Core\Attributes\InsertGameObject.cs" />
     <Compile Include="Core\ComponentExtensions.cs" />
+    <Compile Include="Core\Components\AudioPlayer.cs" />
     <Compile Include="Core\Components\CollisionDetection\BoxCollider2D.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collider.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
