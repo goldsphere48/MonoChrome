@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace MonoChrome.Core.Components.CollisionDetection
 {
     public class BoxCollider2D : Collider
     {
-        public Rectangle Box => _box;
+        public Rectangle Bounds => _box;
         public BoxCollider2D()
         {
         }
@@ -52,12 +53,22 @@ namespace MonoChrome.Core.Components.CollisionDetection
             }
             IsUseRendererBounds = true;
         }
+        private Vector2 RotateAroundOrigin(Vector2 point)
+        {
+            return Vector2.Transform(point - _transform.Position, Matrix.CreateRotationZ(_transform.Angle)) + _transform.Position;
+        }
+        private void DrawLine(SpriteBatch spriteBatch, Vector2 point, float length, float angle, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+            spriteBatch.Draw(_debugTexture, point, null, Color.Black, angle, origin, scale, SpriteEffects.None, 0);
+        }
         internal override void DrawBounds(SpriteBatch batch)
         {
-            batch.Draw(_debugTexture, new Rectangle(_box.Left, _box.Top, 2, _box.Height), Color.Black); // Left
-            batch.Draw(_debugTexture, new Rectangle(_box.Right, _box.Top, 2, _box.Height), Color.Black); // Right
-            batch.Draw(_debugTexture, new Rectangle(_box.Left, _box.Top, _box.Width, 2), Color.Black); // Top
-            batch.Draw(_debugTexture, new Rectangle(_box.Left, _box.Bottom, _box.Width + 2, 2), Color.Black); // Bottom
+            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Left, _box.Top)), _box.Height, (float)(_transform.Angle + Math.PI / 2));
+            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Right, _box.Top)), _box.Height, (float)(_transform.Angle + Math.PI / 2));
+            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Right, _box.Top)), _box.Width, (float)(_transform.Angle - Math.PI));
+            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Left, _box.Bottom)), _box.Width, _transform.Angle);
         }
         private Rectangle _box;
         private IList<BoxCollider2D> _childColliders = new List<BoxCollider2D>();
@@ -86,8 +97,8 @@ namespace MonoChrome.Core.Components.CollisionDetection
         }
         private void Update()
         {
-            _box.X = (int)(_transform.Position.X);
-            _box.Y = (int)(_transform.Position.Y);
+            _box.X = (int)(_transform.Position.X - _transform.Origin.X);
+            _box.Y = (int)(_transform.Position.Y - _transform.Origin.Y);
         }
     }
 }

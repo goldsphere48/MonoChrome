@@ -10,6 +10,8 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         public IEnumerable<Component> Components { private get; set; }
         public Component CurrentComponent { private get; set; }
         public FieldInfo CurrentField { private get; set; }
+        private IEnumerable<Component> _components;
+
         public void VisitInsertComponentAttribute(string from, bool inherit, bool required)
         {
             if (!string.IsNullOrEmpty(from))
@@ -17,12 +19,16 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
                 var gameObject = Entity.Find(from);
                 if (gameObject != null)
                 {
+                    _components = Components;
                     Components = gameObject.GetComponents();
                 }
                 else
                 {
                     return;
                 }
+            } else if (_components != null)
+            {
+                Components = _components;
             }
             foreach (var component in Components)
             {

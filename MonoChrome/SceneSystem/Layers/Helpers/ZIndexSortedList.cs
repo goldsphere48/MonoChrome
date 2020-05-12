@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
@@ -13,9 +14,9 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             {
                 foreach (var dictionary in _list)
                 {
-                    foreach (var value in dictionary.Value)
+                    for (int i = 0; i < dictionary.Value.Count; ++i) 
                     {
-                        yield return value.Value;
+                        yield return dictionary.Value.ElementAt(i).Value;
                     }
                 }
             }

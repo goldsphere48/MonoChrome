@@ -19,7 +19,7 @@ namespace MonoChrome.Core.Components
         {
             if (Texture != null)
             {
-                spriteBatch.Draw(Texture, _transform.Position, Color);
+                spriteBatch.Draw(Texture, _transform.Position, null, Color, _transform.Angle, _transform.Origin, Vector2.One, SpriteEffects.None, 1);
             }
         }
         [InsertComponent] private Transform _transform;

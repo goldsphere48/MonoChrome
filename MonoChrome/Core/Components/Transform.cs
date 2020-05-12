@@ -30,6 +30,9 @@ namespace MonoChrome.Core.Components
             set => HandleLocalPositionChange(value);
         }
 
+        public float Angle { get; set; }
+        public Vector2 Origin { get; set; }
+
         public Transform Parent
         {
             get => _parent;
@@ -53,6 +56,14 @@ namespace MonoChrome.Core.Components
                 }
                 _parent = value;
             }
+        }
+
+        public void MoveTowards(Vector2 dir, Vector2 speed)
+        {
+            var newVector = new Vector2(dir.X - Position.X, dir.Y - Position.Y);
+            newVector.Normalize();
+            newVector = newVector * speed;
+            Position += newVector;
         }
 
         public Vector2 Position { get => _position; set => HandleAbsolutePositionChange(value); }
