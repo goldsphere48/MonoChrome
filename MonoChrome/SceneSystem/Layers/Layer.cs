@@ -1,18 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.Components.CollisionDetection;
-using MonoChrome.Core.EntityManager;
-using MonoChrome.Core.Helpers;
 using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
@@ -35,9 +29,7 @@ namespace MonoChrome.SceneSystem.Layers
                 ZIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
-
         public event EventHandler<ZIndexEventArgs> ZIndexChanged;
-
         private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
         private ICachedCollection<Type, Component> _cachedComponents;
         private ICachedCollection<string, Action> _cachedMethods;
@@ -46,20 +38,18 @@ namespace MonoChrome.SceneSystem.Layers
         private Type _pointerClickHandler = typeof(IPointerClickHandler);
         private Type _mouseOverHandler = typeof(IMouseOverHandler);
         private int _zIndex;
-
         public Layer(string name, int zIndex)
         {
             Name = name;
             ZIndex = zIndex;
-            var allCacheModes = 
-                CacheMode.CacheOnAdd | 
+            var allCacheModes =
+                CacheMode.CacheOnAdd |
                 CacheMode.CacheOnEnable |
-                CacheMode.UncacheOnDisable | 
+                CacheMode.UncacheOnDisable |
                 CacheMode.UnchacheOnRemove;
-            var onlyEntryCacheModes = 
-                CacheMode.CacheOnAdd | 
+            var onlyEntryCacheModes =
+                CacheMode.CacheOnAdd |
                 CacheMode.UnchacheOnRemove;
-
             _cachedComponents = new CachedComponents();
             _cachedMethods = new CachedMethods();
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(Renderer)));
@@ -70,7 +60,6 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnDestroy", component => component.OnDestroyMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
         }
-
         public void Draw(SpriteBatch _spriteBatch)
         {
             foreach (Renderer renderer in _cachedComponents[_renderer])
@@ -78,7 +67,6 @@ namespace MonoChrome.SceneSystem.Layers
                 renderer.Draw(_spriteBatch);
             }
         }
-
         public void Update()
         {
             foreach (var updateMethod in _cachedMethods["Update"])
@@ -99,7 +87,6 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-
         public void OnDestroy()
         {
             foreach (var updateMethod in _cachedMethods["OnDestroy"])
@@ -107,7 +94,6 @@ namespace MonoChrome.SceneSystem.Layers
                 updateMethod();
             }
         }
-
         public void OnFinalise()
         {
             foreach (var updateMethod in _cachedMethods["OnFinalise"])
@@ -115,7 +101,6 @@ namespace MonoChrome.SceneSystem.Layers
                 updateMethod();
             }
         }
-
         public void Add(GameObject item)
         {
             item.LayerName = Name;
@@ -123,7 +108,6 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.Register(item);
             _gameObjects.Add(item);
         }
-
         public void Clear()
         {
             foreach (var gameObject in _gameObjects)
@@ -134,23 +118,19 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.Clear();
             _gameObjects.Clear();
         }
-
         public bool Contains(GameObject item)
         {
             return _gameObjects.Contains(item);
         }
-
         public void CopyTo(GameObject[] array, int arrayIndex)
         {
             _gameObjects.CopyTo(array, arrayIndex);
         }
-
         public bool Remove(GameObject item)
         {
             EraseItem(item);
             return _gameObjects.Remove(item);
         }
-
         internal bool HandleMouseMove(PointerEventData pointerEventData)
         {
             if (HandleInput)
@@ -159,7 +139,6 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return false;
         }
-
         public bool HandleMouseClick(PointerEventData pointerEventData)
         {
             if (HandleInput)
@@ -168,24 +147,20 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return false;
         }
-
         public IEnumerator<GameObject> GetEnumerator()
         {
             return _gameObjects.GetEnumerator();
         }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
         private void EraseItem(GameObject item)
         {
             item.LayerName = null;
             _cachedComponents.Erase(item);
             _cachedMethods.Erase(item);
         }
-
         private bool HandlePointerClick(PointerEventData pointerEventData)
         {
             var clickWasHandled = false;
@@ -204,7 +179,6 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return clickWasHandled;
         }
-
         private bool HandleMouseOver(PointerEventData pointerEventData)
         {
             var handled = false;
@@ -219,7 +193,8 @@ namespace MonoChrome.SceneSystem.Layers
                         (component as IMouseOverHandler).OnMouseOver();
                         collider.IsMouseOver = true;
                         handled = true;
-                    } else if (collider.IsMouseOver)
+                    }
+                    else if (collider.IsMouseOver)
                     {
                         collider.IsMouseOver = false;
                         (component as IMouseOverHandler).OnMouseExit();
@@ -228,12 +203,10 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return handled;
         }
-
         public int CompareTo(Layer other)
         {
             return other.ZIndex - ZIndex;
         }
-
         public bool Equals(Layer other)
         {
             return base.Equals(other);

@@ -1,9 +1,5 @@
 ﻿using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Attributes
 {
@@ -13,7 +9,6 @@ namespace MonoChrome.Core.Attributes
         public string From { get; set; }
         public bool Inherit { get; set; } = false;
         public bool Required { get; set; } = false;
-
         public void AcceptFieldVisitor(FieldAttributeVisitor visitor)
         {
             visitor.VisitInsertComponentAttribute(From, Inherit, Required);

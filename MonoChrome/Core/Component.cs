@@ -1,18 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem;
-using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core
 {
@@ -32,7 +26,6 @@ namespace MonoChrome.Core
             }
             return result;
         }
-
         public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
             add
@@ -45,17 +38,15 @@ namespace MonoChrome.Core
                 _zIndexChanged -= value;
             }
         }
-
         public GameObject GameObject { get; internal set; }
         public Transform Transform => GameObject.Transform;
         public Scene Scene => GameObject.Scene;
         public GraphicsDevice GraphicsDevice => Scene.GraphicsDevice;
         public ContentManager Content => Scene.Content;
-
-        public bool Enabled 
+        public bool Enabled
         {
             get => _enabled;
-            set 
+            set
             {
                 if (value == _enabled)
                 {
@@ -65,29 +56,25 @@ namespace MonoChrome.Core
                 {
                     OnEnableMethod?.Invoke();
                     ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
-                } else
+                }
+                else
                 {
                     OnDisableMethod?.Invoke();
                     ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
                 }
                 _enabled = value;
-            } 
+            }
         }
-
-        public int ZIndex 
-        { 
+        public int ZIndex
+        {
             get => GameObject.ZIndex;
             set => GameObject.ZIndex = value;
         }
-
         internal bool IsAwaked { get; set; }
         internal bool IsStarted { get; set; }
-
         public string LayerName => GameObject.LayerName;
-
         internal ComponentEventHandler ComponentEnabled;
         internal ComponentEventHandler ComponentDisabled;
-
         internal Action AwakeMethod;
         internal Action StartMethod;
         internal Action UpdateMethod;
@@ -96,11 +83,9 @@ namespace MonoChrome.Core
         internal Action OnFinaliseMethod;
         internal Action OnDestroyMethod;
         internal Action<Collision> OnCollision;
-
         private bool _enabled = true;
         private bool _disposed = false;
         private EventHandler<ZIndexEventArgs> _zIndexChanged;
-
         protected Component()
         {
             AwakeMethod = CreateDelegate("Awake");
@@ -112,28 +97,23 @@ namespace MonoChrome.Core
             OnDestroyMethod = CreateDelegate("OnDestroy");
             OnCollision = CreateDelegate<Collision>("OnCollision");
         }
-
         private Action CreateDelegate(string name)
         {
             return GetMethod(name)?.CreateDelegate(typeof(Action), this) as Action;
         }
-
         private Action<T> CreateDelegate<T>(string name)
         {
             return GetMethod(name)?.CreateDelegate(typeof(Action<T>), this) as Action<T>;
         }
-
         private MethodInfo GetMethod(string name)
         {
             return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         public void Dispose(bool clean)
         {
             if (!_disposed)
@@ -150,12 +130,10 @@ namespace MonoChrome.Core
                 _disposed = true;
             }
         }
-
         ~Component()
         {
             Dispose(false);
         }
-
         internal void OnZIndexChanged(object sender, ZIndexEventArgs e)
         {
             _zIndexChanged?.Invoke(this, e);

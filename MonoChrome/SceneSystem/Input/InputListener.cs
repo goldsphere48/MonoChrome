@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Input
 {
@@ -12,16 +7,13 @@ namespace MonoChrome.SceneSystem.Input
     {
         private MouseState oldState = Mouse.GetState();
         private Point previousMousePosition;
-
         public void HandleMouseEvents()
         {
             HandleMouseClick();
             HandleMouseMove();
         }
-
         public abstract void OnMouseClick(PointerEventData pointerEventData);
         public abstract void OnMouseMove(PointerEventData pointerEventData);
-
         private void HandleMouseClick()
         {
             MouseState newState = Mouse.GetState();
@@ -39,7 +31,6 @@ namespace MonoChrome.SceneSystem.Input
             }
             oldState = newState;
         }
-
         private void HandleMouseMove()
         {
             MouseState newState = Mouse.GetState();

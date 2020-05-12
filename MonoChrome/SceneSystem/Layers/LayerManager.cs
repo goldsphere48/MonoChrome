@@ -1,20 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
-using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers
 {
     public class LayerManager
     {
         private ILayerCollection _layers = new LayerStore();
-
         public LayerManager()
         {
             CreateLayer(DefaultLayers.Default, 0);
@@ -27,7 +20,6 @@ namespace MonoChrome.SceneSystem.Layers
             foregroundLayer.CollisionDetectionEnable = false;
             foregroundLayer.HandleInput = false;
         }
-
         public void Add(string layerName, GameObject gameObject, bool replace = true)
         {
             if (string.IsNullOrEmpty(layerName) || gameObject == null)
@@ -51,24 +43,22 @@ namespace MonoChrome.SceneSystem.Layers
                     {
                         Add(layerName, child.GameObject, false);
                     }
-                } else if (replace)
+                }
+                else if (replace)
                 {
                     Remove(gameObject);
                     Add(layerName, gameObject);
                 }
             }
         }
-
         public void Add(DefaultLayers layerName, GameObject gameObject)
         {
             Add(layerName.ToString(), gameObject);
         }
-
         public void Add(GameObject gameObject)
         {
             Add(DefaultLayers.Default.ToString(), gameObject);
         }
-
         public void Remove(GameObject gameObject)
         {
             string layerName = null;
@@ -94,24 +84,22 @@ namespace MonoChrome.SceneSystem.Layers
                 throw new ArgumentException($"Can't find layer which contains gameObject {gameObject.Name}");
             }
         }
-
         public void SetZIndex(string layerName, int zIndex)
         {
             if (!string.IsNullOrEmpty(layerName))
             {
                 var layer = _layers.GetLayer(layerName);
                 layer.ZIndex = zIndex;
-            } else
+            }
+            else
             {
                 throw new ArgumentNullException();
             }
         }
-
         public void SetZIndex(DefaultLayers layerName, int zIndex)
         {
             SetZIndex(layerName.ToString(), zIndex);
         }
-
         public Layer CreateLayer(string layerName, int zIndex)
         {
             if (!string.IsNullOrEmpty(layerName))
@@ -122,17 +110,18 @@ namespace MonoChrome.SceneSystem.Layers
                     layer = new Layer(layerName, zIndex);
                     layer.ZIndexChanged += OnZIndexChanged;
                     _layers.Add(layer);
-                } else
+                }
+                else
                 {
                     layer.ZIndex = zIndex;
                 }
                 return layer;
-            } else
+            }
+            else
             {
                 throw new ArgumentNullException();
             }
         }
-
         public void Draw(SpriteBatch batch)
         {
             foreach (var layer in _layers)
@@ -140,7 +129,6 @@ namespace MonoChrome.SceneSystem.Layers
                 layer.Draw(batch);
             }
         }
-
         public void Update()
         {
             foreach (var layer in _layers)
@@ -148,7 +136,6 @@ namespace MonoChrome.SceneSystem.Layers
                 layer.Update();
             }
         }
-
         public void OnDestroy()
         {
             foreach (var layer in _layers)
@@ -156,7 +143,6 @@ namespace MonoChrome.SceneSystem.Layers
                 layer.OnDestroy();
             }
         }
-
         public void OnFinalise()
         {
             foreach (var layer in _layers)
@@ -164,7 +150,6 @@ namespace MonoChrome.SceneSystem.Layers
                 layer.OnFinalise();
             }
         }
-
         public void HandleMouseClick(PointerEventData pointerEventData)
         {
             foreach (var layer in _layers)
@@ -176,7 +161,6 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-
         public void HandleMouseMove(PointerEventData pointerEventData)
         {
             foreach (var layer in _layers)
@@ -188,7 +172,6 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-
         public void Clear()
         {
             foreach (var layer in _layers)
@@ -197,12 +180,10 @@ namespace MonoChrome.SceneSystem.Layers
             }
             _layers.Clear();
         }
-
         private Layer CreateLayer(DefaultLayers layerName, int zIndex)
         {
             return CreateLayer(layerName.ToString(), zIndex);
         }
-
         private void OnZIndexChanged(object sender, EventArgs args)
         {
             var layer = sender as Layer;

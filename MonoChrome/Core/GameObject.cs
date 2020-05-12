@@ -1,28 +1,21 @@
 ﻿using MonoChrome.Core.Components;
-using MonoChrome.Core.Helpers;
+using MonoChrome.Core.EntityManager;
+using MonoChrome.SceneSystem;
+using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
-using MonoChrome.Core.Helpers.ComponentAttributeApplication;
-using MonoChrome.Core.EntityManager;
-using MonoChrome.SceneSystem.Input;
-using MonoChrome.Core.Components.CollisionDetection;
-using MonoChrome.SceneSystem.Layers.Helpers;
-using MonoChrome.SceneSystem;
 
 namespace MonoChrome.Core
 {
-    class ComponentAttachEventArgs : EventArgs
+    internal class ComponentAttachEventArgs : EventArgs
     {
         public Component Component { get; set; }
         public ComponentAttachEventArgs(Component component)
         {
             Component = component;
         }
-
     }
-
     public sealed class GameObject : IDisposable, ILayerItem
     {
         public const string DefaultName = "GameObject";
@@ -59,7 +52,6 @@ namespace MonoChrome.Core
                 }
             }
         }
-
         public Scene Scene
         {
             get => _scene;
@@ -72,7 +64,6 @@ namespace MonoChrome.Core
                 }
             }
         }
-
         public int ZIndex
         {
             get => _zIndex;
@@ -83,42 +74,33 @@ namespace MonoChrome.Core
                 _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
-
         internal event ComponentEventHandler ComponentAttached;
         internal event ComponentEventHandler ComponentDettach;
         internal event ComponentEventHandler ComponentEnabled;
         internal event ComponentEventHandler ComponentDisabled;
         internal EntityStore Registry { get; set; }
-
         private Scene _scene;
         private EventHandler<ZIndexEventArgs> _zIndexChanged;
         private int _zIndex;
         private bool _enabled = true;
-
-
         internal GameObject(string name, EntityStore store)
         {
             Name = name;
             Registry = store;
         }
-
-        #region Components Controller
         public void AddComponent(Type componentType)
         {
             var component = Component.Create(componentType);
             Registry.Add(this, component);
         }
-
         public void AddComponent(Component component)
         {
             Registry.Add(this, component);
         }
-
         public void AddComponent<T>() where T : Component
         {
             AddComponent(typeof(T));
         }
-
         public void RemoveComponent(Type type)
         {
             var removableComponent = GetComponent(type);
@@ -127,17 +109,14 @@ namespace MonoChrome.Core
                 Registry.Remove(this, removableComponent);
             }
         }
-
         public void RemoveComponent<T>() where T : Component
         {
             RemoveComponent(typeof(T));
         }
-
         public bool HasComponent<T>(bool inherit = false) where T : Component
         {
             return Registry.HasComponent<T>(this, inherit);
         }
-
         public Component GetComponent(Type componentType, bool inherit = false)
         {
             return Registry.GetComponent(this, componentType, inherit);
@@ -146,7 +125,6 @@ namespace MonoChrome.Core
         {
             return GetComponent(typeof(T), inherit) as T;
         }
-
         public IEnumerable<Component> GetComponents(Type componentType, bool inherit = true)
         {
             return Registry.GetComponents(this, componentType, inherit);
@@ -159,7 +137,6 @@ namespace MonoChrome.Core
                 yield return component as T;
             }
         }
-
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
@@ -177,12 +154,10 @@ namespace MonoChrome.Core
             }
             return component;
         }
-
         public T GetComponentInChildren<T>(bool inherit = false) where T : Component
         {
             return GetComponentInChildren(typeof(T), inherit) as T;
         }
-
         public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
         {
             var currentComponents = GetComponents(componentType, inherit);
@@ -203,7 +178,6 @@ namespace MonoChrome.Core
                 }
             }
         }
-
         public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
         {
             var components = GetComponentsInChildren(typeof(T), inherit);
@@ -212,7 +186,6 @@ namespace MonoChrome.Core
                 yield return component as T;
             }
         }
-
         public Component GetComponentInParent(Type componentType, bool inherit = false)
         {
             var component = GetComponent(componentType, inherit);
@@ -226,12 +199,10 @@ namespace MonoChrome.Core
             }
             return component;
         }
-
         public T GetComponentInParent<T>(bool inherit = false) where T : Component
         {
             return GetComponentInParent(typeof(T), inherit) as T;
         }
-
         public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
         {
             var currentComponents = GetComponents(componentType, inherit);
@@ -252,7 +223,6 @@ namespace MonoChrome.Core
                 }
             }
         }
-
         public IEnumerable<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
         {
             var components = GetComponentsInParent(typeof(T), inherit);
@@ -261,13 +231,10 @@ namespace MonoChrome.Core
                 yield return component as T;
             }
         }
-
         public IEnumerable<Component> GetComponents()
         {
             return Registry.GetComponents(this);
         }
-        #endregion Components Controller
-
         public void Dispose()
         {
             Registry.Remove(this);
@@ -279,7 +246,6 @@ namespace MonoChrome.Core
                 child.GameObject = null;
             }
         }
-
         internal void InvokeAction(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after)
         {
             var components = Registry.GetComponents(this).ToList();
@@ -290,7 +256,6 @@ namespace MonoChrome.Core
                 child.GameObject.InvokeAction(reciever, predicate, after);
             }
         }
-
         internal void Awake()
         {
             InvokeAction(
@@ -299,7 +264,6 @@ namespace MonoChrome.Core
                 component => component.IsAwaked = true
             );
         }
-
         internal void Start()
         {
             InvokeAction(
@@ -308,17 +272,14 @@ namespace MonoChrome.Core
                 component => component.IsStarted = true
             );
         }
-
         internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
         {
             ComponentEnabled?.Invoke(this, componentEventArgs);
         }
-
         internal void OnComponentDisabled(object sender, ComponentEventArgs componentEventArgs)
         {
             ComponentDisabled?.Invoke(this, componentEventArgs);
         }
-
         internal void Attach(Component component)
         {
             component.GameObject = this;
@@ -327,7 +288,6 @@ namespace MonoChrome.Core
             ZIndexChanged += component.OnZIndexChanged;
             ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
         }
-
         internal void Dettach(Component component)
         {
             ComponentDettach?.Invoke(this, new ComponentEventArgs(component, this));
@@ -336,7 +296,6 @@ namespace MonoChrome.Core
             component.ComponentDisabled -= OnComponentDisabled;
             ZIndexChanged -= component.OnZIndexChanged;
         }
-
         private void InvokeActionForComponents(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after, List<Component> components)
         {
             for (int i = 0; i < components.Count; ++i)

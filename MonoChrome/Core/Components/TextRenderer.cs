@@ -1,12 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
-using MonoChrome.Core.Components.CollisionDetection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Components
 {
@@ -26,14 +20,10 @@ namespace MonoChrome.Core.Components
             }
         }
         public override Vector2 Size => _size;
-
         [InsertComponent]
         private Transform _transform;
-
         private string _text = "";
         private Vector2 _size;
-
-
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (SpriteFont != null)

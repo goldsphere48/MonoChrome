@@ -13,12 +13,12 @@ namespace MonoChrome.Core.EntityManager
             new HashSet<Component>();
         private IDictionary<Predicate<Component>, Action<Component>> _triggers =
             new Dictionary<Predicate<Component>, Action<Component>>();
-
         public EntityStore()
         {
             SetTrigger(
                 component => true,
-                component => {
+                component =>
+                {
                     var issues = ComponentAttributeAplicator.Apply(component);
                     foreach (var issue in issues)
                     {
@@ -27,7 +27,6 @@ namespace MonoChrome.Core.EntityManager
                 }
             );
         }
-
         public bool Add(GameObject entity, Component component)
         {
             if (entity == null || component == null)
@@ -50,7 +49,6 @@ namespace MonoChrome.Core.EntityManager
             }
             return componentSuccessfullyAttached;
         }
-
         public bool Remove(GameObject entity, Component component)
         {
             if (entity == null || component == null)
@@ -70,7 +68,6 @@ namespace MonoChrome.Core.EntityManager
             component.Dispose();
             return components.Remove(component.GetType());
         }
-
         public bool Remove(GameObject entity)
         {
             if (entity == null)
@@ -80,7 +77,6 @@ namespace MonoChrome.Core.EntityManager
             EraseGameObject(entity);
             return _gameObjects.Remove(entity);
         }
-
         private void EraseGameObject(GameObject entity)
         {
             var components = GetComponentsForEntity(entity);
@@ -91,8 +87,7 @@ namespace MonoChrome.Core.EntityManager
             }
             components.Clear();
         }
-
-        IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
+        internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
             IDictionary<Type, Component> components = null;
             if (_gameObjects.ContainsKey(gameObject))
@@ -101,7 +96,6 @@ namespace MonoChrome.Core.EntityManager
             }
             return components;
         }
-
         public bool Contains(GameObject entity)
         {
             if (entity == null)
@@ -110,7 +104,6 @@ namespace MonoChrome.Core.EntityManager
             }
             return _gameObjects.ContainsKey(entity);
         }
-
         public bool HasComponent<T>(GameObject gameObject, bool inherit = false) where T : Component
         {
             if (gameObject != null && Contains(gameObject))
@@ -118,40 +111,34 @@ namespace MonoChrome.Core.EntityManager
                 if (inherit == false)
                 {
                     return _gameObjects[gameObject].ContainsKey(typeof(T));
-                } else
+                }
+                else
                 {
                     return GetComponent<T>(gameObject, inherit) != null;
                 }
             }
             return false;
         }
-
         public T GetComponent<T>(GameObject entity) where T : Component
         {
             return GetComponent(entity, typeof(T), false) as T;
         }
-
         public T GetComponent<T>(GameObject entity, bool allowDerivedComponents) where T : Component
         {
             return GetComponent(entity, typeof(T), allowDerivedComponents) as T;
         }
-
         public Component GetComponent(GameObject entity, Type componentType)
         {
             return GetComponent(entity, componentType, false);
         }
-
         public Component GetComponent(GameObject entity, Type componentType, bool allowDerivedComponents)
         {
             if (entity == null || componentType == null)
             {
                 throw new ArgumentNullException();
             }
-
             IDictionary<Type, Component> components = GetComponentsForEntity(entity);
-
             Component result = null;
-
             if (components != null && components.Count > 0)
             {
                 foreach (Component otherComponent in components.Values)
@@ -160,20 +147,16 @@ namespace MonoChrome.Core.EntityManager
                         || otherComponent.GetType() == componentType)
                     {
                         result = otherComponent;
-
                         break;
                     }
                 }
             }
-
             return result;
         }
-
         public IEnumerable<Component> GetComponents(GameObject entity)
         {
             return GetComponentsForEntity(entity)?.Values;
         }
-
         public IEnumerable<Component> GetComponents(GameObject entity, Type type, bool inherit)
         {
             if (!inherit)
@@ -190,22 +173,18 @@ namespace MonoChrome.Core.EntityManager
                 }
             }
         }
-
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
             return GetComponents(typeof(T), false) as IEnumerable<T>;
         }
-
         public IEnumerable<T> GetComponents<T>(bool allowDerivedComponents) where T : Component
         {
             return GetComponents(typeof(T), allowDerivedComponents) as IEnumerable<T>;
         }
-
         public IEnumerable<Component> GetComponents(Type component)
         {
             return GetComponents(component, false);
         }
-
         public IEnumerable<Component> GetComponents(Type component, bool allowDerivedComponents)
         {
             foreach (var go in _gameObjects.Keys)
@@ -213,12 +192,10 @@ namespace MonoChrome.Core.EntityManager
                 yield return GetComponent(go, component, allowDerivedComponents);
             }
         }
-
         public IEnumerator<GameObject> GetEnumerator()
         {
             return _gameObjects.Keys.GetEnumerator();
         }
-
         public void Clear()
         {
             foreach (var gameObject in _gameObjects.Keys)
@@ -227,12 +204,10 @@ namespace MonoChrome.Core.EntityManager
             }
             _gameObjects.Clear();
         }
-
         public void SetTrigger(Predicate<Component> predicate, Action<Component> action)
         {
             _triggers.Add(predicate, action);
         }
-
         public void Synchronize()
         {
             foreach (var trigger in _triggers)
@@ -247,7 +222,6 @@ namespace MonoChrome.Core.EntityManager
             }
             _unsynchronizedComponents.Clear();
         }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

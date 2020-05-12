@@ -2,14 +2,12 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
-using MonoChrome.Core.EntityManager;
-using MonoChrome.SceneSystem.Input;
 using MonoChrome.SceneSystem.Layers;
 using System;
 
 namespace MonoChrome.SceneSystem
 {
-    internal class AddGameObjectEventArgs : EventArgs 
+    internal class AddGameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; }
         public string LayerName { get; }
@@ -19,7 +17,6 @@ namespace MonoChrome.SceneSystem
             LayerName = layerName;
         }
     }
-
     internal class RemoveGameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; }
@@ -28,17 +25,14 @@ namespace MonoChrome.SceneSystem
             GameObject = gameObject;
         }
     }
-
     public abstract class Scene : IScene
     {
         internal event EventHandler<AddGameObjectEventArgs> Added;
         internal event EventHandler<RemoveGameObjectEventArgs> Drop;
-
         protected LayerManager LayerManager { get; private set; }
         public ContentManager Content { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
         public Game Game { get; private set; }
-
         internal void Initialize(LayerManager layerManager, ContentManager content, GraphicsDevice device, Game game)
         {
             LayerManager = layerManager;
@@ -46,7 +40,6 @@ namespace MonoChrome.SceneSystem
             GraphicsDevice = device;
             Game = game;
         }
-
         public void Add(GameObject gameObject, string layerName)
         {
             if (gameObject == null || layerName == null)
@@ -58,12 +51,10 @@ namespace MonoChrome.SceneSystem
             Added?.Invoke(this, new AddGameObjectEventArgs(gameObject, layerName));
             gameObject.Start();
         }
-
         public void Add(GameObject gameObject, DefaultLayers layerName)
         {
             Add(gameObject, layerName.ToString());
         }
-
         public void Add(GameObject gameObject)
         {
             Add(gameObject, DefaultLayers.Default.ToString());
@@ -75,11 +66,9 @@ namespace MonoChrome.SceneSystem
         }
         public virtual void OnDisable()
         {
-
         }
         public virtual void OnEnable()
         {
-
         }
         public abstract void Setup();
     }

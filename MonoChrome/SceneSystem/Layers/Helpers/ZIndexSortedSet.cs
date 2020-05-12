@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    class ZIndexSortedSet<TValue> : ICollection<TValue>
+    internal class ZIndexSortedSet<TValue> : ICollection<TValue>
             where TValue : class, ILayerItem
     {
         private SortedList<int, HashSet<TValue>> _list = new SortedList<int, HashSet<TValue>>(new DescendingComparer());
-
         public int Count => _list.Count;
-
         public bool IsReadOnly => false;
-
         public void Add(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -27,7 +21,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             container.Add(value);
             value.ZIndexChanged += OnZIndexChanged;
         }
-
         public bool Remove(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -43,7 +36,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return true;
         }
-
         public bool Contains(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -53,7 +45,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return false;
         }
-
         public IEnumerator<TValue> GetEnumerator()
         {
             foreach (var dictionary in _list.Values)
@@ -64,7 +55,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-
         public void Clear()
         {
             foreach (var dictionary in _list)
@@ -77,7 +67,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             _list.Clear();
         }
-
         public void OnZIndexChanged(object sender, ZIndexEventArgs args)
         {
             _list.TryGetValue(args.OldZIndex, out var container);
@@ -92,12 +81,10 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 Add(item);
             }
         }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             throw new NotImplementedException();

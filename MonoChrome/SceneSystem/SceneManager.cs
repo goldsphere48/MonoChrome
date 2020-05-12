@@ -1,14 +1,10 @@
-﻿using MonoChrome.Core.Exceptions;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoChrome.Core;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Content;
-using MonoChrome.Core;
 
 namespace MonoChrome.SceneSystem
 {
@@ -28,17 +24,12 @@ namespace MonoChrome.SceneSystem
                 return _instance;
             }
         }
-
         private static SceneManager _instance;
         private SceneController _currentScreen;
         private List<SceneController> _scenes = new List<SceneController>();
-
         private SceneManager()
         {
-
         }
-
-        #region ISceneManager interface
         public void LoadScene(Type type)
         {
             if (!IsScene(type))
@@ -56,12 +47,10 @@ namespace MonoChrome.SceneSystem
                 scene.Setup();
             }
         }
-
         public void LoadScene<T>() where T : IScene
         {
             LoadScene(typeof(T));
         }
-
         public void UnloadScene(Type type)
         {
             if (!IsScene(type) && !Contains(type))
@@ -75,12 +64,10 @@ namespace MonoChrome.SceneSystem
             }
             _scenes.Remove(scene);
         }
-
         public void UnloadScene<T>() where T : IScene
         {
             UnloadScene(typeof(T));
         }
-
         public void Clear()
         {
             foreach (var value in _scenes)
@@ -93,7 +80,6 @@ namespace MonoChrome.SceneSystem
             }
             _scenes.Clear();
         }
-
         public void ClearAllExceptCurrent()
         {
             var scenesToRemove = new List<Type>();
@@ -115,7 +101,6 @@ namespace MonoChrome.SceneSystem
                 _scenes.Remove(scene);
             }
         }
-
         public void SetActiveScene(Type type)
         {
             var scene = GetSceneController(type);
@@ -132,49 +117,39 @@ namespace MonoChrome.SceneSystem
             }
             scene.OnEnable();
         }
-
         public void SetActiveScene<T>() where T : IScene
         {
             SetActiveScene(typeof(T));
         }
-
         public bool IsLoaded(Type type)
         {
             return _scenes.Find(scene => scene.SceneType == type).Initialized;
         }
-
         public bool IsLoaded<T>() where T : IScene
         {
             return IsLoaded(typeof(T));
         }
-
         public void Draw()
         {
             _currentScreen?.Draw();
         }
-
         public void Update(GameTime gameTime)
         {
             Time.GameTime = gameTime;
             _currentScreen?.Update();
         }
-        #endregion
-
         internal SceneController GetSceneController(Type type)
         {
             return _scenes.Find(sceneController => sceneController.SceneType == type);
         }
-
         internal SceneController GetSceneController<T>() where T : IScene
         {
             return GetSceneController(typeof(T));
         }
-
         private static bool IsScene(Type type)
         {
             return typeof(IScene).IsAssignableFrom(type);
         }
-
         private bool Contains(Type sceneType)
         {
             return _scenes.Any(sceneController => sceneType == sceneController.SceneType);

@@ -1,34 +1,28 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoChrome.Core.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 
 namespace MonoChrome.Core.Components
 {
     public class GameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; set; }
-
         public GameObjectEventArgs(GameObject gameObject)
         {
             GameObject = gameObject;
         }
     }
-    
     public class Transform : Component
     {
         public event EventHandler<GameObjectEventArgs> ChildAdded;
-        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;        
+        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;
         public event EventHandler<GameObjectEventArgs> ChildRemove;
         public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
-
         private Vector2 _position = Vector2.Zero;
         private Transform _parent;
-
         public List<Transform> Childrens { get; } = new List<Transform>();
-        public Transform Parent 
-        { 
+        public Transform Parent
+        {
             get => _parent;
             set
             {
@@ -41,7 +35,8 @@ namespace MonoChrome.Core.Components
                         OnChildRemove(args);
                         _parent.Childrens.Remove(this);
                     }
-                } else if (!value.Childrens.Contains(this))
+                }
+                else if (!value.Childrens.Contains(this))
                 {
                     value.Childrens.Add(this);
                     ChildAdded?.Invoke(this, args);
@@ -50,10 +45,10 @@ namespace MonoChrome.Core.Components
                 _parent = value;
             }
         }
-        public Vector2 LocalPosition 
+        public Vector2 LocalPosition
         {
-            get 
-            { 
+            get
+            {
                 if (Parent == null)
                 {
                     return _position;
@@ -62,23 +57,18 @@ namespace MonoChrome.Core.Components
             }
             set => HandleLocalPositionChange(value);
         }
-        public Vector2 Position
-        {
-            get => _position;
-            set => HandleAbsolutePositionChange(value);
-        }
-
+        public Vector2 Position { get => _position; set => HandleAbsolutePositionChange(value); }
         private void HandleLocalPositionChange(Vector2 newLocalPosition)
         {
             if (Parent != null)
             {
                 Position = newLocalPosition + Parent.Position;
-            } else
+            }
+            else
             {
                 Position = newLocalPosition;
             }
         }
-
         private void HandleAbsolutePositionChange(Vector2 newAbsolutePosition)
         {
             if (newAbsolutePosition != _position)
@@ -91,7 +81,6 @@ namespace MonoChrome.Core.Components
                 }
             }
         }
-
         private void OnChildAdded(GameObjectEventArgs args)
         {
             if (Parent != null)
@@ -100,7 +89,6 @@ namespace MonoChrome.Core.Components
             }
             ChildAddedDeep?.Invoke(this, args);
         }
-
         private void OnChildRemove(GameObjectEventArgs args)
         {
             if (Parent != null)

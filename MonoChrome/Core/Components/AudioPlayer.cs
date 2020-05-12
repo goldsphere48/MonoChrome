@@ -1,26 +1,21 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Components
 {
     public class AudioPlayer : Component
     {
-        public SoundEffect Source 
+        public SoundEffect Source
         {
-            get => _soundEffect; 
-            set 
+            get => _soundEffect;
+            set
             {
                 _soundEffect = value;
                 _instance = _soundEffect.CreateInstance();
-            } 
+            }
         }
-
-        public bool IsLooped 
-        { 
+        public bool IsLooped
+        {
             get => _isLooped;
             set
             {
@@ -28,9 +23,7 @@ namespace MonoChrome.Core.Components
                 _instance.IsLooped = _isLooped;
             }
         }
-
         public bool PlayOnStart { get; set; }
-
         public float Volume
         {
             get => _volume;
@@ -40,23 +33,21 @@ namespace MonoChrome.Core.Components
                 _instance.Volume = _volume;
             }
         }
-
         private SoundEffect _soundEffect;
         private SoundEffectInstance _instance;
         private bool _isLooped = false;
         private float _volume;
-
         public void Play()
         {
             if (_instance != null && !_instance.IsDisposed)
             {
                 _instance.Play();
-            } else
+            }
+            else
             {
                 throw new InvalidOperationException("Can't play sound, sound effect is null or disposed");
             }
         }
-
         public void Stop()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -68,7 +59,6 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't stop play sound, sound effect is null or disposed");
             }
         }
-
         public void Pause()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -80,7 +70,6 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't pause play sound, sound effect is null or disposed");
             }
         }
-
         private void Start()
         {
             if (PlayOnStart)
@@ -88,7 +77,6 @@ namespace MonoChrome.Core.Components
                 Play();
             }
         }
-
         private void OnDestroy()
         {
             _instance.Dispose();

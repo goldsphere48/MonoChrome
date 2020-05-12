@@ -2,13 +2,9 @@
 using MonoChrome.Core.EntityManager;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-
     [Flags]
     enum CacheMode
     {
@@ -17,8 +13,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         UnchacheOnRemove = 4,
         UncacheOnDisable = 16
     }
-
-    class CacheRule 
+    internal class CacheRule
     {
         public CacheMode CacheMode { get; }
         public CacheRule(CacheMode cacheMode)
@@ -26,8 +21,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             CacheMode = cacheMode;
         }
     }
-
-    class CacheItem<TKey>
+    internal class CacheItem<TKey>
     {
         public Component Component { get; }
         public TKey Key { get; }
@@ -37,11 +31,9 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             Key = key;
         }
     }
-
-    abstract class CachedCollection<TKey, TCached> : ICachedCollection<TKey, TCached>
+    internal abstract class CachedCollection<TKey, TCached> : ICachedCollection<TKey, TCached>
     {
         public abstract IEnumerable<TCached> this[TKey type] { get; }
-
         public void Register(GameObject gameObject)
         {
             RegisterHandlers(gameObject);
@@ -54,7 +46,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-
         public void Erase(GameObject gameObject)
         {
             EraseHandlers(gameObject);
@@ -63,7 +54,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 Uncache(component, CacheMode.UnchacheOnRemove | CacheMode.UncacheOnDisable);
             }
         }
-
         public abstract void AddCacheRule(CacheRule rule);
         public abstract void Clear();
         protected void RegisterHandlers(GameObject gameObject)
@@ -96,7 +86,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         {
             Uncache(componentArgs.Component, CacheMode.UncacheOnDisable);
         }
-
         protected abstract void Cache(Component component, CacheMode rule);
         protected abstract void Uncache(Component component, CacheMode rule);
         protected abstract void Add(CacheItem<TKey> item);

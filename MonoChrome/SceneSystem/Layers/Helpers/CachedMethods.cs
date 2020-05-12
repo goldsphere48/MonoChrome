@@ -1,18 +1,11 @@
 ﻿using MonoChrome.Core;
-using MonoChrome.Core.EntityManager;
-using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    delegate Action MethodReciver(Component component);
-
-    class MethodCacheRule : CacheRule
+    internal delegate Action MethodReciver(Component component);
+    internal class MethodCacheRule : CacheRule
     {
         public string MethodName { get; }
         public MethodReciver MethodReciever { get; }
@@ -22,8 +15,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             MethodReciever = methodReciever;
         }
     }
-
-    class MethodCacheItem : CacheItem<string>
+    internal class MethodCacheItem : CacheItem<string>
     {
         public Action Action { get; }
         public MethodCacheItem(Component component, string key, Action action) : base(component, key)
@@ -31,13 +23,11 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             Action = action;
         }
     }
-
-    class CachedMethods : CachedCollection<string, Action>
+    internal class CachedMethods : CachedCollection<string, Action>
     {
         private IDictionary<string, ZIndexSortedList<Component, Action>> _cached = new Dictionary<string, ZIndexSortedList<Component, Action>>();
         private IDictionary<string, CacheMode> _rules = new Dictionary<string, CacheMode>();
         private IDictionary<string, MethodReciver> _methodRecievers = new Dictionary<string, MethodReciver>();
-
         public override IEnumerable<Action> this[string type]
         {
             get
@@ -46,7 +36,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 return result.Values;
             }
         }
-
         public override void AddCacheRule(CacheRule cacheRule)
         {
             var rule = cacheRule as MethodCacheRule;
@@ -58,7 +47,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 _methodRecievers.Add(methodName, rule.MethodReciever);
             }
         }
-
         protected override void Add(CacheItem<string> cacheItem)
         {
             var item = cacheItem as MethodCacheItem;
@@ -71,14 +59,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 _cached[item.Key].Add(item.Component, item.Action);
             }
         }
-
         public override void Clear()
         {
             _cached.Clear();
             _rules.Clear();
             _methodRecievers.Clear();
         }
-
         protected override bool Remove(CacheItem<string> cacheItem)
         {
             var item = cacheItem as MethodCacheItem;
@@ -88,7 +74,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return false;
         }
-
         protected override void Cache(Component component, CacheMode rule)
         {
             foreach (var methodReciever in _methodRecievers)
@@ -101,7 +86,6 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-
         protected override void Uncache(Component component, CacheMode rule)
         {
             foreach (var methodReciever in _methodRecievers)

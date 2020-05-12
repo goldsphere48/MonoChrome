@@ -1,9 +1,6 @@
 ﻿using MonoChrome.Core.Helpers.ComponentAttributeApplication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MonoChrome.Core.Attributes
 {
@@ -16,7 +13,6 @@ namespace MonoChrome.Core.Attributes
         {
             _name = name;
         }
-
         public void AcceptFieldVisitor(FieldAttributeVisitor visitor)
         {
             visitor.VisitInsertGameObjectAttribute(_name, Required);

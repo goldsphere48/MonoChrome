@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
-    static class ComponentAttributeAplicator
+    internal static class ComponentAttributeAplicator
     {
         private static FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
-        
         public static IEnumerable<AttributeError> Apply(Component component)
         {
             _fieldAttributeVisitor.CheckResults.Clear();
@@ -18,7 +15,6 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
             ProceedComponentFields(component);
             return _fieldAttributeVisitor.CheckResults;
         }
-
         private static void ProceedComponentFields(Component component)
         {
             _fieldAttributeVisitor.CurrentComponent = component;
@@ -28,7 +24,6 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
                 ProceedField(field);
             }
         }
-
         private static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
             if (type == null && !typeof(Component).IsAssignableFrom(type))
@@ -38,7 +33,6 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
             return type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
                 .Concat(GetAllFields(type.BaseType));
         }
-
         private static void ProceedField(FieldInfo field)
         {
             _fieldAttributeVisitor.CurrentField = field;
@@ -51,7 +45,6 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
                 }
             }
         }
-
         private static void ProceedFieldAttribute(IComponentApplicatorAcceptable attribute)
         {
             attribute.AcceptFieldVisitor(_fieldAttributeVisitor);
