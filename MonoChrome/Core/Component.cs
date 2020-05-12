@@ -82,6 +82,7 @@ namespace MonoChrome.Core
         internal ComponentEventHandler ComponentDisabled;
 
         internal Action AwakeMethod;
+        internal Action StartMethod;
         internal Action UpdateMethod;
         internal Action OnEnableMethod;
         internal Action OnDisableMethod;
@@ -96,6 +97,7 @@ namespace MonoChrome.Core
         protected Component()
         {
             AwakeMethod = CreateDelegate("Awake");
+            StartMethod = CreateDelegate("Start");
             UpdateMethod = CreateDelegate("Update");
             OnEnableMethod = CreateDelegate("OnEnable");
             OnDisableMethod = CreateDelegate("OnDisable");

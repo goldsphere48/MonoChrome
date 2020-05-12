@@ -85,7 +85,7 @@ namespace MonoChrome.Core
         }
 
         internal event ComponentEventHandler ComponentAttached;
-        internal event ComponentEventHandler ComponentDetach;
+        internal event ComponentEventHandler ComponentDettach;
         internal event ComponentEventHandler ComponentEnabled;
         internal event ComponentEventHandler ComponentDisabled;
         internal EntityStore Registry { get; set; }
@@ -153,7 +153,11 @@ namespace MonoChrome.Core
         }
         public IEnumerable<T> GetComponents<T>(bool inherit = true) where T : Component
         {
-            return GetComponents(typeof(T), inherit) as IEnumerable<T>;
+            var components = GetComponents(typeof(T), inherit);
+            foreach (var component in components)
+            {
+                yield return component as T;
+            }
         }
 
         public Component GetComponentInChildren(Type componentType, bool inherit = false)
@@ -202,7 +206,11 @@ namespace MonoChrome.Core
 
         public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
         {
-            return GetComponentsInChildren(typeof(T), inherit) as IEnumerable<T>;
+            var components = GetComponentsInChildren(typeof(T), inherit);
+            foreach (var component in components)
+            {
+                yield return component as T;
+            }
         }
 
         public Component GetComponentInParent(Type componentType, bool inherit = false)
@@ -247,7 +255,11 @@ namespace MonoChrome.Core
 
         public IEnumerable<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
         {
-            return GetComponentsInParent(typeof(T), inherit) as List<T>;
+            var components = GetComponentsInParent(typeof(T), inherit);
+            foreach (var component in components)
+            {
+                yield return component as T;
+            }
         }
 
         public IEnumerable<Component> GetComponents()
@@ -258,31 +270,38 @@ namespace MonoChrome.Core
 
         public void Dispose()
         {
-            var components = Registry.GetComponents(this);
-            foreach (var component in components)
-            {
-                Registry.Remove(this, component);
-            }
+            Registry.Remove(this);
             var transform = Transform;
-            transform.Parent?.Childrens.Remove(transform);
+            transform.Parent = null;
             foreach (var child in transform.Childrens)
             {
                 child.GameObject.Dispose();
+                child.GameObject = null;
+            }
+        }
+
+        internal void InvokeAction(Func<Component, Action> reciever)
+        {
+            var components = Registry.GetComponents(this);
+            foreach (var component in components)
+            {
+                reciever?.Invoke(component)?.Invoke();
+            }
+            var transform = Transform;
+            foreach (var child in transform.Childrens)
+            {
+                child.GameObject.InvokeAction(reciever);
             }
         }
 
         internal void Awake()
         {
-            var components = Registry.GetComponents(this);
-            foreach (var component in components)
-            {
-                component.AwakeMethod?.Invoke();
-            }
-            var transform = Transform;
-            foreach (var child in transform.Childrens)
-            {
-                child.GameObject.Awake();
-            }
+            InvokeAction((Component) => Component.AwakeMethod);
+        }
+
+        internal void Start()
+        {
+            InvokeAction((Component) => Component.StartMethod);
         }
 
         internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
@@ -306,10 +325,11 @@ namespace MonoChrome.Core
 
         internal void Dettach(Component component)
         {
-            ComponentDetach?.Invoke(this, new ComponentEventArgs(component, this));
+            ComponentDettach?.Invoke(this, new ComponentEventArgs(component, this));
             component.GameObject = null;
             component.ComponentEnabled -= OnComponentEnabled;
             component.ComponentDisabled -= OnComponentDisabled;
+            ZIndexChanged -= component.OnZIndexChanged;
         }
     }
 }

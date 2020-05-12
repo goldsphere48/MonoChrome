@@ -22,6 +22,8 @@ namespace Match_3.Scenes
 
         [InsertComponent]
         private Transform _transform;
+        [InsertGameObject("Sprite1")]
+        private GameObject _sprite;
 
         public void OnMouseExit()
         {
@@ -35,7 +37,13 @@ namespace Match_3.Scenes
 
         public void OnPointerClick(PointerEventData pointerEventData)
         {
-            Console.WriteLine(pointerEventData.Position);
+            _sprite.Transform.Parent = null;
+            Scene.Remove(_sprite);
+        }
+
+        private void Update()
+        {
+            //_transform.Position += new Vector2(5, 0);
         }
     }
 
@@ -48,21 +56,16 @@ namespace Match_3.Scenes
             var s1 = Content.Load<Texture2D>("1");
             var s2 = Content.Load<Texture2D>("2");
             var f = Content.Load<SpriteFont>("font");
-            var sprite1 = Entity.Create("Sprite1", 
+            var sprite1 = Entity.Create("Sprite1",
                 new BoxCollider2D(),
                 new SpriteRenderer
                 {
                     Texture = s1
-                },
-                new TextRenderer 
-                { 
-                    SpriteFont = f, 
-                    Text = "Scor11111111111111111111111111111111111111111111111111111111111111111111111e",
-                    Color = Color.Red
-                });
+                }, new DebugRenderer());
             sprite1.Transform.Position = new Vector2(100, 100);
-            var compose = Entity.Create("Compose", new BoxCollider2D(), new DebugRenderer(), new TestComponent());
-            var sprite2 = Entity.Create("Sp2", new TextRenderer { SpriteFont = f, Text = "Hello" });
+            var compose = Entity.Create("Compose", new BoxCollider2D(100, 100), new DebugRenderer(), new TestComponent());
+            var sprite2 = Entity.Create("Sp2", new TextRenderer { SpriteFont = f, Text = "Hello" }, new BoxCollider2D(100, 100), new DebugRenderer());
+            compose.Transform.Position = new Vector2(40, 40);
             sprite2.Transform.Position = new Vector2(10, 10);
             sprite2.Transform.Parent = compose.Transform;
             sprite1.Transform.Parent = compose.Transform;

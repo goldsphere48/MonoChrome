@@ -2,11 +2,27 @@
 using MonoChrome.Core.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace MonoChrome.Core.Components
 {
+    public class GameObjectEventArgs : EventArgs
+    {
+        public GameObject GameObject { get; set; }
+
+        public GameObjectEventArgs(GameObject gameObject)
+        {
+            GameObject = gameObject;
+        }
+    }
+    
     public class Transform : Component
     {
+        public event EventHandler<GameObjectEventArgs> ChildAdded;
+        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;        
+        public event EventHandler<GameObjectEventArgs> ChildRemove;
+        public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
+
         private Vector2 _position = Vector2.Zero;
         private Transform _parent;
 
@@ -16,15 +32,20 @@ namespace MonoChrome.Core.Components
             get => _parent;
             set
             {
+                var args = new GameObjectEventArgs(GameObject);
                 if (value == null)
                 {
                     if (_parent != null)
                     {
+                        ChildRemove?.Invoke(this, args);
+                        OnChildRemove(args);
                         _parent.Childrens.Remove(this);
                     }
                 } else if (!value.Childrens.Contains(this))
                 {
                     value.Childrens.Add(this);
+                    ChildAdded?.Invoke(this, args);
+                    OnChildAdded(args);
                 }
                 _parent = value;
             }
@@ -69,6 +90,24 @@ namespace MonoChrome.Core.Components
                     child.Position += dv;
                 }
             }
+        }
+
+        private void OnChildAdded(GameObjectEventArgs args)
+        {
+            if (Parent != null)
+            {
+                Parent.OnChildAdded(args);
+            }
+            ChildAddedDeep?.Invoke(this, args);
+        }
+
+        private void OnChildRemove(GameObjectEventArgs args)
+        {
+            if (Parent != null)
+            {
+                Parent.OnChildRemove(args);
+            }
+            ChildRemoveDeep?.Invoke(this, args);
         }
     }
 }

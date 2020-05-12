@@ -60,10 +60,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             EraseHandlers(gameObject);
             foreach (var component in gameObject.GetComponents())
             {
-                if (component.Enabled)
-                {
-                    Uncache(component, CacheMode.UnchacheOnRemove);
-                }
+                Uncache(component, CacheMode.UnchacheOnRemove | CacheMode.UncacheOnDisable);
             }
         }
 
@@ -72,16 +69,16 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         protected void RegisterHandlers(GameObject gameObject)
         {
             gameObject.ComponentAttached += OnComponentAdded;
-            gameObject.ComponentDetach += OnComponentRemoved;
+            gameObject.ComponentDettach += OnComponentRemoved;
             gameObject.ComponentEnabled += OnComponentEnabled;
             gameObject.ComponentDisabled += OnComponentDisabled;
         }
         protected void EraseHandlers(GameObject gameObject)
         {
-            gameObject.ComponentAttached += OnComponentAdded;
-            gameObject.ComponentDetach += OnComponentRemoved;
-            gameObject.ComponentEnabled += OnComponentEnabled;
-            gameObject.ComponentDisabled += OnComponentDisabled;
+            gameObject.ComponentAttached -= OnComponentAdded;
+            gameObject.ComponentDettach -= OnComponentRemoved;
+            gameObject.ComponentEnabled -= OnComponentEnabled;
+            gameObject.ComponentDisabled -= OnComponentDisabled;
         }
         protected void OnComponentAdded(object sender, ComponentEventArgs componentArgs)
         {

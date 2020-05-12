@@ -53,6 +53,7 @@ namespace MonoChrome.SceneSystem
             gameObject.Scene = this;
             gameObject.Awake();
             Added?.Invoke(this, new AddGameObjectEventArgs(gameObject, layerName));
+            gameObject.Start();
         }
 
         public void Add(GameObject gameObject, DefaultLayers layerName)

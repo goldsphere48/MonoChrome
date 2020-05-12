@@ -71,6 +71,27 @@ namespace MonoChrome.Core.EntityManager
             return components.Remove(component.GetType());
         }
 
+        public bool Remove(GameObject entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException();
+            }
+            EraseGameObject(entity);
+            return _gameObjects.Remove(entity);
+        }
+
+        private void EraseGameObject(GameObject entity)
+        {
+            var components = GetComponentsForEntity(entity);
+            foreach (var component in components.Values)
+            {
+                component.Dispose();
+                entity.Dettach(component);
+            }
+            components.Clear();
+        }
+
         IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
             IDictionary<Type, Component> components = null;
@@ -200,6 +221,10 @@ namespace MonoChrome.Core.EntityManager
 
         public void Clear()
         {
+            foreach (var gameObject in _gameObjects.Keys)
+            {
+                EraseGameObject(gameObject);
+            }
             _gameObjects.Clear();
         }
 
