@@ -56,6 +56,26 @@ namespace MonoChrome.Core.EntityManager
             return gameObject;
         }
 
+        public static GameObject Compose(GameObject parent, params GameObject[] childrens)
+        {
+            foreach (var child in childrens)
+            {
+                child.Transform.Parent = parent.Transform;
+            }
+            return parent;
+        }
+
+        public static GameObject Compose(string name, params GameObject[] childrens)
+        {
+            var parent = _entityFactory.CreateEmpty(Registry);
+            return Compose(parent, childrens);
+        }
+
+        public static GameObject Compose(params GameObject[] childrens)
+        {
+            return Compose(GameObject.DefaultName, childrens);
+        }
+
         public static void Synchronize()
         {
             Registry.Synchronize();
