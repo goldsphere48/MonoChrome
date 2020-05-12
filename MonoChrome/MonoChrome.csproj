@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3C96FA0A-F72B-4935-AF43-48DBAA01F511}</ProjectGuid>
+    <ProjectGuid>{E0779D32-A4FE-49A4-957C-DD8555177AF0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MonoChrome</RootNamespace>
@@ -54,6 +54,7 @@
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
     <Compile Include="Core\Components\DebugRenderer.cs" />
     <Compile Include="Core\Components\TextRenderer.cs" />
+    <Compile Include="Core\Time.cs" />
     <Compile Include="SceneSystem\Input\IMouseOverHandler.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedComponents.cs" />

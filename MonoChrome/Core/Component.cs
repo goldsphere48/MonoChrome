@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
@@ -47,6 +49,8 @@ namespace MonoChrome.Core
         public GameObject GameObject { get; internal set; }
         public Transform Transform => GameObject.Transform;
         public Scene Scene => GameObject.Scene;
+        public GraphicsDevice GraphicsDevice => Scene.GraphicsDevice;
+        public ContentManager Content => Scene.Content;
 
         public bool Enabled 
         {
@@ -75,6 +79,9 @@ namespace MonoChrome.Core
             get => GameObject.ZIndex;
             set => GameObject.ZIndex = value;
         }
+
+        internal bool IsAwaked { get; set; }
+        internal bool IsStarted { get; set; }
 
         public string LayerName => GameObject.LayerName;
 

@@ -22,6 +22,8 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         private IList<BoxCollider2D> _childColliders = new List<BoxCollider2D>();
 
+        public Rectangle Box => _box;
+
         public override void CheckCollisionWith(Collider collider)
         {
             if (collider is BoxCollider2D boxCollider)

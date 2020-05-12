@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core;
 using MonoChrome.Core.EntityManager;
@@ -34,14 +35,16 @@ namespace MonoChrome.SceneSystem
         internal event EventHandler<RemoveGameObjectEventArgs> Drop;
 
         protected LayerManager LayerManager { get; private set; }
-        protected ContentManager Content { get; private set; }
+        public ContentManager Content { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
+        public Game Game { get; private set; }
 
-        internal void Initialize(LayerManager layerManager, ContentManager content, GraphicsDevice device)
+        internal void Initialize(LayerManager layerManager, ContentManager content, GraphicsDevice device, Game game)
         {
             LayerManager = layerManager;
             Content = content;
             GraphicsDevice = device;
+            Game = game;
         }
 
         public void Add(GameObject gameObject, string layerName)

@@ -280,28 +280,33 @@ namespace MonoChrome.Core
             }
         }
 
-        internal void InvokeAction(Func<Component, Action> reciever)
+        internal void InvokeAction(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after)
         {
-            var components = Registry.GetComponents(this);
-            foreach (var component in components)
-            {
-                reciever?.Invoke(component)?.Invoke();
-            }
+            var components = Registry.GetComponents(this).ToList();
+            InvokeActionForComponents(reciever, predicate, after, components);
             var transform = Transform;
             foreach (var child in transform.Childrens)
             {
-                child.GameObject.InvokeAction(reciever);
+                child.GameObject.InvokeAction(reciever, predicate, after);
             }
         }
 
         internal void Awake()
         {
-            InvokeAction((Component) => Component.AwakeMethod);
+            InvokeAction(
+                component => component.AwakeMethod,
+                component => component.IsAwaked,
+                component => component.IsAwaked = true
+            );
         }
 
         internal void Start()
         {
-            InvokeAction((Component) => Component.StartMethod);
+            InvokeAction(
+                component => component.StartMethod,
+                component => component.IsStarted,
+                component => component.IsStarted = true
+            );
         }
 
         internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
@@ -330,6 +335,24 @@ namespace MonoChrome.Core
             component.ComponentEnabled -= OnComponentEnabled;
             component.ComponentDisabled -= OnComponentDisabled;
             ZIndexChanged -= component.OnZIndexChanged;
+        }
+
+        private void InvokeActionForComponents(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after, List<Component> components)
+        {
+            for (int i = 0; i < components.Count; ++i)
+            {
+                var method = reciever?.Invoke(components[i]);
+                if (method != null && !predicate(components[i]))
+                {
+                    method();
+                    var newComponents = Registry.GetComponents(this).ToList();
+                    var result = newComponents.Except(components).ToList();
+                    if (result.Count > 0)
+                    {
+                        InvokeActionForComponents(reciever, predicate, after, newComponents);
+                    }
+                }
+            }
         }
     }
 }

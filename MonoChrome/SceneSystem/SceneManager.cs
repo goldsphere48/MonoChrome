@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
+using MonoChrome.Core;
 
 namespace MonoChrome.SceneSystem
 {
@@ -15,6 +16,7 @@ namespace MonoChrome.SceneSystem
     {
         public GraphicsDevice GraphicsDevice { get; set; }
         public ContentManager Content { get; set; }
+        public Game Game { get; set; }
         public static SceneManager Instance
         {
             get
@@ -46,7 +48,7 @@ namespace MonoChrome.SceneSystem
             var scene = GetSceneController(type);
             if (scene == null)
             {
-                scene = new SceneController(type, GraphicsDevice, Content);
+                scene = new SceneController(type, GraphicsDevice, Content, Game);
                 _scenes.Add(scene);
             }
             if (!scene.Initialized)
@@ -146,13 +148,14 @@ namespace MonoChrome.SceneSystem
             return IsLoaded(typeof(T));
         }
 
-        public void DrawActiveScene()
+        public void Draw()
         {
             _currentScreen?.Draw();
         }
 
-        public void UpdateActiveScene()
+        public void Update(GameTime gameTime)
         {
+            Time.GameTime = gameTime;
             _currentScreen?.Update();
         }
         #endregion

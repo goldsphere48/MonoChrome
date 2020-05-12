@@ -23,14 +23,14 @@ namespace MonoChrome.SceneSystem
         private EntityStore _store;
         private LayerManager _layerManager;
 
-        public SceneController(Type sceneType, GraphicsDevice device, ContentManager content)
+        public SceneController(Type sceneType, GraphicsDevice device, ContentManager content, Game game)
         {
             _store = new EntityStore();
             _layerManager = new LayerManager();
             _spriteBatch = new SpriteBatch(device);
             Entity.Registry = _store;
             _scene = CreateScene(sceneType);
-            _scene.Initialize(_layerManager, content, device);
+            _scene.Initialize(_layerManager, content, device, game);
             _scene.Added += OnAdd;
             _scene.Drop += OnRemove;
         }

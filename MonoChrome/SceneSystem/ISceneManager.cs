@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,8 @@ namespace MonoChrome.SceneSystem
         bool IsLoaded<T>() where T : IScene;
         bool IsLoaded(Type sceneType);
         void ClearAllExceptCurrent();
-        void DrawActiveScene();
-        void UpdateActiveScene();
+        void Draw();
+        void Update(GameTime gameTime);
         void Clear();
     }
 }
