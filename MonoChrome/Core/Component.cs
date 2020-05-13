@@ -36,6 +36,7 @@ namespace MonoChrome.Core
             }
         }
         public GameObject GameObject { get; internal set; }
+        public bool IsDisposed => _disposed;
         public GraphicsDevice GraphicsDevice => Scene.GraphicsDevice;
         public string LayerName => GameObject.LayerName;
         public Scene Scene => GameObject.Scene;
