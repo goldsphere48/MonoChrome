@@ -6,43 +6,26 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
     public class FieldAttributeVisitor
     {
-        public ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
-        public IEnumerable<Component> Components { private get; set; }
-        public Component CurrentComponent { private get; set; }
-        public FieldInfo CurrentField { private get; set; }
-        private IEnumerable<Component> _components;
+        internal ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
+        internal IEnumerable<Component> Components { private get; set; }
+        internal Component CurrentComponent { private get; set; }
+        internal FieldInfo CurrentField { private get; set; }
 
-        public void VisitInsertComponentAttribute(string from, bool inherit, bool required)
+        internal void VisitInsertComponentAttribute(string from, bool inherit, bool required)
         {
             if (!string.IsNullOrEmpty(from))
             {
                 var gameObject = Entity.Find(from);
                 if (gameObject != null)
                 {
-                    _components = Components;
-                    Components = gameObject.GetComponents();
+                    VisitInsertComponentAttribute(inherit, required, gameObject.GetComponents());
                 }
-                else
-                {
-                    return;
-                }
-            } else if (_components != null)
+            } else
             {
-                Components = _components;
-            }
-            foreach (var component in Components)
-            {
-                if (component.GetType() == CurrentField.FieldType || (inherit && CurrentField.FieldType.IsAssignableFrom(component.GetType())))
-                {
-                    CurrentField.SetValue(CurrentComponent, component, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
-                    return;
-                }
-            }
-            if (required == true)
-            {
-                CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
+                VisitInsertComponentAttribute(inherit, required, Components);
             }
         }
+
         internal void VisitInsertGameObjectAttribute(string name, bool required)
         {
             if (CurrentField.FieldType == typeof(GameObject))
@@ -60,6 +43,22 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
             else
             {
                 CheckResults.Add(new AttributeError { Message = $"Can't insert game object with name {name} to not game object field" });
+            }
+        }
+
+        internal void VisitInsertComponentAttribute(bool inherit, bool required, IEnumerable<Component> components)
+        {
+            foreach (var component in components)
+            {
+                if (component.GetType() == CurrentField.FieldType || (inherit && CurrentField.FieldType.IsAssignableFrom(component.GetType())))
+                {
+                    CurrentField.SetValue(CurrentComponent, component, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
+                    return;
+                }
+            }
+            if (required == true)
+            {
+                CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
             }
         }
     }
