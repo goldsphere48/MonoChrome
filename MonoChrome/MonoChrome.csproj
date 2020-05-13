@@ -59,6 +59,7 @@
     <Compile Include="SceneSystem\Input\IMouseOverHandler.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedCollection.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedComponents.cs" />
+    <Compile Include="SceneSystem\Layers\Helpers\CachedItemBufferEqualityComparer.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\CachedMethods.cs" />
     <Compile Include="Core\EntityManager\ComponentEventArgs.cs" />
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />

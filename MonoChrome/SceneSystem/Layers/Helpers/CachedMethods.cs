@@ -51,7 +51,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    Add(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
+                    SafeAdd(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 var cacheRule = _rules[key] & rule;
                 if (cacheRule == rule)
                 {
-                    Remove(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
+                    SafeRemove(new MethodCacheItem(component, key, methodReciever.Value?.Invoke(component)));
                 }
             }
         }

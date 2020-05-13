@@ -246,6 +246,11 @@ namespace MonoChrome.Core
             RemoveComponent(typeof(T));
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         internal EntityStore Registry { get; set; }
 
         internal event ComponentEventHandler ComponentAttached;

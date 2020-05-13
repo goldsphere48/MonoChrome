@@ -17,7 +17,7 @@ namespace MonoChrome.Core.EntityManager
         }
         public static GameObject Compose(string name, params GameObject[] childrens)
         {
-            var parent = _entityFactory.CreateEmpty(Registry);
+            var parent = _entityFactory.CreateEmpty(name, Registry);
             return Compose(parent, childrens);
         }
         public static GameObject Compose(params GameObject[] childrens)

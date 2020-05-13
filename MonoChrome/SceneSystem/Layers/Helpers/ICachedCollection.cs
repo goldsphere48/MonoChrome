@@ -10,5 +10,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         void Clear();
         void Erase(GameObject gameObject);
         void Register(GameObject gameObject);
+        void OnFrameEnd();
+        void OnFrameStart();
     }
 }

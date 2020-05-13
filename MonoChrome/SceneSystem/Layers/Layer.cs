@@ -60,19 +60,29 @@ namespace MonoChrome.SceneSystem.Layers
         internal void OnFrameEnd()
         {
             _isFrameFinished = true;
-            foreach (var gameObject in _gameObjectsBuffer)
+            foreach (var gameObject in _orderToAdd)
             {
                 Add(gameObject);
             }
-            _gameObjectsBuffer.Clear();
+            foreach (var gameObject in _orderToRemove)
+            {
+                Remove(gameObject);
+            }
+            _cachedComponents.OnFrameEnd();
+            _cachedMethods.OnFrameEnd();
+            _orderToAdd.Clear();
+            _orderToRemove.Clear();
         }
 
         internal void OnFrameStart()
         {
             _isFrameFinished = false;
+            _cachedComponents.OnFrameStart();
+            _cachedMethods.OnFrameStart();
         }
 
-        private HashSet<GameObject> _gameObjectsBuffer = new HashSet<GameObject>();
+        private HashSet<GameObject> _orderToAdd = new HashSet<GameObject>();
+        private HashSet<GameObject> _orderToRemove = new HashSet<GameObject>();
         private bool _isFrameFinished = false;
 
         internal void KeyboardHandle(KeyboardState state)
@@ -93,7 +103,7 @@ namespace MonoChrome.SceneSystem.Layers
                 _gameObjects.Add(item);
             } else
             {
-                _gameObjectsBuffer.Add(item);
+                _orderToAdd.Add(item);
             }
         }
         
@@ -102,6 +112,7 @@ namespace MonoChrome.SceneSystem.Layers
             foreach (var gameObject in _gameObjects)
             {
                 EraseItem(gameObject);
+                gameObject.Dispose();
             }
             _cachedComponents.Clear();
             _cachedMethods.Clear();
@@ -162,8 +173,16 @@ namespace MonoChrome.SceneSystem.Layers
         }
         public bool Remove(GameObject item)
         {
-            EraseItem(item);
-            return _gameObjects.Remove(item);
+            if (_isFrameFinished)
+            {
+                EraseItem(item);
+                item.Dispose();
+                return _gameObjects.Remove(item);
+            } else
+            {
+                _orderToRemove.Add(item);
+                return true;
+            }
         }
         public void Update()
         {

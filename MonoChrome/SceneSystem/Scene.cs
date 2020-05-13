@@ -48,7 +48,6 @@ namespace MonoChrome.SceneSystem
         public void Remove(GameObject gameObject)
         {
             Drop?.Invoke(this, new RemoveGameObjectEventArgs(gameObject));
-            gameObject.Dispose();
         }
 
         public abstract void Setup();

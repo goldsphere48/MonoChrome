@@ -60,6 +60,7 @@ namespace MonoChrome.SceneSystem
         public void Setup()
         {
             Entity.Registry = _store;
+            _layerManager.Initialize();
             _scene.Setup();
             Initialized = true;
             Disposed = false;
@@ -85,17 +86,20 @@ namespace MonoChrome.SceneSystem
         }
         private void Dispose(bool clean)
         {
-            OnDisable();
-            if (!Disposed)
+            _layerManager.AddFrameEndTask(() =>
             {
-                if (clean)
+                OnDisable();
+                if (!Disposed)
                 {
-                    OnDestroy();
+                    if (clean)
+                    {
+                        OnDestroy();
+                    }
+                    OnFinalize();
+                    Disposed = true;
+                    Initialized = false;
                 }
-                OnFinalize();
-                Disposed = true;
-                Initialized = false;
-            }
+            });
         }
         private void OnAdd(object sender, AddGameObjectEventArgs args)
         {

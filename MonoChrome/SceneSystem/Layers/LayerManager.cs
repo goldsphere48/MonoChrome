@@ -7,9 +7,13 @@ using System.Collections.Generic;
 
 namespace MonoChrome.SceneSystem.Layers
 {
+    delegate void FrameEndTask();
     public class LayerManager
     {
-        public LayerManager()
+        private HashSet<FrameEndTask> _frameEndTasksBuffers = new HashSet<FrameEndTask>();
+        private bool _isFrameFinished = true;
+
+        internal void Initialize()
         {
             CreateLayer(DefaultLayers.Default, 0);
             var backgroundLayer = CreateLayer(DefaultLayers.Background, int.MinValue + 1000);
@@ -20,6 +24,18 @@ namespace MonoChrome.SceneSystem.Layers
             uiLayer.CollisionDetectionEnable = false;
             foregroundLayer.CollisionDetectionEnable = false;
             foregroundLayer.HandleInput = false;
+        }
+
+        internal void AddFrameEndTask(FrameEndTask task)
+        {
+            if (_isFrameFinished)
+            {
+                task?.Invoke();
+            }
+            else
+            {
+                _frameEndTasksBuffers.Add(task);
+            }
         }
 
         public void Add(string layerName, GameObject gameObject, bool replace = true)
@@ -69,14 +85,21 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void OnFrameEnd()
         {
+            _isFrameFinished = true;
             foreach (var layer in _layers)
             {
                 layer.OnFrameEnd();
             }
+            foreach (var task in _frameEndTasksBuffers)
+            {
+                task();
+            }
+            _frameEndTasksBuffers.Clear();
         }
 
         internal void OnFrameStart()
         {
+            _isFrameFinished = false;
             foreach (var layer in _layers)
             {
                 layer.OnFrameStart();

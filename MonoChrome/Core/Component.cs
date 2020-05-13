@@ -30,7 +30,7 @@ namespace MonoChrome.Core
                 else
                 {
                     OnDisableMethod?.Invoke();
-                    ComponentEnabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
+                    ComponentDisabled?.Invoke(this, new ComponentEventArgs(this, GameObject));
                 }
                 _enabled = value;
             }
@@ -93,6 +93,11 @@ namespace MonoChrome.Core
                 OnFinaliseMethod?.Invoke();
                 _disposed = true;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} {GameObject}";
         }
         internal bool IsAwaked { get; set; }
         internal bool IsStarted { get; set; }

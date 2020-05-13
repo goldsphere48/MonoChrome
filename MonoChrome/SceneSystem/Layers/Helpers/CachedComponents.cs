@@ -54,7 +54,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                     var cacheRule = _rules[type] & rule;
                     if (cacheRule == rule)
                     {
-                        Add(new ComponentCacheItem(component, type));
+                        SafeAdd(new ComponentCacheItem(component, type));
                     }
                 }
             }
@@ -76,9 +76,9 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 if (type != null)
                 {
                     var cacheRule = _rules[type] & rule;
-                    if (cacheRule == rule)
+                    if (cacheRule == rule && rule == CacheMode.UncacheOnDisable)
                     {
-                        Remove(new ComponentCacheItem(component, type));
+                        SafeRemove(new ComponentCacheItem(component, type));
                     }
                 }
             }

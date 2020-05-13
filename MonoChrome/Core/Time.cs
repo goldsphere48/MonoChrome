@@ -6,5 +6,6 @@ namespace MonoChrome.Core
     {
         public static double DeltaTime => GameTime.ElapsedGameTime.TotalSeconds;
         public static GameTime GameTime { get; internal set; }
+        public static float TimeDelation { get; set; }
     }
 }
