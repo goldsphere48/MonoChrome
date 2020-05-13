@@ -57,6 +57,24 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
         }
 
+        internal void OnFrameEnd()
+        {
+            _isFrameFinished = true;
+            foreach (var gameObject in _gameObjectsBuffer)
+            {
+                Add(gameObject);
+            }
+            _gameObjectsBuffer.Clear();
+        }
+
+        internal void OnFrameStart()
+        {
+            _isFrameFinished = false;
+        }
+
+        private HashSet<GameObject> _gameObjectsBuffer = new HashSet<GameObject>();
+        private bool _isFrameFinished = false;
+
         internal void KeyboardHandle(KeyboardState state)
         {
             foreach (IKeyboardHandler component in _cachedComponents[_keyboardHandler])
@@ -67,11 +85,18 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void Add(GameObject item)
         {
-            item.LayerName = Name;
-            _cachedComponents.Register(item);
-            _cachedMethods.Register(item);
-            _gameObjects.Add(item);
+            if (_isFrameFinished)
+            {
+                item.LayerName = Name;
+                _cachedComponents.Register(item);
+                _cachedMethods.Register(item);
+                _gameObjects.Add(item);
+            } else
+            {
+                _gameObjectsBuffer.Add(item);
+            }
         }
+        
         public void Clear()
         {
             foreach (var gameObject in _gameObjects)

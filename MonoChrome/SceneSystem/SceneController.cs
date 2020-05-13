@@ -66,8 +66,10 @@ namespace MonoChrome.SceneSystem
         }
         public void Update()
         {
-            HandleMouseEvents();
+            _layerManager.OnFrameStart();
+            HandleInput();
             _layerManager.Update();
+            _layerManager.OnFrameEnd();
         }
         ~SceneController()
         {

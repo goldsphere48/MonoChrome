@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoChrome.Core;
 using MonoChrome.SceneSystem.Input;
 using System;
+using System.Collections.Generic;
 
 namespace MonoChrome.SceneSystem.Layers
 {
@@ -20,6 +21,7 @@ namespace MonoChrome.SceneSystem.Layers
             foregroundLayer.CollisionDetectionEnable = false;
             foregroundLayer.HandleInput = false;
         }
+
         public void Add(string layerName, GameObject gameObject, bool replace = true)
         {
             if (string.IsNullOrEmpty(layerName) || gameObject == null)
@@ -64,6 +66,23 @@ namespace MonoChrome.SceneSystem.Layers
         {
             Add(layerName.ToString(), gameObject);
         }
+
+        internal void OnFrameEnd()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnFrameEnd();
+            }
+        }
+
+        internal void OnFrameStart()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.OnFrameStart();
+            }
+        }
+
         public void Add(GameObject gameObject)
         {
             Add(DefaultLayers.Default.ToString(), gameObject);

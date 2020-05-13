@@ -5,7 +5,7 @@ namespace MonoChrome.SceneSystem.Input
 {
     public abstract class InputListener
     {
-        public void HandleMouseEvents()
+        public void HandleInput()
         {
             HandleMouseClick();
             HandleMouseMove();

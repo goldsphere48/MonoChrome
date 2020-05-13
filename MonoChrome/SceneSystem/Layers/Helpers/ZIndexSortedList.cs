@@ -12,11 +12,11 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         {
             get
             {
-                foreach (var dictionary in _list)
+                foreach (var zIndexGroup in _list)
                 {
-                    for (int i = 0; i < dictionary.Value.Count; ++i) 
+                    foreach (var dictionary in zIndexGroup.Value) 
                     {
-                        yield return dictionary.Value.ElementAt(i).Value;
+                        yield return dictionary.Value;
                     }
                 }
             }
