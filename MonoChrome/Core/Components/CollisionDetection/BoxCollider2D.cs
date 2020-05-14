@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
 
 namespace MonoChrome.Core.Components.CollisionDetection
 {
@@ -38,6 +39,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
         public void UseCustomBounds(int width, int height)
         {
             _box = new Rectangle(0, 0, width, height);
+            _transform.Origin = new Vector2(width / 2, height / 2);
             IsUseRendererBounds = false;
         }
         public void UseRendererBounds()
@@ -46,6 +48,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
             if (renderer != null)
             {
                 _box = new Rectangle((int)_transform.Position.X, (int)_transform.Position.Y, (int)renderer.Size.X, (int)renderer.Size.Y);
+                _transform.Origin = renderer.Center;
             }
             else
             {
@@ -65,10 +68,10 @@ namespace MonoChrome.Core.Components.CollisionDetection
         }
         internal override void DrawBounds(SpriteBatch batch)
         {
-            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Left, _box.Top)), _box.Height, (float)(_transform.Angle + Math.PI / 2));
-            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Right, _box.Top)), _box.Height, (float)(_transform.Angle + Math.PI / 2));
-            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Right, _box.Top)), _box.Width, (float)(_transform.Angle - Math.PI));
-            DrawLine(batch, RotateAroundOrigin(new Vector2(_box.Left, _box.Bottom)), _box.Width, _transform.Angle);
+            DrawLine(batch, (new Vector2(_box.Left, _box.Top)), _box.Height, (float)( Math.PI / 2));
+            DrawLine(batch, (new Vector2(_box.Right, _box.Top)), _box.Height, (float)( Math.PI / 2));
+            DrawLine(batch, (new Vector2(_box.Right, _box.Top)), _box.Width, (float)( - Math.PI));
+            DrawLine(batch, (new Vector2(_box.Left, _box.Bottom)), _box.Width, 0);
         }
         private Rectangle _box;
         private IList<BoxCollider2D> _childColliders = new List<BoxCollider2D>();
@@ -97,6 +100,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
         }
         private void Update()
         {
+
             _box.X = (int)(_transform.Position.X - _transform.Origin.X);
             _box.Y = (int)(_transform.Position.Y - _transform.Origin.Y);
         }

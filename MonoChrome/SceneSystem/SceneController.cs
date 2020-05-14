@@ -53,6 +53,12 @@ namespace MonoChrome.SceneSystem
         {
             _layerManager.HandleMouseMove(pointerEventData);
         }
+
+        internal Scene GetScene()
+        {
+            return _scene;
+        }
+
         public override void KeyboardHandle(KeyboardState state)
         {
             _layerManager.KeyboardHandle(state);

@@ -62,7 +62,7 @@ namespace MonoChrome.Core.Components
         {
             var newVector = new Vector2(dir.X - Position.X, dir.Y - Position.Y);
             newVector.Normalize();
-            newVector = newVector * speed;
+            newVector *= speed;
             Position += newVector;
         }
 

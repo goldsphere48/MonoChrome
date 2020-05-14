@@ -60,6 +60,8 @@ namespace MonoChrome.SceneSystem.Layers
         internal void OnFrameEnd()
         {
             _isFrameFinished = true;
+            _cachedComponents.OnFrameEnd();
+            _cachedMethods.OnFrameEnd();
             foreach (var gameObject in _orderToAdd)
             {
                 Add(gameObject);
@@ -68,8 +70,6 @@ namespace MonoChrome.SceneSystem.Layers
             {
                 Remove(gameObject);
             }
-            _cachedComponents.OnFrameEnd();
-            _cachedMethods.OnFrameEnd();
             _orderToAdd.Clear();
             _orderToRemove.Clear();
         }
@@ -176,7 +176,7 @@ namespace MonoChrome.SceneSystem.Layers
             if (_isFrameFinished)
             {
                 EraseItem(item);
-                item.Dispose();
+                GameObject.Erase(item);
                 return _gameObjects.Remove(item);
             } else
             {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using MonoChrome.Core.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +9,16 @@ namespace MonoChrome.Core.EntityManager
     public static class Entity
     {
         public static EntityStore Registry { get; set; }
+        public static IEnumerable<GameObject> Decompose(GameObject gameObject)
+        {
+            var childrens = new List<Transform>(gameObject.Transform.Childrens);
+            foreach (var child in childrens)
+            {
+                child.Parent = null;
+                Decompose(child.GameObject);
+                yield return child.GameObject;
+            }
+        }
         public static GameObject Compose(GameObject parent, params GameObject[] childrens)
         {
             foreach (var child in childrens)
@@ -20,9 +32,13 @@ namespace MonoChrome.Core.EntityManager
             var parent = _entityFactory.CreateEmpty(name, Registry);
             return Compose(parent, childrens);
         }
-        public static GameObject Compose(params GameObject[] childrens)
+        public static GameObject ComposeNew(params GameObject[] childrens)
         {
             return Compose(GameObject.DefaultName, childrens);
+        }
+        public static GameObject ComposeNew(string name, params GameObject[] childrens)
+        {
+            return Compose(name, childrens);
         }
         public static GameObject Create(params Component[] components)
         {

@@ -1,6 +1,7 @@
 ﻿using MonoChrome.Core.Components;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem;
+using MonoChrome.SceneSystem.Layers;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Collections.Generic;
@@ -84,16 +85,40 @@ namespace MonoChrome.Core
             AddComponent(typeof(T));
         }
 
+        public static void Instatiate(GameObject gameObject)
+        {
+            SceneManager.Instance.CurrentScene.Instatiate(gameObject);
+        }
+
+        public static void Instatiate(GameObject gameObject, string layerName)
+        {
+            SceneManager.Instance.CurrentScene.Instatiate(gameObject, layerName);
+        }
+
+        public static void Instatiate(GameObject gameObject, DefaultLayers layer)
+        {
+            SceneManager.Instance.CurrentScene.Instatiate(gameObject, layer.ToString());
+        }
+
+        public static void Destroy(GameObject gameObject)
+        {
+            SceneManager.Instance.CurrentScene.Destroy(gameObject);
+        }
+
+        internal static void Erase(GameObject gameObject)
+        {
+            gameObject.Dispose();
+            var childs = Entity.Decompose(gameObject);
+            foreach (var child in childs)
+            {
+                child.Dispose();
+            }
+        }
+
         public void Dispose()
         {
             Registry.Remove(this);
-            var transform = Transform;
-            transform.Parent = null;
-            foreach (var child in transform.Childrens)
-            {
-                child.GameObject.Dispose();
-                child.GameObject = null;
-            }
+            Transform.Parent = null;
         }
 
         public Component GetComponent(Type componentType, bool inherit = false)

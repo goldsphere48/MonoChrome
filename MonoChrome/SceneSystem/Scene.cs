@@ -15,7 +15,7 @@ namespace MonoChrome.SceneSystem
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public void Add(GameObject gameObject, string layerName)
+        public void Instatiate(GameObject gameObject, string layerName)
         {
             if (gameObject == null || layerName == null)
             {
@@ -27,14 +27,14 @@ namespace MonoChrome.SceneSystem
             gameObject.Start();
         }
 
-        public void Add(GameObject gameObject, DefaultLayers layerName)
+        public void Instatiate(GameObject gameObject, DefaultLayers layerName)
         {
-            Add(gameObject, layerName.ToString());
+            Instatiate(gameObject, layerName.ToString());
         }
 
-        public void Add(GameObject gameObject)
+        public void Instatiate(GameObject gameObject)
         {
-            Add(gameObject, DefaultLayers.Default.ToString());
+            Instatiate(gameObject, DefaultLayers.Default.ToString());
         }
 
         public virtual void OnDisable()
@@ -45,7 +45,7 @@ namespace MonoChrome.SceneSystem
         {
         }
 
-        public void Remove(GameObject gameObject)
+        public void Destroy(GameObject gameObject)
         {
             Drop?.Invoke(this, new RemoveGameObjectEventArgs(gameObject));
         }

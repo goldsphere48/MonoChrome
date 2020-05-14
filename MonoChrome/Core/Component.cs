@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Components;
 using MonoChrome.Core.Components.CollisionDetection;
 using MonoChrome.Core.EntityManager;
 using MonoChrome.SceneSystem;
+using MonoChrome.SceneSystem.Layers;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
 using System.Reflection;
@@ -58,6 +60,26 @@ namespace MonoChrome.Core
             {
                 _zIndexChanged -= value;
             }
+        }
+
+        public static void Destroy(GameObject gameObject)
+        {
+            GameObject.Destroy(gameObject);
+        }
+
+        public static void Instatiate(GameObject gameObject)
+        {
+            GameObject.Instatiate(gameObject);
+        }
+
+        public static void Instatiate(GameObject gameObject, string layerName)
+        {
+            GameObject.Instatiate(gameObject, layerName);
+        }
+
+        public static void Instatiate(GameObject gameObject, DefaultLayers layer)
+        {
+            GameObject.Instatiate(gameObject, layer.ToString());
         }
 
         public static Component Create(Type componentType)

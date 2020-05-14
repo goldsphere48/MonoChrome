@@ -76,7 +76,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 if (type != null)
                 {
                     var cacheRule = _rules[type] & rule;
-                    if (cacheRule == rule && rule == CacheMode.UncacheOnDisable)
+                    if (cacheRule == rule)
                     {
                         SafeRemove(new ComponentCacheItem(component, type));
                     }

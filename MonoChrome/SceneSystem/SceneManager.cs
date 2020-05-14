@@ -57,6 +57,7 @@ namespace MonoChrome.SceneSystem
                 _scenes.Remove(scene);
             }
         }
+        public Scene CurrentScene => _currentScreen.GetScene();
         public void Draw()
         {
             _currentScreen?.Draw();
