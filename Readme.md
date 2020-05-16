@@ -334,8 +334,9 @@ int ZIndex { get; set; }
 | DefaultLayers.Default    | false                | true                     | true        | 0           | true    | true   |
 | DefaultLayers.Foreground | false                | false                    | false       | 2147482647  | true    | true   |
 | DefaultLayers.UI         | false                | false                    | true        | 2147483548  | true    | true   |
-Но ничто не мешает создать свой слой и настроить его по своему, это возможно благодаря интерфейсу LayerManager
 
+
+Но ничто не мешает создать свой слой и настроить его по своему, это возможно благодаря интерфейсу LayerManager
 ```sh
 public Layer CreateLayer(string layerName, int zIndex)
 public ILayerSettings GetLayer(string layerName)
