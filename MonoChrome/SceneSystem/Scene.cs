@@ -10,10 +10,16 @@ namespace MonoChrome.SceneSystem
     public abstract class Scene : IScene
     {
         public ContentManager Content { get; private set; }
-
         public Game Game { get; private set; }
-
         public GraphicsDevice GraphicsDevice { get; private set; }
+        protected LayerManager LayerManager { get; private set; }
+        internal event EventHandler<AddGameObjectEventArgs> Added;
+        internal event EventHandler<RemoveGameObjectEventArgs> Drop;
+
+        public void Destroy(GameObject gameObject)
+        {
+            Drop?.Invoke(this, new RemoveGameObjectEventArgs(gameObject));
+        }
 
         public void Instatiate(GameObject gameObject, string layerName)
         {
@@ -45,16 +51,7 @@ namespace MonoChrome.SceneSystem
         {
         }
 
-        public void Destroy(GameObject gameObject)
-        {
-            Drop?.Invoke(this, new RemoveGameObjectEventArgs(gameObject));
-        }
-
         public abstract void Setup();
-
-        internal event EventHandler<AddGameObjectEventArgs> Added;
-
-        internal event EventHandler<RemoveGameObjectEventArgs> Drop;
 
         internal void Initialize(LayerManager layerManager, ContentManager content, GraphicsDevice device, Game game)
         {
@@ -63,13 +60,13 @@ namespace MonoChrome.SceneSystem
             GraphicsDevice = device;
             Game = game;
         }
-        protected LayerManager LayerManager { get; private set; }
     }
 
     internal class AddGameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; }
         public string LayerName { get; }
+
         public AddGameObjectEventArgs(GameObject gameObject, string layerName)
         {
             GameObject = gameObject;
@@ -80,6 +77,7 @@ namespace MonoChrome.SceneSystem
     internal class RemoveGameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; }
+
         public RemoveGameObjectEventArgs(GameObject gameObject)
         {
             GameObject = gameObject;

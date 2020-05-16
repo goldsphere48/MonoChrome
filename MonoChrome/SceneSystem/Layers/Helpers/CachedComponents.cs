@@ -19,6 +19,9 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 return result;
             }
         }
+        private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
+        private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
+
         public override void AddCacheRule(CacheRule cacheRule)
         {
             var rule = cacheRule as ComponentCacheRule;
@@ -28,10 +31,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 _cached.Add(rule.ComponentType, new ZIndexSortedSet<Component>());
             }
         }
+
         public override void Clear()
         {
             _cached.Clear();
         }
+
         protected override void Add(CacheItem<Type> cacheItem)
         {
             var item = cacheItem as ComponentCacheItem;
@@ -44,6 +49,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
+
         protected override void Cache(Component component, CacheMode rule)
         {
             var types = GetBaseType(component);
@@ -59,6 +65,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
+
         protected override bool Remove(CacheItem<Type> cacheItem)
         {
             var item = cacheItem as ComponentCacheItem;
@@ -68,6 +75,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return false;
         }
+
         protected override void Uncache(Component component, CacheMode rule)
         {
             var types = GetBaseType(component);
@@ -83,8 +91,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-        private IDictionary<Type, ICollection<Component>> _cached = new Dictionary<Type, ICollection<Component>>();
-        private IDictionary<Type, CacheMode> _rules = new Dictionary<Type, CacheMode>();
+
         private IEnumerable<Type> GetBaseType(Component component)
         {
             var componentType = component.GetType();
@@ -112,6 +119,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
     internal class ComponentCacheRule : CacheRule
     {
         public Type ComponentType { get; }
+
         public ComponentCacheRule(CacheMode mode, Type componentType) : base(mode)
         {
             ComponentType = componentType;

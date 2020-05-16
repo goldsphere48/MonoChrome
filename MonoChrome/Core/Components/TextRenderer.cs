@@ -21,6 +21,10 @@ namespace MonoChrome.Core.Components
                 }
             }
         }
+        private Vector2 _size;
+        private string _text = "";
+        [InsertComponent] private Transform _transform;
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (SpriteFont != null)
@@ -28,8 +32,5 @@ namespace MonoChrome.Core.Components
                 spriteBatch.DrawString(SpriteFont, Text, _transform.Position, Color, _transform.Angle, _transform.Origin, Vector2.One, SpriteEffects.None, 1);
             }
         }
-        private Vector2 _size;
-        private string _text = "";
-        [InsertComponent] private Transform _transform;
     }
 }

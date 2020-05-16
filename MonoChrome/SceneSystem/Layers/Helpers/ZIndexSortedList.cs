@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
@@ -14,13 +13,15 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             {
                 foreach (var zIndexGroup in _list)
                 {
-                    foreach (var dictionary in zIndexGroup.Value) 
+                    foreach (var dictionary in zIndexGroup.Value)
                     {
                         yield return dictionary.Value;
                     }
                 }
             }
         }
+        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>(new DescendingComparer());
+
         public void Add(TKey key, TValue value)
         {
             _list.TryGetValue(key.ZIndex, out var container);
@@ -32,6 +33,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             container.Add(key, value);
             key.ZIndexChanged += OnZIndexChanged;
         }
+
         public void Clear()
         {
             foreach (var dictionary in _list)
@@ -44,6 +46,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             _list.Clear();
         }
+
         public bool Contains(TKey key)
         {
             _list.TryGetValue(key.ZIndex, out var container);
@@ -53,6 +56,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return false;
         }
+
         public IEnumerator<TValue> GetEnumerator()
         {
             foreach (var dictionary in _list.Values)
@@ -63,10 +67,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         public void OnZIndexChanged(object sender, ZIndexEventArgs args)
         {
             _list.TryGetValue(args.OldZIndex, out var container);
@@ -82,6 +88,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 Add(item, value);
             }
         }
+
         public bool Remove(TKey key)
         {
             _list.TryGetValue(key.ZIndex, out var container);
@@ -97,6 +104,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return true;
         }
+
         public bool TryGetValue(TKey key, out TValue outValue)
         {
             foreach (var dictionary in _list.Values)
@@ -110,6 +118,5 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             outValue = null;
             return false;
         }
-        private SortedList<int, Dictionary<TKey, TValue>> _list = new SortedList<int, Dictionary<TKey, TValue>>(new DescendingComparer());
     }
 }

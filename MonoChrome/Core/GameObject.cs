@@ -54,7 +54,7 @@ namespace MonoChrome.Core
                 _zIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
-
+        internal EntityStore Registry { get; set; }
         public event EventHandler<ZIndexEventArgs> ZIndexChanged
         {
             add
@@ -67,22 +67,26 @@ namespace MonoChrome.Core
                 _zIndexChanged -= value;
             }
         }
+        internal event ComponentEventHandler ComponentAttached;
+        internal event ComponentEventHandler ComponentDettach;
+        internal event ComponentEventHandler ComponentDisabled;
+        internal event ComponentEventHandler ComponentEnabled;
+
+        internal GameObject(string name, EntityStore store)
+        {
+            Name = name;
+            Registry = store;
+        }
 
         public const string DefaultName = "GameObject";
-        public void AddComponent(Type componentType)
-        {
-            var component = Component.Create(componentType);
-            Registry.Add(this, component);
-        }
+        private bool _enabled = true;
+        private Scene _scene;
+        private int _zIndex;
+        private EventHandler<ZIndexEventArgs> _zIndexChanged;
 
-        public void AddComponent(Component component)
+        public static void Destroy(GameObject gameObject)
         {
-            Registry.Add(this, component);
-        }
-
-        public void AddComponent<T>() where T : Component
-        {
-            AddComponent(typeof(T));
+            SceneManager.Instance.CurrentScene.Destroy(gameObject);
         }
 
         public static void Instatiate(GameObject gameObject)
@@ -100,19 +104,20 @@ namespace MonoChrome.Core
             SceneManager.Instance.CurrentScene.Instatiate(gameObject, layer.ToString());
         }
 
-        public static void Destroy(GameObject gameObject)
+        public void AddComponent(Type componentType)
         {
-            SceneManager.Instance.CurrentScene.Destroy(gameObject);
+            var component = Component.Create(componentType);
+            Registry.Add(this, component);
         }
 
-        internal static void Erase(GameObject gameObject)
+        public void AddComponent(Component component)
         {
-            gameObject.Dispose();
-            var childs = Entity.Decompose(gameObject);
-            foreach (var child in childs)
-            {
-                child.Dispose();
-            }
+            Registry.Add(this, component);
+        }
+
+        public void AddComponent<T>() where T : Component
+        {
+            AddComponent(typeof(T));
         }
 
         public void Dispose()
@@ -276,21 +281,16 @@ namespace MonoChrome.Core
             return Name;
         }
 
-        internal EntityStore Registry { get; set; }
-
-        internal event ComponentEventHandler ComponentAttached;
-
-        internal event ComponentEventHandler ComponentDettach;
-
-        internal event ComponentEventHandler ComponentDisabled;
-
-        internal event ComponentEventHandler ComponentEnabled;
-
-        internal GameObject(string name, EntityStore store)
+        internal static void Erase(GameObject gameObject)
         {
-            Name = name;
-            Registry = store;
+            gameObject.Dispose();
+            var childs = Entity.Decompose(gameObject);
+            foreach (var child in childs)
+            {
+                child.Dispose();
+            }
         }
+
         internal void Attach(Component component)
         {
             component.GameObject = this;
@@ -299,6 +299,7 @@ namespace MonoChrome.Core
             ZIndexChanged += component.OnZIndexChanged;
             ComponentAttached?.Invoke(this, new ComponentEventArgs(component, this));
         }
+
         internal void Awake()
         {
             InvokeAction(
@@ -307,6 +308,7 @@ namespace MonoChrome.Core
                 component => component.IsAwaked = true
             );
         }
+
         internal void Dettach(Component component)
         {
             ComponentDettach?.Invoke(this, new ComponentEventArgs(component, this));
@@ -315,6 +317,7 @@ namespace MonoChrome.Core
             component.ComponentDisabled -= OnComponentDisabled;
             ZIndexChanged -= component.OnZIndexChanged;
         }
+
         internal void InvokeAction(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after)
         {
             var components = Registry.GetComponents(this).ToList();
@@ -325,14 +328,17 @@ namespace MonoChrome.Core
                 child.GameObject.InvokeAction(reciever, predicate, after);
             }
         }
+
         internal void OnComponentDisabled(object sender, ComponentEventArgs componentEventArgs)
         {
             ComponentDisabled?.Invoke(this, componentEventArgs);
         }
+
         internal void OnComponentEnabled(object sender, ComponentEventArgs componentEventArgs)
         {
             ComponentEnabled?.Invoke(this, componentEventArgs);
         }
+
         internal void Start()
         {
             InvokeAction(
@@ -341,10 +347,6 @@ namespace MonoChrome.Core
                 component => component.IsStarted = true
             );
         }
-        private bool _enabled = true;
-        private Scene _scene;
-        private int _zIndex;
-        private EventHandler<ZIndexEventArgs> _zIndexChanged;
 
         private void CheckComponent(Component component)
         {
@@ -378,6 +380,7 @@ namespace MonoChrome.Core
     internal class ComponentAttachEventArgs : EventArgs
     {
         public Component Component { get; set; }
+
         public ComponentAttachEventArgs(Component component)
         {
             Component = component;

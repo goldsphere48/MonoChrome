@@ -9,6 +9,7 @@ namespace MonoChrome.Core.EntityManager
         {
             return Create(GameObject.DefaultName, types, store);
         }
+
         public GameObject Create(string name, Type[] types, EntityStore store)
         {
             var gameObject = CreateEmpty(name, store);
@@ -18,10 +19,12 @@ namespace MonoChrome.Core.EntityManager
             }
             return gameObject;
         }
+
         public GameObject CreateEmpty(EntityStore store)
         {
             return CreateEmpty(GameObject.DefaultName, store);
         }
+
         public GameObject CreateEmpty(string name, EntityStore store)
         {
             var gameObject = new GameObject(name, store);

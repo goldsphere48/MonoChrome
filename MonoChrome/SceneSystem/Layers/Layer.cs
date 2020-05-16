@@ -15,12 +15,12 @@ namespace MonoChrome.SceneSystem.Layers
     {
         public bool AllowThroughHandling { get; set; } = false;
         public bool CollisionDetectionEnable { get; set; } = true;
-        public bool Visible { get; set; } = true;
-        public bool Enabled { get; set; } = true;
         public int Count => _gameObjects.Count;
+        public bool Enabled { get; set; } = true;
         public bool HandleInput { get; set; } = true;
         public bool IsReadOnly => false;
         public string Name { get; }
+        public bool Visible { get; set; } = true;
         public int ZIndex
         {
             get => _zIndex;
@@ -31,7 +31,6 @@ namespace MonoChrome.SceneSystem.Layers
                 ZIndexChanged?.Invoke(this, new ZIndexEventArgs(oldValue));
             }
         }
-
         public event EventHandler<ZIndexEventArgs> ZIndexChanged;
 
         public Layer(string name, int zIndex)
@@ -58,6 +57,166 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
         }
 
+        private ICachedCollection<Type, Component> _cachedComponents;
+        private ICachedCollection<string, Action> _cachedMethods;
+        private Type _collider = typeof(Collider);
+        private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
+        private bool _isFrameEnd = false;
+        private Type _keyboardHandler = typeof(IKeyboardHandler);
+        private Type _mouseOverHandler = typeof(IMouseOverHandler);
+        private HashSet<GameObject> _orderToAdd = new HashSet<GameObject>();
+        private HashSet<GameObject> _orderToRemove = new HashSet<GameObject>();
+        private Type _pointerClickHandler = typeof(IPointerClickHandler);
+        private Type _renderer = typeof(Renderer);
+        private int _zIndex;
+
+        public void Add(GameObject item)
+        {
+            if (_isFrameEnd)
+            {
+                item.LayerName = Name;
+                _cachedComponents.Register(item);
+                _cachedMethods.Register(item);
+                _gameObjects.Add(item);
+            }
+            else
+            {
+                _orderToAdd.Add(item);
+            }
+        }
+
+        public void Clear()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                EraseItem(gameObject);
+                gameObject.Dispose();
+            }
+            _cachedComponents.Clear();
+            _cachedMethods.Clear();
+            _gameObjects.Clear();
+        }
+
+        public int CompareTo(Layer other)
+        {
+            return other.ZIndex - ZIndex;
+        }
+
+        public bool Contains(GameObject item)
+        {
+            return _gameObjects.Contains(item);
+        }
+
+        public void CopyTo(GameObject[] array, int arrayIndex)
+        {
+            _gameObjects.CopyTo(array, arrayIndex);
+        }
+
+        public void Draw(SpriteBatch _spriteBatch)
+        {
+            if (Visible && Enabled)
+            {
+                foreach (Renderer renderer in _cachedComponents[_renderer])
+                {
+                    renderer.Draw(_spriteBatch);
+                }
+            }
+        }
+
+        public bool Equals(Layer other)
+        {
+            return base.Equals(other);
+        }
+
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            return _gameObjects.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool HandleMouseClick(PointerEventData pointerEventData)
+        {
+            if (HandleInput)
+            {
+                return HandlePointerClick(pointerEventData);
+            }
+            return false;
+        }
+
+        public void OnDestroy()
+        {
+            foreach (var updateMethod in _cachedMethods["OnDestroy"])
+            {
+                updateMethod();
+            }
+        }
+
+        public void OnFinalise()
+        {
+            foreach (var updateMethod in _cachedMethods["OnFinalise"])
+            {
+                updateMethod();
+            }
+        }
+
+        public bool Remove(GameObject item)
+        {
+            if (_isFrameEnd)
+            {
+                EraseItem(item);
+                GameObject.Erase(item);
+                return _gameObjects.Remove(item);
+            }
+            else
+            {
+                _orderToRemove.Add(item);
+                return true;
+            }
+        }
+
+        public void Update()
+        {
+            if (Enabled)
+            {
+                foreach (var updateMethod in _cachedMethods["Update"])
+                {
+                    updateMethod();
+                }
+                if (CollisionDetectionEnable)
+                {
+                    CheckCollision();
+                }
+            }
+        }
+
+        internal bool HandleMouseMove(PointerEventData pointerEventData)
+        {
+            if (HandleInput)
+            {
+                return HandleMouseOver(pointerEventData);
+            }
+            return false;
+        }
+
+        internal void KeyboardHandle(KeyboardState state)
+        {
+            foreach (IKeyboardHandler component in _cachedComponents[_keyboardHandler])
+            {
+                component.KeyboardHandle(state);
+            }
+        }
+
+        internal void OnFrameBegin()
+        {
+            _isFrameEnd = false;
+            _cachedComponents.OnFrameBegin();
+            _cachedMethods.OnFrameBegin();
+        }
+
         internal void OnFrameEnd()
         {
             _isFrameEnd = true;
@@ -75,133 +234,6 @@ namespace MonoChrome.SceneSystem.Layers
             _orderToRemove.Clear();
         }
 
-        internal void OnFrameBegin()
-        {
-            _isFrameEnd = false;
-            _cachedComponents.OnFrameBegin();
-            _cachedMethods.OnFrameBegin();
-        }
-
-        private HashSet<GameObject> _orderToAdd = new HashSet<GameObject>();
-        private HashSet<GameObject> _orderToRemove = new HashSet<GameObject>();
-        private bool _isFrameEnd = false;
-
-        internal void KeyboardHandle(KeyboardState state)
-        {
-            foreach (IKeyboardHandler component in _cachedComponents[_keyboardHandler])
-            {
-                component.KeyboardHandle(state);
-            }
-        }
-
-        public void Add(GameObject item)
-        {
-            if (_isFrameEnd)
-            {
-                item.LayerName = Name;
-                _cachedComponents.Register(item);
-                _cachedMethods.Register(item);
-                _gameObjects.Add(item);
-            } else
-            {
-                _orderToAdd.Add(item);
-            }
-        }
-        
-        public void Clear()
-        {
-            foreach (var gameObject in _gameObjects)
-            {
-                EraseItem(gameObject);
-                gameObject.Dispose();
-            }
-            _cachedComponents.Clear();
-            _cachedMethods.Clear();
-            _gameObjects.Clear();
-        }
-        public int CompareTo(Layer other)
-        {
-            return other.ZIndex - ZIndex;
-        }
-        public bool Contains(GameObject item)
-        {
-            return _gameObjects.Contains(item);
-        }
-        public void CopyTo(GameObject[] array, int arrayIndex)
-        {
-            _gameObjects.CopyTo(array, arrayIndex);
-        }
-        public void Draw(SpriteBatch _spriteBatch)
-        {
-            if (Visible && Enabled)
-            {
-                foreach (Renderer renderer in _cachedComponents[_renderer])
-                {
-                    renderer.Draw(_spriteBatch);
-                }
-            }
-        }
-        public bool Equals(Layer other)
-        {
-            return base.Equals(other);
-        }
-        public IEnumerator<GameObject> GetEnumerator()
-        {
-            return _gameObjects.GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        public bool HandleMouseClick(PointerEventData pointerEventData)
-        {
-            if (HandleInput)
-            {
-                return HandlePointerClick(pointerEventData);
-            }
-            return false;
-        }
-        public void OnDestroy()
-        {
-            foreach (var updateMethod in _cachedMethods["OnDestroy"])
-            {
-                updateMethod();
-            }
-        }
-        public void OnFinalise()
-        {
-            foreach (var updateMethod in _cachedMethods["OnFinalise"])
-            {
-                updateMethod();
-            }
-        }
-        public bool Remove(GameObject item)
-        {
-            if (_isFrameEnd)
-            {
-                EraseItem(item);
-                GameObject.Erase(item);
-                return _gameObjects.Remove(item);
-            } else
-            {
-                _orderToRemove.Add(item);
-                return true;
-            }
-        }
-        public void Update()
-        {
-            if (Enabled)
-            {
-                foreach (var updateMethod in _cachedMethods["Update"])
-                {
-                    updateMethod();
-                }
-                if (CollisionDetectionEnable)
-                {
-                    CheckCollision();
-                }
-            }
-        }
         private void CheckCollision()
         {
             foreach (Collider colliderA in _cachedComponents[_collider])
@@ -218,23 +250,6 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-        internal bool HandleMouseMove(PointerEventData pointerEventData)
-        {
-            if (HandleInput)
-            {
-                return HandleMouseOver(pointerEventData);
-            }
-            return false;
-        }
-        private ICachedCollection<Type, Component> _cachedComponents;
-        private ICachedCollection<string, Action> _cachedMethods;
-        private Type _collider = typeof(Collider);
-        private ICollection<GameObject> _gameObjects = new HashSet<GameObject>();
-        private Type _mouseOverHandler = typeof(IMouseOverHandler);
-        private Type _keyboardHandler = typeof(IKeyboardHandler);
-        private Type _pointerClickHandler = typeof(IPointerClickHandler);
-        private Type _renderer = typeof(Renderer);
-        private int _zIndex;
 
         private void EraseItem(GameObject item)
         {
@@ -242,6 +257,7 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedComponents.Erase(item);
             _cachedMethods.Erase(item);
         }
+
         private bool HandleMouseOver(PointerEventData pointerEventData)
         {
             var handled = false;
@@ -266,6 +282,7 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return handled;
         }
+
         private bool HandlePointerClick(PointerEventData pointerEventData)
         {
             var clickWasHandled = false;

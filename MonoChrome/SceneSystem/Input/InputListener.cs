@@ -5,18 +5,30 @@ namespace MonoChrome.SceneSystem.Input
 {
     public abstract class InputListener
     {
+        private MouseState oldState = Mouse.GetState();
+        private Point previousMousePosition;
+
         public void HandleInput()
         {
             HandleMouseClick();
             HandleMouseMove();
             HandleKeyboardKeyPressed();
         }
-        public abstract void OnMouseClick(PointerEventData pointerEventData);
-        public abstract void OnMouseMove(PointerEventData pointerEventData);
+
         public abstract void KeyboardHandle(KeyboardState state);
 
-        private MouseState oldState = Mouse.GetState();
-        private Point previousMousePosition;
+        public abstract void OnMouseClick(PointerEventData pointerEventData);
+
+        public abstract void OnMouseMove(PointerEventData pointerEventData);
+
+        private void HandleKeyboardKeyPressed()
+        {
+            var state = Keyboard.GetState();
+            if (state.GetPressedKeys().Length > 0)
+            {
+                KeyboardHandle(state);
+            }
+        }
 
         private void HandleMouseClick()
         {
@@ -35,14 +47,7 @@ namespace MonoChrome.SceneSystem.Input
             }
             oldState = newState;
         }
-        private void HandleKeyboardKeyPressed()
-        {
-            var state = Keyboard.GetState();
-            if (state.GetPressedKeys().Length > 0)
-            {
-                KeyboardHandle(state);
-            }
-        }
+
         private void HandleMouseMove()
         {
             MouseState newState = Mouse.GetState();

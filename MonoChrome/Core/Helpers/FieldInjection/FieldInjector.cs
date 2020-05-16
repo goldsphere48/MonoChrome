@@ -1,5 +1,4 @@
-﻿using MonoChrome.Core.EntityManager;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,8 +8,8 @@ namespace MonoChrome.Core.Helpers.FieldInjection
     internal class FieldInjector
     {
         private delegate string IssueTemplate(Component component, DependencyFieldInfo info);
-        private FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
         private HashSet<Component> _componentsToErase = new HashSet<Component>();
+        private FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
         private bool _isFrameEnd = true;
 
         public IEnumerable<AttributeError> GetIssues(Component component)
@@ -31,21 +30,14 @@ namespace MonoChrome.Core.Helpers.FieldInjection
             EraseFields(component);
         }
 
-        public void OnObjectEntered(GameObject gameObject)
-        {
-            InjectGameObject(gameObject);
-        }
-
         public void OnObjectDrop(GameObject gameObject)
         {
             InjectNull(gameObject);
         }
 
-        private IEnumerable<AttributeError> GetIssuses(Component component, IEnumerable<DependencyFieldInfo> dependencyList, IssueTemplate template)
+        public void OnObjectEntered(GameObject gameObject)
         {
-            return from info in _fieldAttributeVisitor.DependencyObjects
-                   where info.IsInOrder && info.Required
-                   select new AttributeError { Message = template?.Invoke(component, info) };
+            InjectGameObject(gameObject);
         }
 
         private string ComponentIssueTemplate(Component component, DependencyFieldInfo info)
@@ -53,26 +45,32 @@ namespace MonoChrome.Core.Helpers.FieldInjection
             return $"Can't find value for field {info.Field.Name} in component {info.Component.GetType().Name} of object {component.GameObject.Name}";
         }
 
+        private void EraseFields(Component component)
+        {
+            _fieldAttributeVisitor.DependencyComponents.RemoveAll(e => e.Component == component);
+            _fieldAttributeVisitor.DependencyObjects.RemoveAll(e => e.Component == component);
+        }
+
         private string GameObjectIssueTemplate(Component component, DependencyFieldInfo info)
         {
             return $"Can't find game object with name {info.From} for field {info.Field.Name} in component {component.GetType().Name} of object {component.GameObject.Name}";
         }
 
-        private void RegistryFields(Component component)
+        private IEnumerable<FieldInfo> GetAllFields(Type type)
         {
-            Console.WriteLine(component);
-            _fieldAttributeVisitor.CurrentComponent = component;
-            var fields = GetAllFields(component.GetType());
-            foreach (var field in fields)
+            if (type == null && !typeof(Component).IsAssignableFrom(type))
             {
-                ProceedField(field);
+                return Enumerable.Empty<FieldInfo>();
             }
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                .Concat(GetAllFields(type.BaseType));
         }
 
-        private void EraseFields(Component component)
+        private IEnumerable<AttributeError> GetIssuses(Component component, IEnumerable<DependencyFieldInfo> dependencyList, IssueTemplate template)
         {
-            _fieldAttributeVisitor.DependencyComponents.RemoveAll(e => e.Component == component);
-            _fieldAttributeVisitor.DependencyObjects.RemoveAll(e => e.Component == component);
+            return from info in _fieldAttributeVisitor.DependencyObjects
+                   where info.IsInOrder && info.Required
+                   select new AttributeError { Message = template?.Invoke(component, info) };
         }
 
         private void InjectComponent(Component injectableComponent, bool injectNull = false)
@@ -107,15 +105,6 @@ namespace MonoChrome.Core.Helpers.FieldInjection
             InjectGameObject(injectableObject, true);
         }
 
-        private IEnumerable<FieldInfo> GetAllFields(Type type)
-        {
-            if (type == null && !typeof(Component).IsAssignableFrom(type))
-            {
-                return Enumerable.Empty<FieldInfo>();
-            }
-            return type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
-                .Concat(GetAllFields(type.BaseType));
-        }
         private void ProceedField(FieldInfo field)
         {
             _fieldAttributeVisitor.CurrentField = field;
@@ -128,9 +117,21 @@ namespace MonoChrome.Core.Helpers.FieldInjection
                 }
             }
         }
+
         private void ProceedFieldAttribute(IComponentApplicatorAcceptable attribute)
         {
             attribute.AcceptFieldVisitor(_fieldAttributeVisitor);
+        }
+
+        private void RegistryFields(Component component)
+        {
+            Console.WriteLine(component);
+            _fieldAttributeVisitor.CurrentComponent = component;
+            var fields = GetAllFields(component.GetType());
+            foreach (var field in fields)
+            {
+                ProceedField(field);
+            }
         }
     }
 }

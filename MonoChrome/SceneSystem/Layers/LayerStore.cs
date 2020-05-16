@@ -11,6 +11,9 @@ namespace MonoChrome.SceneSystem.Layers
         {
             _layers = new ZIndexSortedSet<Layer>();
         }
+
+        private ZIndexSortedSet<Layer> _layers;
+
         public void Add(Layer layer)
         {
             if (!_layers.Contains(layer))
@@ -18,10 +21,12 @@ namespace MonoChrome.SceneSystem.Layers
                 _layers.Add(layer);
             }
         }
+
         public void Clear()
         {
             _layers.Clear();
         }
+
         public bool Contains(string layerName)
         {
             foreach (var layer in _layers)
@@ -33,14 +38,17 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return false;
         }
+
         public IEnumerator<Layer> GetEnumerator()
         {
             return _layers.GetEnumerator();
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         public Layer GetLayer(string layerName)
         {
             foreach (var layer in _layers)
@@ -52,10 +60,12 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return null;
         }
+
         public ILayerSettings GetLayerSettings(string layerName)
         {
             return GetLayer(layerName);
         }
+
         public bool Remove(Layer layer)
         {
             if (layer == null)
@@ -64,11 +74,11 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return _layers.Remove(layer);
         }
+
         public bool Remove(string layerName)
         {
             var layer = GetLayer(layerName);
             return Remove(layer);
         }
-        private ZIndexSortedSet<Layer> _layers;
     }
 }

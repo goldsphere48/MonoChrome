@@ -7,6 +7,7 @@ namespace MonoChrome.Core.Components
     public class GameObjectEventArgs : EventArgs
     {
         public GameObject GameObject { get; set; }
+
         public GameObjectEventArgs(GameObject gameObject)
         {
             GameObject = gameObject;
@@ -15,8 +16,8 @@ namespace MonoChrome.Core.Components
 
     public class Transform : Component
     {
+        public float Angle { get; set; }
         public List<Transform> Childrens { get; } = new List<Transform>();
-
         public Vector2 LocalPosition
         {
             get
@@ -29,10 +30,7 @@ namespace MonoChrome.Core.Components
             }
             set => HandleLocalPositionChange(value);
         }
-
-        public float Angle { get; set; }
         public Vector2 Origin { get; set; }
-
         public Transform Parent
         {
             get => _parent;
@@ -57,6 +55,13 @@ namespace MonoChrome.Core.Components
                 _parent = value;
             }
         }
+        public Vector2 Position { get => _position; set => HandleAbsolutePositionChange(value); }
+        public event EventHandler<GameObjectEventArgs> ChildAdded;
+        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;
+        public event EventHandler<GameObjectEventArgs> ChildRemove;
+        public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
+        private Transform _parent;
+        private Vector2 _position = Vector2.Zero;
 
         public void MoveTowards(Vector2 dir, Vector2 speed)
         {
@@ -66,18 +71,6 @@ namespace MonoChrome.Core.Components
             Position += newVector;
         }
 
-        public Vector2 Position { get => _position; set => HandleAbsolutePositionChange(value); }
-
-        public event EventHandler<GameObjectEventArgs> ChildAdded;
-
-        public event EventHandler<GameObjectEventArgs> ChildAddedDeep;
-
-        public event EventHandler<GameObjectEventArgs> ChildRemove;
-
-        public event EventHandler<GameObjectEventArgs> ChildRemoveDeep;
-
-        private Transform _parent;
-        private Vector2 _position = Vector2.Zero;
         private void HandleAbsolutePositionChange(Vector2 newAbsolutePosition)
         {
             if (newAbsolutePosition != _position)
@@ -90,6 +83,7 @@ namespace MonoChrome.Core.Components
                 }
             }
         }
+
         private void HandleLocalPositionChange(Vector2 newLocalPosition)
         {
             if (Parent != null)
@@ -101,6 +95,7 @@ namespace MonoChrome.Core.Components
                 Position = newLocalPosition;
             }
         }
+
         private void OnChildAdded(GameObjectEventArgs args)
         {
             if (Parent != null)
@@ -109,6 +104,7 @@ namespace MonoChrome.Core.Components
             }
             ChildAddedDeep?.Invoke(this, args);
         }
+
         private void OnChildRemove(GameObjectEventArgs args)
         {
             if (Parent != null)

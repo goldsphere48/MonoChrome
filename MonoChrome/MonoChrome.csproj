@@ -51,7 +51,6 @@
     <Compile Include="Core\Components\CollisionDetection\BoxCollider2D.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collider.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
-    <Compile Include="Core\Components\CollisionDetection\PolygonCollisionResult.cs" />
     <Compile Include="Core\Components\DebugRenderer.cs" />
     <Compile Include="Core\Components\GameObjectRenderer.cs" />
     <Compile Include="Core\Components\TextRenderer.cs" />
@@ -68,8 +67,6 @@
     <Compile Include="Core\EntityManager\EntityStore.cs" />
     <Compile Include="Core\Helpers\FieldInjection\AttributeError.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
-    <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
-    <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
     <Compile Include="Core\Helpers\FieldInjection\FieldInjector.cs" />
     <Compile Include="Core\Helpers\FieldInjection\FieldAttributeVisitor.cs" />
     <Compile Include="Core\Helpers\FieldInjection\IComponentApplicatorAcceptable.cs" />
@@ -81,9 +78,6 @@
     <Compile Include="Core\EntityManager\IEntityDefinitionCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Exceptions\SceneAlreadyExistException.cs" />
-    <Compile Include="Core\Exceptions\SceneNotFoundException.cs" />
-    <Compile Include="Core\Exceptions\SceneNotInitializedException.cs" />
     <Compile Include="SceneSystem\Input\InputListener.cs" />
     <Compile Include="SceneSystem\Input\IPointerClickHandler.cs" />
     <Compile Include="SceneSystem\Input\MouseButton.cs" />

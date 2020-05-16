@@ -7,6 +7,7 @@ namespace MonoChrome.Core.EntityManager
 {
     internal class EntityStore : IEntityCollection<GameObject>
     {
+        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects = new Dictionary<GameObject, IDictionary<Type, Component>>();
         private FieldInjector _injector = new FieldInjector();
 
         public bool Add(GameObject entity, Component component)
@@ -33,11 +34,6 @@ namespace MonoChrome.Core.EntityManager
             return componentSuccessfullyAttached;
         }
 
-        internal IEnumerable<AttributeError> GetIssues(Component component)
-        {
-            return _injector.GetIssues(component);
-        }
-
         public void Clear()
         {
             foreach (var gameObject in _gameObjects.Keys)
@@ -46,6 +42,7 @@ namespace MonoChrome.Core.EntityManager
             }
             _gameObjects.Clear();
         }
+
         public bool Contains(GameObject entity)
         {
             if (entity == null)
@@ -54,18 +51,22 @@ namespace MonoChrome.Core.EntityManager
             }
             return _gameObjects.ContainsKey(entity);
         }
+
         public T GetComponent<T>(GameObject entity) where T : Component
         {
             return GetComponent(entity, typeof(T), false) as T;
         }
+
         public T GetComponent<T>(GameObject entity, bool allowDerivedComponents) where T : Component
         {
             return GetComponent(entity, typeof(T), allowDerivedComponents) as T;
         }
+
         public Component GetComponent(GameObject entity, Type componentType)
         {
             return GetComponent(entity, componentType, false);
         }
+
         public Component GetComponent(GameObject entity, Type componentType, bool allowDerivedComponents)
         {
             if (entity == null || componentType == null)
@@ -88,10 +89,12 @@ namespace MonoChrome.Core.EntityManager
             }
             return result;
         }
+
         public IEnumerable<Component> GetComponents(GameObject entity)
         {
             return GetComponentsForEntity(entity)?.Values;
         }
+
         public IEnumerable<Component> GetComponents(GameObject entity, Type type, bool inherit)
         {
             if (!inherit)
@@ -108,18 +111,22 @@ namespace MonoChrome.Core.EntityManager
                 }
             }
         }
+
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
             return GetComponents(typeof(T), false) as IEnumerable<T>;
         }
+
         public IEnumerable<T> GetComponents<T>(bool allowDerivedComponents) where T : Component
         {
             return GetComponents(typeof(T), allowDerivedComponents) as IEnumerable<T>;
         }
+
         public IEnumerable<Component> GetComponents(Type component)
         {
             return GetComponents(component, false);
         }
+
         public IEnumerable<Component> GetComponents(Type component, bool allowDerivedComponents)
         {
             foreach (var go in _gameObjects.Keys)
@@ -127,14 +134,17 @@ namespace MonoChrome.Core.EntityManager
                 yield return GetComponent(go, component, allowDerivedComponents);
             }
         }
+
         public IEnumerator<GameObject> GetEnumerator()
         {
             return _gameObjects.Keys.GetEnumerator();
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         public bool HasComponent<T>(GameObject gameObject, bool inherit = false) where T : Component
         {
             if (gameObject != null && Contains(gameObject))
@@ -149,13 +159,6 @@ namespace MonoChrome.Core.EntityManager
                 }
             }
             return false;
-        }
-
-        private void EraseComponent(GameObject entity, Component component)
-        {
-            _injector.OnComponentRemove(component);
-            entity.Dettach(component);
-            component.Dispose();
         }
 
         public bool Remove(GameObject entity, Component component)
@@ -177,6 +180,7 @@ namespace MonoChrome.Core.EntityManager
             EraseComponent(entity, component);
             return components.Remove(component.GetType());
         }
+
         public bool Remove(GameObject entity)
         {
             if (entity == null)
@@ -186,6 +190,7 @@ namespace MonoChrome.Core.EntityManager
             EraseGameObject(entity);
             return _gameObjects.Remove(entity);
         }
+
         internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
             IDictionary<Type, Component> components = null;
@@ -195,7 +200,18 @@ namespace MonoChrome.Core.EntityManager
             }
             return components;
         }
-        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects = new Dictionary<GameObject, IDictionary<Type, Component>>();
+
+        internal IEnumerable<AttributeError> GetIssues(Component component)
+        {
+            return _injector.GetIssues(component);
+        }
+
+        private void EraseComponent(GameObject entity, Component component)
+        {
+            _injector.OnComponentRemove(component);
+            entity.Dettach(component);
+            component.Dispose();
+        }
 
         private void EraseGameObject(GameObject entity)
         {

@@ -9,8 +9,8 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         void AddCacheRule(CacheRule rule);
         void Clear();
         void Erase(GameObject gameObject);
-        void Register(GameObject gameObject);
-        void OnFrameEnd();
         void OnFrameBegin();
+        void OnFrameEnd();
+        void Register(GameObject gameObject);
     }
 }

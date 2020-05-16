@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using MonoChrome.Core.Components;
+﻿using MonoChrome.Core.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +8,9 @@ namespace MonoChrome.Core.EntityManager
     public static class Entity
     {
         internal static EntityStore Registry { get; set; }
-        public static IEnumerable<GameObject> Decompose(GameObject gameObject)
-        {
-            var childrens = new List<Transform>(gameObject.Transform.Childrens);
-            foreach (var child in childrens)
-            {
-                child.Parent = null;
-                Decompose(child.GameObject);
-                yield return child.GameObject;
-            }
-        }
+        private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
+        private static EntityFactory _entityFactory = new EntityFactory();
+
         public static GameObject Compose(GameObject parent, params GameObject[] childrens)
         {
             foreach (var child in childrens)
@@ -27,23 +19,28 @@ namespace MonoChrome.Core.EntityManager
             }
             return parent;
         }
+
         public static GameObject Compose(string name, params GameObject[] childrens)
         {
             var parent = _entityFactory.CreateEmpty(name, Registry);
             return Compose(parent, childrens);
         }
+
         public static GameObject ComposeNew(params GameObject[] childrens)
         {
             return Compose(GameObject.DefaultName, childrens);
         }
+
         public static GameObject ComposeNew(string name, params GameObject[] childrens)
         {
             return Compose(name, childrens);
         }
+
         public static GameObject Create(params Component[] components)
         {
             return Create(GameObject.DefaultName, components);
         }
+
         public static GameObject Create(string name, params Component[] components)
         {
             if (name == null || components == null)
@@ -54,6 +51,7 @@ namespace MonoChrome.Core.EntityManager
             AttachComponents(gameObject, components);
             return gameObject;
         }
+
         public static GameObject CreateFromDefinition(string definition, string name)
         {
             if (definition == null)
@@ -64,10 +62,23 @@ namespace MonoChrome.Core.EntityManager
             var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
             return gameObject;
         }
+
+        public static IEnumerable<GameObject> Decompose(GameObject gameObject)
+        {
+            var childrens = new List<Transform>(gameObject.Transform.Childrens);
+            foreach (var child in childrens)
+            {
+                child.Parent = null;
+                Decompose(child.GameObject);
+                yield return child.GameObject;
+            }
+        }
+
         public static void Define(string definition, params Type[] componentTypes)
         {
             Define(definition, null, componentTypes);
         }
+
         public static void Define(string definition, string inheritFromDefinition, params Type[] componentTypes)
         {
             if (definition == null || componentTypes == null)
@@ -76,6 +87,7 @@ namespace MonoChrome.Core.EntityManager
             }
             _definitions.Define(definition, inheritFromDefinition, componentTypes);
         }
+
         public static GameObject Find(string name)
         {
             foreach (var gameObject in Registry)
@@ -87,6 +99,7 @@ namespace MonoChrome.Core.EntityManager
             }
             return null;
         }
+
         public static IEnumerable<GameObject> FindAll(string name)
         {
             var result = new List<GameObject>();
@@ -99,8 +112,7 @@ namespace MonoChrome.Core.EntityManager
             }
             return result;
         }
-        private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
-        private static EntityFactory _entityFactory = new EntityFactory();
+
         private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)
         {
             foreach (var component in components)

@@ -6,6 +6,7 @@ namespace MonoChrome.Core.EntityManager
     {
         public Component Component { get; private set; }
         public GameObject GameObject { get; private set; }
+
         public ComponentEventArgs(Component component, GameObject gameObject)
         {
             GameObject = gameObject;

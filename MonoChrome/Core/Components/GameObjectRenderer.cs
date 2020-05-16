@@ -2,24 +2,21 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoChrome.Core.Components
 {
     public abstract class GameObjectRenderer : Renderer
     {
-        public event Action<Renderer> BecomeInvisible;
-        public event Action<Renderer> BecomeVisible;
+        protected bool IsVisible { get; set; }
         protected Rectangle Window => new Rectangle(
             0,
             0,
             GraphicsDevice.PresentationParameters.BackBufferWidth,
             GraphicsDevice.PresentationParameters.BackBufferHeight
         );
-        protected bool IsVisible { get; set; }
+        public event Action<Renderer> BecomeInvisible;
+        public event Action<Renderer> BecomeVisible;
+        [InsertComponent] private Transform _transform;
 
         protected void Update()
         {
@@ -35,6 +32,5 @@ namespace MonoChrome.Core.Components
                 BecomeVisible?.Invoke(this);
             }
         }
-        [InsertComponent] private Transform _transform;
     }
 }

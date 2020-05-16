@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MonoChrome.SceneSystem.Layers.Helpers
 {
-    class CachedItemBufferEqualityComparer<TKey> : IEqualityComparer<CacheItem<TKey>>
+    internal class CachedItemBufferEqualityComparer<TKey> : IEqualityComparer<CacheItem<TKey>>
     {
         public bool Equals(CacheItem<TKey> x, CacheItem<TKey> y)
         {

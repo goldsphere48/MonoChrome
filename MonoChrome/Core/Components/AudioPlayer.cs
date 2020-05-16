@@ -33,6 +33,11 @@ namespace MonoChrome.Core.Components
                 _instance.Volume = _volume;
             }
         }
+        private SoundEffectInstance _instance;
+        private bool _isLooped = false;
+        private SoundEffect _soundEffect;
+        private float _volume;
+
         public void Pause()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -44,6 +49,7 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't pause play sound, sound effect is null or disposed");
             }
         }
+
         public void Play()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -55,6 +61,7 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't play sound, sound effect is null or disposed");
             }
         }
+
         public void Stop()
         {
             if (_instance != null && !_instance.IsDisposed)
@@ -66,14 +73,12 @@ namespace MonoChrome.Core.Components
                 throw new InvalidOperationException("Can't stop play sound, sound effect is null or disposed");
             }
         }
-        private SoundEffectInstance _instance;
-        private bool _isLooped = false;
-        private SoundEffect _soundEffect;
-        private float _volume;
+
         private void OnDestroy()
         {
             _instance.Dispose();
         }
+
         private void Start()
         {
             if (PlayOnStart)

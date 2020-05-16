@@ -9,6 +9,8 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
     {
         public int Count => _list.Count;
         public bool IsReadOnly => false;
+        private SortedList<int, HashSet<TValue>> _list = new SortedList<int, HashSet<TValue>>(new DescendingComparer());
+
         public void Add(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -20,6 +22,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             container.Add(value);
             value.ZIndexChanged += OnZIndexChanged;
         }
+
         public void Clear()
         {
             foreach (var dictionary in _list)
@@ -32,6 +35,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             _list.Clear();
         }
+
         public bool Contains(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -41,10 +45,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return false;
         }
+
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
+
         public IEnumerator<TValue> GetEnumerator()
         {
             foreach (var dictionary in _list.Values)
@@ -55,10 +61,12 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         public void OnZIndexChanged(object sender, ZIndexEventArgs args)
         {
             _list.TryGetValue(args.OldZIndex, out var container);
@@ -73,6 +81,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 Add(item);
             }
         }
+
         public bool Remove(TValue value)
         {
             _list.TryGetValue(value.ZIndex, out var container);
@@ -88,6 +97,5 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             return true;
         }
-        private SortedList<int, HashSet<TValue>> _list = new SortedList<int, HashSet<TValue>>(new DescendingComparer());
     }
 }
