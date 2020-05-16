@@ -70,7 +70,7 @@
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\ComponentInjector.cs" />
+    <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldInjector.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldAttributeVisitor.cs" />
     <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentApplicatorAcceptable.cs" />
     <Compile Include="Core\Component.cs" />

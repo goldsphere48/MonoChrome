@@ -7,7 +7,7 @@ namespace MonoChrome.Core.EntityManager
 {
     public class EntityStore : IEntityCollection<GameObject>
     {
-        private ComponentInjector _injector = new ComponentInjector();
+        private FieldInjector _injector = new FieldInjector();
 
         public bool Add(GameObject entity, Component component)
         {
@@ -32,6 +32,12 @@ namespace MonoChrome.Core.EntityManager
             }
             return componentSuccessfullyAttached;
         }
+
+        public IEnumerable<AttributeError> GetIssues(Component component)
+        {
+            return _injector.GetIssues(component);
+        }
+
         public void Clear()
         {
             foreach (var gameObject in _gameObjects.Keys)
@@ -160,8 +166,8 @@ namespace MonoChrome.Core.EntityManager
                 }
                 return false;
             }
-            entity.Dettach(component);
             _injector.OnComponentRemove(component);
+            entity.Dettach(component);
             component.Dispose();
             return components.Remove(component.GetType());
         }

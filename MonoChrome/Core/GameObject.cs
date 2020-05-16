@@ -303,7 +303,7 @@ namespace MonoChrome.Core
         {
             InvokeAction(
                 component => component.AwakeMethod,
-                component => component.IsAwaked,
+                component => !component.IsAwaked,
                 component => component.IsAwaked = true
             );
         }
@@ -337,7 +337,7 @@ namespace MonoChrome.Core
         {
             InvokeAction(
                 component => component.StartMethod,
-                component => component.IsStarted,
+                component => !component.IsStarted,
                 component => component.IsStarted = true
             );
         }
@@ -345,12 +345,23 @@ namespace MonoChrome.Core
         private Scene _scene;
         private int _zIndex;
         private EventHandler<ZIndexEventArgs> _zIndexChanged;
+
+        private void CheckComponent(Component component)
+        {
+            var issues = Registry.GetIssues(component);
+            foreach (var issue in issues)
+            {
+                throw new Exception(issue.Message);
+            }
+        }
+
         private void InvokeActionForComponents(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after, List<Component> components)
         {
             for (int i = 0; i < components.Count; ++i)
             {
+                CheckComponent(components[i]);
                 var method = reciever?.Invoke(components[i]);
-                if (method != null && !predicate(components[i]))
+                if (method != null && predicate(components[i]))
                 {
                     method();
                     var newComponents = Registry.GetComponents(this).ToList();
