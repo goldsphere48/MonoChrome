@@ -1,64 +1,55 @@
 ﻿using MonoChrome.Core.EntityManager;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
 {
+    internal class DependencieFieldInfo
+    {
+        public FieldInfo Field { get; set; }
+        public string From { get; set; }
+        public bool Inherit { get; set; }
+        public Component Component { get; set; }
+        public void Inject<T>(T value)
+        {
+            Field.SetValue(Component, value, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
+        }
+    }
+
     public class FieldAttributeVisitor
     {
-        internal ICollection<AttributeError> CheckResults { get; set; } = new List<AttributeError>();
-        internal IEnumerable<Component> Components { private get; set; }
+        internal List<DependencieFieldInfo> DependencieComponents { get; } = new List<DependencieFieldInfo>();
+        internal List<DependencieFieldInfo> DependencieObjects { get; } = new List<DependencieFieldInfo>();
         internal Component CurrentComponent { private get; set; }
         internal FieldInfo CurrentField { private get; set; }
 
         internal void VisitInsertComponentAttribute(string from, bool inherit, bool required)
         {
-            if (!string.IsNullOrEmpty(from))
-            {
-                var gameObject = Entity.Find(from);
-                if (gameObject != null)
+            DependencieComponents.Add(
+                new DependencieFieldInfo
                 {
-                    VisitInsertComponentAttribute(inherit, required, gameObject.GetComponents());
-                }
-            } else
-            {
-                VisitInsertComponentAttribute(inherit, required, Components);
-            }
+                    Field = CurrentField,
+                    Component = CurrentComponent,
+                    From = from,
+                    Inherit = inherit
+                });
         }
 
         internal void VisitInsertGameObjectAttribute(string name, bool required)
         {
             if (CurrentField.FieldType == typeof(GameObject))
             {
-                var gameObject = Entity.Find(name);
-                if (gameObject == null && required)
+                DependencieObjects.Add(new DependencieFieldInfo
                 {
-                    CheckResults.Add(new AttributeError { Message = $"Can't find game object with name {name}" });
-                }
-                else
-                {
-                    CurrentField.SetValue(CurrentComponent, gameObject, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
-                }
+                    Field = CurrentField,
+                    Component = CurrentComponent,
+                    From = name
+                });
             }
             else
             {
-                CheckResults.Add(new AttributeError { Message = $"Can't insert game object with name {name} to not game object field" });
-            }
-        }
-
-        internal void VisitInsertComponentAttribute(bool inherit, bool required, IEnumerable<Component> components)
-        {
-            foreach (var component in components)
-            {
-                if (component.GetType() == CurrentField.FieldType || (inherit && CurrentField.FieldType.IsAssignableFrom(component.GetType())))
-                {
-                    CurrentField.SetValue(CurrentComponent, component, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, null);
-                    return;
-                }
-            }
-            if (required == true)
-            {
-                CheckResults.Add(new AttributeError { Message = $"Unfound required component {CurrentField.FieldType.Name}" });
+                throw new InvalidOperationException($"Can't insert game object with name {name} to not game object field");
             }
         }
     }

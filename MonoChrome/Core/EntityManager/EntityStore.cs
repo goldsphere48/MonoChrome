@@ -7,20 +7,8 @@ namespace MonoChrome.Core.EntityManager
 {
     public class EntityStore : IEntityCollection<GameObject>
     {
-        public EntityStore()
-        {
-            SetTrigger(
-                component => true,
-                component =>
-                {
-                    var issues = ComponentAttributeAplicator.Apply(component);
-                    foreach (var issue in issues)
-                    {
-                        throw new Exception(issue.Message);
-                    }
-                }
-            );
-        }
+        private ComponentInjector _injector = new ComponentInjector();
+
         public bool Add(GameObject entity, Component component)
         {
             if (entity == null || component == null)
@@ -33,13 +21,14 @@ namespace MonoChrome.Core.EntityManager
             {
                 components = new Dictionary<Type, Component>();
                 _gameObjects[entity] = components;
+                _injector.OnObjectEntered(entity);
             }
             if (!components.ContainsKey(component.GetType()))
             {
                 components.Add(component.GetType(), component);
                 entity.Attach(component);
+                _injector.OnComponentAdded(component);
                 componentSuccessfullyAttached = true;
-                _unsynchronizedComponents.Add(component);
             }
             return componentSuccessfullyAttached;
         }
@@ -166,11 +155,13 @@ namespace MonoChrome.Core.EntityManager
             {
                 if (components.Count == 0)
                 {
+                    _injector.OnObjectDrop(entity);
                     _gameObjects.Remove(entity);
                 }
                 return false;
             }
             entity.Dettach(component);
+            _injector.OnComponentRemove(component);
             component.Dispose();
             return components.Remove(component.GetType());
         }
@@ -183,24 +174,6 @@ namespace MonoChrome.Core.EntityManager
             EraseGameObject(entity);
             return _gameObjects.Remove(entity);
         }
-        public void SetTrigger(Predicate<Component> predicate, Action<Component> action)
-        {
-            _triggers.Add(predicate, action);
-        }
-        public void Synchronize()
-        {
-            foreach (var trigger in _triggers)
-            {
-                foreach (var component in _unsynchronizedComponents)
-                {
-                    if (trigger.Key(component))
-                    {
-                        trigger.Value(component);
-                    }
-                }
-            }
-            _unsynchronizedComponents.Clear();
-        }
         internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
         {
             IDictionary<Type, Component> components = null;
@@ -210,12 +183,8 @@ namespace MonoChrome.Core.EntityManager
             }
             return components;
         }
-        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects =
-                                                                                                                                                                                            new Dictionary<GameObject, IDictionary<Type, Component>>();
-        private IDictionary<Predicate<Component>, Action<Component>> _triggers =
-            new Dictionary<Predicate<Component>, Action<Component>>();
-        private ICollection<Component> _unsynchronizedComponents =
-                    new HashSet<Component>();
+        private IDictionary<GameObject, IDictionary<Type, Component>> _gameObjects = new Dictionary<GameObject, IDictionary<Type, Component>>();
+
         private void EraseGameObject(GameObject entity)
         {
             var components = GetComponentsForEntity(entity);

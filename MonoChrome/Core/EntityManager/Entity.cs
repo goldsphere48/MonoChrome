@@ -99,10 +99,6 @@ namespace MonoChrome.Core.EntityManager
             }
             return result;
         }
-        public static void Synchronize()
-        {
-            Registry.Synchronize();
-        }
         private static IEntityDefinitionCollection<string> _definitions = new EntityDefinitions();
         private static EntityFactory _entityFactory = new EntityFactory();
         private static void AttachComponents(GameObject gameObject, IEnumerable<Component> components)
