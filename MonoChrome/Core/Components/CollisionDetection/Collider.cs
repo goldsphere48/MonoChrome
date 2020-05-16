@@ -5,6 +5,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
 {
     public abstract class Collider : Component
     {
+        public bool CheckCollision { get; set; } = false;
         public abstract void CheckCollisionWith(Collider collider);
         public abstract bool Contains(Vector2 point);
         internal bool IsMouseOver { get; set; }

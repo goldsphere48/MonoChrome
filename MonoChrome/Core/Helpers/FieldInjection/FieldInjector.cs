@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
+namespace MonoChrome.Core.Helpers.FieldInjection
 {
     internal class FieldInjector
     {
         private delegate string IssueTemplate(Component component, DependencyFieldInfo info);
         private FieldAttributeVisitor _fieldAttributeVisitor = new FieldAttributeVisitor();
+        private HashSet<Component> _componentsToErase = new HashSet<Component>();
+        private bool _isFrameEnd = true;
 
         public IEnumerable<AttributeError> GetIssues(Component component)
         {

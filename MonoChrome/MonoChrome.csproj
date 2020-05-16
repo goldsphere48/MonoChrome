@@ -66,13 +66,13 @@
     <Compile Include="Core\EntityManager\EntityDefinitions.cs" />
     <Compile Include="Core\EntityManager\EntityFactory.cs" />
     <Compile Include="Core\EntityManager\EntityStore.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\AttributeError.cs" />
+    <Compile Include="Core\Helpers\FieldInjection\AttributeError.cs" />
     <Compile Include="Core\EntityManager\IEntityCollection.cs" />
     <Compile Include="Core\Exceptions\InvalidComponentDuplicateException.cs" />
     <Compile Include="Core\Exceptions\UnfoundRequiredComponentsException.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldInjector.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\FieldAttributeVisitor.cs" />
-    <Compile Include="Core\Helpers\ComponentAttributeApplication\IComponentApplicatorAcceptable.cs" />
+    <Compile Include="Core\Helpers\FieldInjection\FieldInjector.cs" />
+    <Compile Include="Core\Helpers\FieldInjection\FieldAttributeVisitor.cs" />
+    <Compile Include="Core\Helpers\FieldInjection\IComponentApplicatorAcceptable.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\Renderer.cs" />
     <Compile Include="Core\Components\SpriteRenderer.cs" />
@@ -97,6 +97,7 @@
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexEventArgs.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexSortedList.cs" />
     <Compile Include="SceneSystem\Layers\Helpers\ZIndexSortedSet.cs" />
+    <Compile Include="SceneSystem\Layers\ILayerSettings.cs" />
     <Compile Include="SceneSystem\Layers\ILayerCollection.cs" />
     <Compile Include="SceneSystem\Layers\Layer.cs" />
     <Compile Include="SceneSystem\Layers\LayerManager.cs" />

@@ -8,7 +8,7 @@ namespace MonoChrome.Core.EntityManager
 {
     public static class Entity
     {
-        public static EntityStore Registry { get; set; }
+        internal static EntityStore Registry { get; set; }
         public static IEnumerable<GameObject> Decompose(GameObject gameObject)
         {
             var childrens = new List<Transform>(gameObject.Transform.Childrens);

@@ -1,11 +1,11 @@
-﻿using MonoChrome.Core.Helpers.ComponentAttributeApplication;
+﻿using MonoChrome.Core.Helpers.FieldInjection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoChrome.Core.EntityManager
 {
-    public class EntityStore : IEntityCollection<GameObject>
+    internal class EntityStore : IEntityCollection<GameObject>
     {
         private FieldInjector _injector = new FieldInjector();
 
@@ -33,7 +33,7 @@ namespace MonoChrome.Core.EntityManager
             return componentSuccessfullyAttached;
         }
 
-        public IEnumerable<AttributeError> GetIssues(Component component)
+        internal IEnumerable<AttributeError> GetIssues(Component component)
         {
             return _injector.GetIssues(component);
         }
@@ -150,6 +150,14 @@ namespace MonoChrome.Core.EntityManager
             }
             return false;
         }
+
+        private void EraseComponent(GameObject entity, Component component)
+        {
+            _injector.OnComponentRemove(component);
+            entity.Dettach(component);
+            component.Dispose();
+        }
+
         public bool Remove(GameObject entity, Component component)
         {
             if (entity == null || component == null)
@@ -166,9 +174,7 @@ namespace MonoChrome.Core.EntityManager
                 }
                 return false;
             }
-            _injector.OnComponentRemove(component);
-            entity.Dettach(component);
-            component.Dispose();
+            EraseComponent(entity, component);
             return components.Remove(component.GetType());
         }
         public bool Remove(GameObject entity)
@@ -196,10 +202,11 @@ namespace MonoChrome.Core.EntityManager
             var components = GetComponentsForEntity(entity);
             foreach (var component in components.Values)
             {
-                component.Dispose();
-                entity.Dettach(component);
+                EraseComponent(entity, component);
             }
             components.Clear();
+            _injector.OnObjectDrop(entity);
+            _gameObjects.Remove(entity);
         }
     }
 }

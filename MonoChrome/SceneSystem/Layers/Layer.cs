@@ -11,11 +11,12 @@ using System.Collections.Generic;
 
 namespace MonoChrome.SceneSystem.Layers
 {
-    public class Layer : ICollection<GameObject>, ILayerItem
+    public class Layer : ICollection<GameObject>, ILayerItem, ILayerSettings
     {
         public bool AllowThroughHandling { get; set; } = false;
-        public object CachedRule { get; }
         public bool CollisionDetectionEnable { get; set; } = true;
+        public bool Visible { get; set; } = true;
+        public bool Enabled { get; set; } = true;
         public int Count => _gameObjects.Count;
         public bool HandleInput { get; set; } = true;
         public bool IsReadOnly => false;
@@ -59,7 +60,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void OnFrameEnd()
         {
-            _isFrameFinished = true;
+            _isFrameEnd = true;
             _cachedComponents.OnFrameEnd();
             _cachedMethods.OnFrameEnd();
             foreach (var gameObject in _orderToAdd)
@@ -74,16 +75,16 @@ namespace MonoChrome.SceneSystem.Layers
             _orderToRemove.Clear();
         }
 
-        internal void OnFrameStart()
+        internal void OnFrameBegin()
         {
-            _isFrameFinished = false;
-            _cachedComponents.OnFrameStart();
-            _cachedMethods.OnFrameStart();
+            _isFrameEnd = false;
+            _cachedComponents.OnFrameBegin();
+            _cachedMethods.OnFrameBegin();
         }
 
         private HashSet<GameObject> _orderToAdd = new HashSet<GameObject>();
         private HashSet<GameObject> _orderToRemove = new HashSet<GameObject>();
-        private bool _isFrameFinished = false;
+        private bool _isFrameEnd = false;
 
         internal void KeyboardHandle(KeyboardState state)
         {
@@ -95,7 +96,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void Add(GameObject item)
         {
-            if (_isFrameFinished)
+            if (_isFrameEnd)
             {
                 item.LayerName = Name;
                 _cachedComponents.Register(item);
@@ -132,9 +133,12 @@ namespace MonoChrome.SceneSystem.Layers
         }
         public void Draw(SpriteBatch _spriteBatch)
         {
-            foreach (Renderer renderer in _cachedComponents[_renderer])
+            if (Visible && Enabled)
             {
-                renderer.Draw(_spriteBatch);
+                foreach (Renderer renderer in _cachedComponents[_renderer])
+                {
+                    renderer.Draw(_spriteBatch);
+                }
             }
         }
         public bool Equals(Layer other)
@@ -173,7 +177,7 @@ namespace MonoChrome.SceneSystem.Layers
         }
         public bool Remove(GameObject item)
         {
-            if (_isFrameFinished)
+            if (_isFrameEnd)
             {
                 EraseItem(item);
                 GameObject.Erase(item);
@@ -186,13 +190,23 @@ namespace MonoChrome.SceneSystem.Layers
         }
         public void Update()
         {
-            foreach (var updateMethod in _cachedMethods["Update"])
+            if (Enabled)
             {
-                updateMethod();
+                foreach (var updateMethod in _cachedMethods["Update"])
+                {
+                    updateMethod();
+                }
+                if (CollisionDetectionEnable)
+                {
+                    CheckCollision();
+                }
             }
-            if (CollisionDetectionEnable)
+        }
+        private void CheckCollision()
+        {
+            foreach (Collider colliderA in _cachedComponents[_collider])
             {
-                foreach (Collider colliderA in _cachedComponents[_collider])
+                if (colliderA.CheckCollision)
                 {
                     foreach (Collider colliderB in _cachedComponents[_collider])
                     {

@@ -8,6 +8,7 @@ namespace MonoChrome.SceneSystem.Layers
         void Clear();
         bool Contains(string layerName);
         Layer GetLayer(string layerName);
+        ILayerSettings GetLayerSettings(string layerName);
         bool Remove(Layer layer);
         bool Remove(string layerName);
     }

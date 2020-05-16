@@ -1,4 +1,4 @@
-﻿using MonoChrome.Core.Helpers.ComponentAttributeApplication;
+﻿using MonoChrome.Core.Helpers.FieldInjection;
 using System;
 
 namespace MonoChrome.Core.Attributes

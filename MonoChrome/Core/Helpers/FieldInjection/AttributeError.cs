@@ -1,4 +1,4 @@
-﻿namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
+﻿namespace MonoChrome.Core.Helpers.FieldInjection
 {
     public struct AttributeError
     {

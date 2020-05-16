@@ -52,6 +52,10 @@ namespace MonoChrome.SceneSystem.Layers
             }
             return null;
         }
+        public ILayerSettings GetLayerSettings(string layerName)
+        {
+            return GetLayer(layerName);
+        }
         public bool Remove(Layer layer)
         {
             if (layer == null)

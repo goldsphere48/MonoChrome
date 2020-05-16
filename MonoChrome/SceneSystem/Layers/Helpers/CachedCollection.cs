@@ -16,7 +16,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
 
     internal abstract class CachedCollection<TKey, TCached> : ICachedCollection<TKey, TCached>
     {
-        private bool _isFrameFinished = true;
+        private bool _isFrameEnd = true;
         private HashSet<CacheItem<TKey>> _itemBufferOnAdd = new HashSet<CacheItem<TKey>>(new CachedItemBufferEqualityComparer<TKey>());
         private HashSet<CacheItem<TKey>> _itemBufferOnRemove = new HashSet<CacheItem<TKey>>(new CachedItemBufferEqualityComparer<TKey>());
 
@@ -43,13 +43,13 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
                 }
             }
         }
-        public void OnFrameStart()
+        public void OnFrameBegin()
         {
-            _isFrameFinished = false;
+            _isFrameEnd = false;
         }
         public void OnFrameEnd()
         {
-            _isFrameFinished = true;
+            _isFrameEnd = true;
             foreach (var item in _itemBufferOnAdd)
             {
                 Add(item);
@@ -68,7 +68,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         protected abstract void Cache(Component component, CacheMode rule);
         protected void SafeAdd(CacheItem<TKey> item)
         {
-            if (_isFrameFinished)
+            if (_isFrameEnd)
             {
                 Add(item);
             } else
@@ -78,7 +78,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         }
         protected void SafeRemove(CacheItem<TKey> item)
         {
-            if (_isFrameFinished)
+            if (_isFrameEnd)
             {
                 Remove(item);
             }

@@ -11,7 +11,7 @@ namespace MonoChrome.SceneSystem.Layers
     public class LayerManager
     {
         private HashSet<FrameEndTask> _frameEndTasksBuffers = new HashSet<FrameEndTask>();
-        private bool _isFrameFinished = true;
+        private bool _isFrameEnd = true;
 
         internal void Initialize()
         {
@@ -28,7 +28,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void AddFrameEndTask(FrameEndTask task)
         {
-            if (_isFrameFinished)
+            if (_isFrameEnd)
             {
                 task?.Invoke();
             }
@@ -38,7 +38,7 @@ namespace MonoChrome.SceneSystem.Layers
             }
         }
 
-        public void Add(string layerName, GameObject gameObject, bool replace = true)
+        internal void Add(string layerName, GameObject gameObject, bool replace = true)
         {
             if (string.IsNullOrEmpty(layerName) || gameObject == null)
             {
@@ -70,6 +70,22 @@ namespace MonoChrome.SceneSystem.Layers
             }
         }
 
+        public ILayerSettings GetLayer(string layerName)
+        {
+            if (!string.IsNullOrEmpty(layerName))
+            {
+                return _layers.GetLayerSettings(layerName);
+            } else
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        public ILayerSettings GetLayer(DefaultLayers layerName)
+        {
+            return GetLayer(layerName.ToString());
+        }
+
         internal void KeyboardHandle(KeyboardState state)
         {
             foreach (var layer in _layers)
@@ -78,14 +94,14 @@ namespace MonoChrome.SceneSystem.Layers
             }
         }
 
-        public void Add(DefaultLayers layerName, GameObject gameObject)
+        internal void Add(DefaultLayers layerName, GameObject gameObject)
         {
             Add(layerName.ToString(), gameObject);
         }
 
         internal void OnFrameEnd()
         {
-            _isFrameFinished = true;
+            _isFrameEnd = true;
             foreach (var layer in _layers)
             {
                 layer.OnFrameEnd();
@@ -97,20 +113,20 @@ namespace MonoChrome.SceneSystem.Layers
             _frameEndTasksBuffers.Clear();
         }
 
-        internal void OnFrameStart()
+        internal void OnFrameBegin()
         {
-            _isFrameFinished = false;
+            _isFrameEnd = false;
             foreach (var layer in _layers)
             {
-                layer.OnFrameStart();
+                layer.OnFrameBegin();
             }
         }
 
-        public void Add(GameObject gameObject)
+        internal void Add(GameObject gameObject)
         {
             Add(DefaultLayers.Default.ToString(), gameObject);
         }
-        public void Clear()
+        internal void Clear()
         {
             foreach (var layer in _layers)
             {
@@ -140,14 +156,14 @@ namespace MonoChrome.SceneSystem.Layers
                 throw new ArgumentNullException();
             }
         }
-        public void Draw(SpriteBatch batch)
+        internal void Draw(SpriteBatch batch)
         {
             foreach (var layer in _layers)
             {
                 layer.Draw(batch);
             }
         }
-        public void HandleMouseClick(PointerEventData pointerEventData)
+        internal void HandleMouseClick(PointerEventData pointerEventData)
         {
             foreach (var layer in _layers)
             {
@@ -158,7 +174,7 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-        public void HandleMouseMove(PointerEventData pointerEventData)
+        internal void HandleMouseMove(PointerEventData pointerEventData)
         {
             foreach (var layer in _layers)
             {
@@ -169,21 +185,21 @@ namespace MonoChrome.SceneSystem.Layers
                 }
             }
         }
-        public void OnDestroy()
+        internal void OnDestroy()
         {
             foreach (var layer in _layers)
             {
                 layer.OnDestroy();
             }
         }
-        public void OnFinalise()
+        internal void OnFinalise()
         {
             foreach (var layer in _layers)
             {
                 layer.OnFinalise();
             }
         }
-        public void Remove(GameObject gameObject)
+        internal void Remove(GameObject gameObject)
         {
             string layerName = null;
             if (gameObject != null)
@@ -224,7 +240,7 @@ namespace MonoChrome.SceneSystem.Layers
         {
             SetZIndex(layerName.ToString(), zIndex);
         }
-        public void Update()
+        internal void Update()
         {
             foreach (var layer in _layers)
             {

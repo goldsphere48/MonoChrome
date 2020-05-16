@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
+namespace MonoChrome.Core.Helpers.FieldInjection
 {
     internal class DependencyFieldInfo
     {
@@ -27,7 +27,7 @@ namespace MonoChrome.Core.Helpers.ComponentAttributeApplication
         {
             return
                 (!string.IsNullOrEmpty(From) && From == injectableComponet.GameObject.Name) ||
-                string.IsNullOrEmpty(From) && injectableComponet.GameObject.Name == Component.GameObject.Name;
+                string.IsNullOrEmpty(From) && injectableComponet.GameObject == Component.GameObject;
         }
 
         public bool IsFieldValid(Component injectableComponet)

@@ -73,7 +73,7 @@ namespace MonoChrome.SceneSystem
         }
         public void Update()
         {
-            _layerManager.OnFrameStart();
+            _layerManager.OnFrameBegin();
             HandleInput();
             _layerManager.Update();
             _layerManager.OnFrameEnd();
