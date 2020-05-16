@@ -48,7 +48,6 @@ namespace MonoChrome.Core.Components.CollisionDetection
             if (renderer != null)
             {
                 _box = new Rectangle((int)_transform.Position.X, (int)_transform.Position.Y, (int)renderer.Size.X, (int)renderer.Size.Y);
-                _transform.Origin = renderer.Center;
             }
             else
             {

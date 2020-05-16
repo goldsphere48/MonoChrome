@@ -4,7 +4,7 @@ using MonoChrome.Core.Attributes;
 
 namespace MonoChrome.Core.Components
 {
-    public class TextRenderer : Renderer
+    public class TextRenderer : GameObjectRenderer
     {
         public override Vector2 Size => _size;
         public SpriteFont SpriteFont { get; set; }
@@ -17,6 +17,7 @@ namespace MonoChrome.Core.Components
                 if (SpriteFont != null && _text != null)
                 {
                     _size = SpriteFont.MeasureString(_text);
+                    _transform.Origin = Center;
                 }
             }
         }
@@ -24,7 +25,7 @@ namespace MonoChrome.Core.Components
         {
             if (SpriteFont != null)
             {
-                spriteBatch.DrawString(SpriteFont, Text, _transform.Position, Color);
+                spriteBatch.DrawString(SpriteFont, Text, _transform.Position, Color, _transform.Angle, _transform.Origin, Vector2.One, SpriteEffects.None, 1);
             }
         }
         private Vector2 _size;

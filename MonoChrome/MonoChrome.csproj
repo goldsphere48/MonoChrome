@@ -47,14 +47,13 @@
   <ItemGroup>
     <Compile Include="Core\Attributes\InsertComponentAttribute.cs" />
     <Compile Include="Core\Attributes\InsertGameObject.cs" />
-    <Compile Include="Core\ComponentExtensions.cs" />
     <Compile Include="Core\Components\AudioPlayer.cs" />
     <Compile Include="Core\Components\CollisionDetection\BoxCollider2D.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collider.cs" />
     <Compile Include="Core\Components\CollisionDetection\Collision.cs" />
     <Compile Include="Core\Components\CollisionDetection\PolygonCollisionResult.cs" />
     <Compile Include="Core\Components\DebugRenderer.cs" />
-    <Compile Include="Core\Components\IBecomeInvisible.cs" />
+    <Compile Include="Core\Components\GameObjectRenderer.cs" />
     <Compile Include="Core\Components\TextRenderer.cs" />
     <Compile Include="Core\Time.cs" />
     <Compile Include="SceneSystem\Input\IKeyboardHandler.cs" />

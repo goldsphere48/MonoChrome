@@ -8,6 +8,7 @@ using MonoChrome.SceneSystem;
 using MonoChrome.SceneSystem.Layers;
 using MonoChrome.SceneSystem.Layers.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace MonoChrome.Core
@@ -167,6 +168,74 @@ namespace MonoChrome.Core
         private MethodInfo GetMethod(string name)
         {
             return GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+        public void AddComponent(Type componentType)
+        {
+            GameObject.AddComponent(componentType);
+        }
+        public void AddComponent(Component newComponent)
+        {
+            GameObject.AddComponent(newComponent);
+        }
+        public void AddComponent<T>() where T : Component
+        {
+            GameObject.AddComponent<T>();
+        }
+        public Component GetComponent(Type componentType, bool inherit = false)
+        {
+            return GameObject.GetComponent(componentType, inherit);
+        }
+        public T GetComponent<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.GetComponent(typeof(T), inherit) as T;
+        }
+        public Component GetComponentInChildren(Type componentType, bool inherit = false)
+        {
+            return GameObject.GetComponentInChildren(componentType, inherit);
+        }
+        public T GetComponentInChildren<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.GetComponentInChildren<T>(inherit);
+        }
+        public Component GetComponentInParent(Type componentType, bool inherit = false)
+        {
+            return GameObject.GetComponentInParent(componentType, inherit);
+        }
+        public T GetComponentInParent<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.GetComponentInParent<T>(inherit);
+        }
+        public IEnumerable<Component> GetComponents()
+        {
+            return GameObject.GetComponents();
+        }
+        public IEnumerable<Component> GetComponentsInChildren(Type componentType, bool inherit = false)
+        {
+            return GameObject.GetComponentsInChildren(componentType, inherit);
+        }
+        public IEnumerable<T> GetComponentsInChildren<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.GetComponentsInChildren<T>(inherit);
+        }
+        public IEnumerable<Component> GetComponentsInParent(Type componentType, bool inherit = false)
+        {
+            return GameObject.GetComponentsInParent(componentType, inherit);
+        }
+        public IEnumerable<T> GetComponentsInParent<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.GetComponentsInParent<T>(inherit);
+        }
+        public bool HasComponent<T>(bool inherit = false) where T : Component
+        {
+            return GameObject.HasComponent<T>(inherit);
+        }
+        public void RemoveComponent(Type type)
+        {
+            GameObject.RemoveComponent(type);
+        }
+        public void RemoveComponent<T>() where T : Component
+        {
+            GameObject.RemoveComponent<T>();
         }
     }
 }

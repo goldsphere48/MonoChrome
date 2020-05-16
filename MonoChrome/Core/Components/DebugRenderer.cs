@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
 using MonoChrome.Core.Components.CollisionDetection;
+using System;
 
 namespace MonoChrome.Core.Components
 {
