@@ -3,20 +3,20 @@
 MonoCrome это - высокоуровневый компонентно-ориентированный Framework для MonoGame. На данный момент реализующий самый базовый функционал необходимый для создания 2D игры, без необходимости писать какой-либо код помимо логики ваших компонентов. Пример работы с Framework'ом: [Asteroids](https://github.com/goldsphere48/Asteroids).
 
 # Мотивация
-Этот проект является учёбным и сделан с целью развития практических навыков программирования на C# и в целом усвояния теории программирования, применении паттернов и попытка написать грамотный код. Пока что проект на стадии прототипа и многие моменты необходимо подвргнуть рефакторингу, однако цель - реализовать Unity подобный подход к созданию игр на MonoGame считаю достигнут.
+Этот проект является учёбным и сделан с целью развития практических навыков программирования на C# и в целом усвоения теории программирования, применении паттернов и попытка написать грамотный код. Пока что проект на стадии прототипа и многие моменты необходимо подвргнуть рефакторингу, однако цель - реализовать Unity подобный подход к созданию игр на MonoGame, считаю достигнут.
 В процессе разработки я ориентровался на API Unity, иногда повторяя даже имена методов. Однако на структуру DI контейнера компонентов меня вдохновил [данный](https://github.com/jhauberg/ComponentKit) Framework. 
 
 # Features!
 
  1) Набор базовых компонентов : 
   - Transform - отвечает за положение объекта в пространстве, а также организацию иерархии объектов на сцене
-  - BoxCollider2D - создаёт границу объекту соответсвующую Render компоненту, либо задаёт кастомню границу. Служит для проверки пересечения с другими Collier'ами, а также дл проверки нажатия по объекту.
+  - BoxCollider2D - создаёт границу объекту соответсвующую Render компоненту, либо задаёт кастомню границу. Служит для проверки пересечения с другими Collider'ами, а также для проверки нажатия по объекту.
   - TextRenderer - рендер текста на сцене
   - SpriteRenderer - рендер спрайта на сцене
   - DebugRenderer - рендер границ Collider'a
 2) Поддержка иерархии GameObject'ов на подобии того как это сделано в Unity
 3) Система управления сценами
-4) Аттрибуты InsertComponent(From, Require) и InsertGameObject(Name), прокидывающие зависимые компоненты и объекты через механизм рефлексии, что делает код значительно чище и проще.
+4) Аттрибуты InsertComponent и InsertGameObject, прокидывающие зависимые компоненты и объекты через механизм рефлексии, что делает код значительно чище и проще.
 5) Система кэширования компонентов и методов оптимизирует работу Framework'a, кэшируя необхоимые компоненты, такие как Renderer, Collider и методы Update, Awake, Start и.т.д. тем самым исключая лишние вызовы.
 6) LayerManager. Позволяет управлять слоями.
 7) IPointerClickHandler - интерфейс добавляющий метод, срабатывающйи при клике на Collider объекта и несколько других интерфейсов, описанных в блоке Input выше.
@@ -59,8 +59,6 @@ public static void Instatiate(GameObject gameObject)
 public static void Instatiate(GameObject gameObject, string layerName)
 public static void Instatiate(GameObject gameObject, DefaultLayers layer)
 ```
-Поумолчанию объект создаётся на слое DefaultLayers.Default, но при желании можно указать какой именно слой нужен. Каждый из 4 стандартных слоёв имеет свои настройке. Позже будет показано как создавать свой собственные слои.
-
 Публичные свойства
 ```sh
 public string LayerName { get; }
@@ -81,7 +79,7 @@ public static GameObject Create(string name, params Component[] components)
 public static GameObject CreateFromDefinition(string definition, string name)
 ```
 
-Последний метод использует дефиниции (заранее заготовлtнную схему объекта, состоящую из набора типов компонентов, сотсавляющих объект).
+Последний метод использует дефиниции (заранее заготовленную схему объекта, состоящую из набора типов компонентов, составляющих объект).
 Пример создания дефиниции:
 ```sh
 Entity.Define("Name", typeof(Component1), typeof(Component2), ...);
@@ -99,7 +97,10 @@ public static void Define(string definition, string inheritFromDefinition, param
 ```sh
 go1.Transform.Parent = go2.Transform;
 ```
-Декопозировать можно присваением Transform.Parent'у null.
+Декопозировать можно так:
+```sh
+go1.Transform.Parent = null;
+```
 2) Через интерфейс Entity:
 ```sh
 //Присвает результат композиции объекту parent
@@ -121,7 +122,7 @@ var a = Entity.ComposeNew("Go1",
 ```sh
 public static IEnumerable<GameObject> Decompose(GameObject gameObject)
 ```
-полностью линеалиризует объект.
+полностью линеаризует объект.
 
 ## Компоненты
 
@@ -152,7 +153,7 @@ class ComponentA : Component
 }
 ```
 
-##Аттрибуты InsertComponent и InsertGameObject
+## Аттрибуты InsertComponent и InsertGameObject
 ### InsertComponent
 ```sh
 public string From { get; set; }
@@ -165,33 +166,33 @@ public void AcceptFieldVisitor(FieldAttributeVisitor visitor);
 ```sh
 [InsertComponent(From = "StarShip")] private Health _health;
 ```
-Если свойство From не указано, что компонент ищется среди компонентов текущего GameObject'a
+Если свойство From не указано, то компонент ищется среди компонентов текущего GameObject'a
 ```sh
 [InsertComponent] private Health _health;
 ```
-Если флаг Required устанволен в true и при добавлении объекта на сцену, компонент не был найден, будет выброшено исключение. 
+Если флаг Required установлен в true и при добавлении объекта на сцену, компонент не был найден, будет выброшено исключение. 
 ```sh
 [InsertComponent(Required = true)] private Health _health;
 ```
-Если флаг Inherit устанволен в true, то в качестве типа поля можно указать базовый тип и система подставит первый подходящий компонент данного типа либа наследника данного типа (в том числе можно использовать тип интерфейса)
+Если флаг Inherit установлен в true, то в качестве типа поля можно указать базовый тип и система подставит первый подходящий компонент данного типа либо наследника данного типа (в том числе можно использовать тип интерфейса).
 ```sh
- //подставит SpriteRenderer
+//подставит SpriteRenderer
 [InsertComponent(Inherit = true)] private Renderer _renderer;
 [InsertComponent(Inherit = true, From = "Boss", Required = true)] private IDamagable _damagable;
 ```
 ### InsertGameObject
-Данный атрибут ведёт себя также как и InsertComponent. Только в качестве типа использует GameObject.
+Данный аттрибут ведёт себя также как и InsertComponent, только в качестве типа использует GameObject.
 ```sh
- //подставит SpriteRenderer
+//подставит SpriteRenderer
 [InsertGameObject("StarShip", Required = true)] private GameObject _ship;
 ```
 ### Особености аттрибутов
-Данные аттрибуты поддерживают перекрётные ссылки, а также способны "ожидать" пока необходимый компонент не будет добавлен (если Required = false). То есть как-только нужный компонент / объект будет добавлен (это может произойти когда угодно), он сразу попадёт в поле помеченнное соответсвующим аттрибутом. Также важной особенностью является то, что если компонент / объект были удалены со сцены, то в поле будет возвращён null.
+Данные аттрибуты поддерживают перекрёстные ссылки, а также способны "ожидать" пока необходимый компонент не будет добавлен (если Required = false). То есть как-только нужный компонент / объект будет добавлен на сцену (это может произойти когда угодно), он сразу попадёт в поле помеченнное аттрибутом, его ожидающем. Также важной особенностью является то, что если компонент / объект были удалены со сцены, то в поле будет возвращён null.
 
 # Сцены
-Сценой называется объект - наследник класса Scene
+Сценой называется объект - наследник класса MonoChrome.SceneSystem.Scene
 ```sh
- public ContentManager Content { get;}
+public ContentManager Content { get;}
 public Game Game { get; }
 public GraphicsDevice GraphicsDevice { get; }
 protected LayerManager LayerManager { get;}
@@ -203,7 +204,7 @@ public virtual void OnDisable()
 public virtual void OnEnable()
 public abstract void Setup();
 ```
-Scene имеется единственый абстрактный метод Setup предназначенный для настройки сцены и заполнении её объектами. А также настройки самих объектов (хотя это можно делегировать другим классам).
+Scene имеется единственый абстрактный метод Setup предназначенный для настройки сцены и заполнении её объектами. А также настройки самих объектов (хотя это можно делегировать другим классам, например создав фабрику ActorFactory, и определив в ней методы порождающие объекты с необходимыми наборами компонентов).
 Пример сцены: 
 ```sh
 internal class MainMenuScene : Scene
@@ -261,51 +262,51 @@ public void Update(GameTime gameTime)
  Посредством методов Update / Draw SceneManager интегрируется в жизненый цикл игры следующим образом
 ```sh
 public class AsteroidGame : Game
+{
+    private GraphicsDeviceManager graphics;
+    private SpriteBatch spriteBatch;
+
+    public AsteroidGame()
     {
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-
-        public AsteroidGame()
-        {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            ActorFactory.Content = Content;
-            IsMouseVisible = true;
-        }
-
-        protected override void Initialize()
-        {
-            SceneManager.Instance.GraphicsDevice = graphics.GraphicsDevice;
-            SceneManager.Instance.Content = Content;
-            SceneManager.Instance.Game = this;
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            SceneManager.Instance.LoadScene<MainMenuScene>();
-            SceneManager.Instance.SetActiveScene<MainMenuScene>();
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-        }
-
-        protected override void UnloadContent()
-        {
-            SceneManager.Instance.UnloadScene<MainMenuScene>();
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            SceneManager.Instance.Update(gameTime);
-            base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            SceneManager.Instance.Draw();
-            base.Draw(gameTime);
-        }
+        graphics = new GraphicsDeviceManager(this);
+        Content.RootDirectory = "Content";
+        ActorFactory.Content = Content;
+        IsMouseVisible = true;
     }
+
+    protected override void Initialize()
+    {
+        SceneManager.Instance.GraphicsDevice = graphics.GraphicsDevice;
+        SceneManager.Instance.Content = Content;
+        SceneManager.Instance.Game = this;
+        base.Initialize();
+    }
+
+    protected override void LoadContent()
+    {
+        SceneManager.Instance.LoadScene<MainMenuScene>();
+        SceneManager.Instance.SetActiveScene<MainMenuScene>();
+        spriteBatch = new SpriteBatch(GraphicsDevice);
+    }
+
+    protected override void UnloadContent()
+    {
+        SceneManager.Instance.UnloadScene<MainMenuScene>();
+    }
+
+    protected override void Update(GameTime gameTime)
+    {
+        SceneManager.Instance.Update(gameTime);
+        base.Update(gameTime);
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
+        SceneManager.Instance.Draw();
+        base.Draw(gameTime);
+    }
+}
 ```
  
  # LayerManager
@@ -348,6 +349,30 @@ public void SetZIndex(DefaultLayers layerName, int zIndex)
 ```sh
 ComponentA.Scene.LayerManager
 ```
+## Input
+Все стандартные средства ввода из MonoGame можно использовать внутри компонентов. Однако добаилось несколько более эффективных и удобных средств.
+### IPointerClickHandler
+```sh
+void OnPointerClick(PointerEventData pointerEventData);
+```
+
+Добавляет метод срабатывающий при клике по Collider'у объекта, если он есть. В качестве аргумента используется структура PointerEventData:
+```sh
+public MouseButton Button { get; set; }
+public Vector2 Position { get; set; }
+```
+### IMouseOverHandler
+```sh
+void OnMouseExit();
+void OnMouseOver();
+```
+Метод OnMouseOver срабатыват при наведении мышки на Collider объекта каждый фрейм.
+Метод OnMouseExit срабатыват при убирании мышки с Collider объекта единожды.
+### IKeyboardHandler
+```sh
+void KeyboardHandle(KeyboardState state);
+```
+Срабатывает при нажатии клаваши на клавиатуре
  # Итог
  Документация может не содержать всей информации, а также не быть окончательной и может содержать ошибки. Также как и API и реализация не являются окончательными. Есть идеи что можно улущить или вообще переписать, какие кмопоненты добавить и прочее, буду стараться обнолять данный Framework, но следует упомянуть что это лишь учёбный проект, созданный в личных целях и я не беру никаких обязательств по его регулярной поддержке.
  С замченаниями и пожеланиями сюда: [goldsphere48@gmail.com](mailto:goldsphere48@gmail.com?subject=[GitHub]MonoCrome)
