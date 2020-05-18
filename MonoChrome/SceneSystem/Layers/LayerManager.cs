@@ -17,19 +17,7 @@ namespace MonoChrome.SceneSystem.Layers
         {
             if (string.IsNullOrEmpty(layerName) == false)
             {
-                var layer = _layers.GetLayer(layerName);
-                if (layer != null)
-                {
-
-                    layer.ZIndex = zIndex;
-                }
-                else
-                {
-                    layer = new Layer(layerName, zIndex);
-                    layer.ZIndexChanged += OnZIndexChanged;
-                    _layers.Add(layer);
-                }
-                return layer;
+                return _layers.CreateOrReplace(layerName, zIndex);
             }
             else
             {
@@ -277,13 +265,6 @@ namespace MonoChrome.SceneSystem.Layers
         private Layer CreateLayer(DefaultLayers layerName, int zIndex)
         {
             return CreateLayer(layerName.ToString(), zIndex);
-        }
-
-        private void OnZIndexChanged(object sender, EventArgs args)
-        {
-            var layer = sender as Layer;
-            _layers.Remove(layer);
-            _layers.Add(layer);
         }
     }
 

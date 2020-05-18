@@ -11,5 +11,6 @@ namespace MonoChrome.SceneSystem.Layers
         ILayerSettings GetLayerSettings(string layerName);
         bool Remove(Layer layer);
         bool Remove(string layerName);
+        Layer CreateOrReplace(string layerName, int zIndex);
     }
 }
