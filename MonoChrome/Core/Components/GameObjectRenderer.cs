@@ -21,12 +21,12 @@ namespace MonoChrome.Core.Components
         protected void Update()
         {
             var box = new Rectangle((int)_transform.Position.X, (int)_transform.Position.Y, (int)Size.X, (int)Size.Y);
-            if (!box.Intersects(Window) && IsVisible)
+            if (box.Intersects(Window) == false && IsVisible)
             {
                 IsVisible = false;
                 BecomeInvisible?.Invoke(this);
             }
-            else if (!IsVisible)
+            else if (IsVisible == false)
             {
                 IsVisible = true;
                 BecomeVisible?.Invoke(this);

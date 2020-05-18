@@ -152,7 +152,7 @@ namespace MonoChrome.Core
 
         public void Dispose(bool clean)
         {
-            if (!_disposed)
+            if (_disposed == false)
             {
                 if (_enabled)
                 {

@@ -15,18 +15,19 @@ namespace MonoChrome.SceneSystem.Layers
 
         public Layer CreateLayer(string layerName, int zIndex)
         {
-            if (!string.IsNullOrEmpty(layerName))
+            if (string.IsNullOrEmpty(layerName) == false)
             {
                 var layer = _layers.GetLayer(layerName);
-                if (layer == null)
+                if (layer != null)
+                {
+
+                    layer.ZIndex = zIndex;
+                }
+                else
                 {
                     layer = new Layer(layerName, zIndex);
                     layer.ZIndexChanged += OnZIndexChanged;
                     _layers.Add(layer);
-                }
-                else
-                {
-                    layer.ZIndex = zIndex;
                 }
                 return layer;
             }
@@ -38,7 +39,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public ILayerSettings GetLayer(string layerName)
         {
-            if (!string.IsNullOrEmpty(layerName))
+            if (string.IsNullOrEmpty(layerName) == false)
             {
                 return _layers.GetLayerSettings(layerName);
             }
@@ -55,7 +56,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void SetZIndex(string layerName, int zIndex)
         {
-            if (!string.IsNullOrEmpty(layerName))
+            if (string.IsNullOrEmpty(layerName) == false)
             {
                 var layer = _layers.GetLayer(layerName);
                 layer.ZIndex = zIndex;
@@ -73,33 +74,18 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void Add(string layerName, GameObject gameObject, bool replace = true)
         {
-            if (string.IsNullOrEmpty(layerName) || gameObject == null)
-            {
-                throw new ArgumentNullException();
-            }
-            if (gameObject.LayerName != layerName)
+            if (string.IsNullOrEmpty(layerName) == false && gameObject != null)
             {
                 if (string.IsNullOrEmpty(gameObject.LayerName))
                 {
-                    var layer = _layers.GetLayer(layerName);
-                    if (layer != null)
-                    {
-                        layer.Add(gameObject);
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Can't find layer with name {layerName}");
-                    }
-                    foreach (var child in gameObject.Transform.Childrens)
-                    {
-                        Add(layerName, child.GameObject, false);
-                    }
-                }
-                else if (replace)
+                    TryAddOnLayer(gameObject, layerName);
+                } else if (gameObject.LayerName != layerName && replace)
                 {
-                    Remove(gameObject);
-                    Add(layerName, gameObject);
+                    ReplaceGameObjectOnNewLayer(gameObject, layerName);
                 }
+            } else
+            {
+                throw new ArgumentNullException();
             }
         }
 
@@ -115,13 +101,19 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void AddFrameEndTask(FrameEndTask task)
         {
-            if (_isFrameEnd)
+            if (task != null)
             {
-                task?.Invoke();
-            }
-            else
+                if (_isFrameEnd)
+                {
+                    task?.Invoke();
+                }
+                else
+                {
+                    _frameEndTasksBuffers.Add(task);
+                }
+            } else
             {
-                _frameEndTasksBuffers.Add(task);
+                throw new ArgumentNullException();
             }
         }
 
@@ -147,7 +139,7 @@ namespace MonoChrome.SceneSystem.Layers
             foreach (var layer in _layers)
             {
                 var clickWasHandled = layer.HandleMouseClick(pointerEventData);
-                if (clickWasHandled && !layer.AllowThroughHandling)
+                if (clickWasHandled && layer.AllowThroughHandling == false)
                 {
                     break;
                 }
@@ -159,7 +151,7 @@ namespace MonoChrome.SceneSystem.Layers
             foreach (var layer in _layers)
             {
                 var isMouseOver = layer.HandleMouseMove(pointerEventData);
-                if (isMouseOver && !layer.AllowThroughHandling)
+                if (isMouseOver && layer.AllowThroughHandling == false)
                 {
                     break;
                 }
@@ -228,27 +220,26 @@ namespace MonoChrome.SceneSystem.Layers
 
         internal void Remove(GameObject gameObject)
         {
-            string layerName = null;
-            if (gameObject != null)
+            if (gameObject != null && string.IsNullOrEmpty(gameObject.LayerName) == false)
             {
-                layerName = gameObject.LayerName;
-            }
-            if (string.IsNullOrEmpty(layerName))
-            {
-                throw new ArgumentNullException();
-            }
-            var layer = _layers.GetLayer(layerName);
-            if (layer != null)
-            {
-                layer.Remove(gameObject);
-                foreach (var child in gameObject.Transform.Childrens)
+                string layerName = gameObject.LayerName;
+                var layer = _layers.GetLayer(layerName);
+                if (layer != null)
                 {
-                    Remove(child.GameObject);
+                    layer.Remove(gameObject);
+                    foreach (var child in gameObject.Transform.Childrens)
+                    {
+                        Remove(child.GameObject);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Can't find layer which contains gameObject {gameObject.Name}");
                 }
             }
             else
             {
-                throw new ArgumentException($"Can't find layer which contains gameObject {gameObject.Name}");
+                throw new ArgumentNullException();
             }
         }
 
@@ -257,6 +248,29 @@ namespace MonoChrome.SceneSystem.Layers
             foreach (var layer in _layers)
             {
                 layer.Update();
+            }
+        }
+
+        private void ReplaceGameObjectOnNewLayer(GameObject gameObject, string newLayerName)
+        {
+            Remove(gameObject);
+            Add(newLayerName, gameObject);
+        }
+
+        private void TryAddOnLayer(GameObject gameObject, string layerName)
+        {
+            var layer = _layers.GetLayer(layerName);
+            if (layer != null)
+            {
+                layer.Add(gameObject);
+                foreach (var child in gameObject.Transform.Childrens)
+                {
+                    Add(layerName, child.GameObject, false);
+                }
+            }
+            else
+            {
+                throw new ArgumentException($"Can't find layer with name {layerName}");
             }
         }
 

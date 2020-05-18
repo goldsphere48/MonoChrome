@@ -22,11 +22,11 @@ namespace MonoChrome.Core.Components
         {
             get
             {
-                if (Parent == null)
+                if (Parent != null)
                 {
-                    return _position;
+                    return _position - Parent.Position;
                 }
-                return _position - Parent.Position;
+                return _position;
             }
             set => HandleLocalPositionChange(value);
         }
@@ -37,20 +37,18 @@ namespace MonoChrome.Core.Components
             set
             {
                 var args = new GameObjectEventArgs(GameObject);
-                if (value == null)
-                {
-                    if (_parent != null)
-                    {
-                        ChildRemove?.Invoke(this, args);
-                        OnChildRemove(args);
-                        _parent.Childrens.Remove(this);
-                    }
-                }
-                else if (!value.Childrens.Contains(this))
+                if (value != null && value.Childrens.Contains(this) == false)
                 {
                     value.Childrens.Add(this);
                     ChildAdded?.Invoke(this, args);
                     OnChildAdded(args);
+                   
+                }
+                else if (value == null && _parent == null)
+                {
+                    ChildRemove?.Invoke(this, args);
+                    OnChildRemove(args);
+                    _parent.Childrens.Remove(this);
                 }
                 _parent = value;
             }

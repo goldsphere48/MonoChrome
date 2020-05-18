@@ -25,7 +25,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         public override void AddCacheRule(CacheRule cacheRule)
         {
             var rule = cacheRule as ComponentCacheRule;
-            if (!_cached.ContainsKey(rule.ComponentType))
+            if (_cached.ContainsKey(rule.ComponentType) == false)
             {
                 _rules.Add(rule.ComponentType, rule.CacheMode);
                 _cached.Add(rule.ComponentType, new ZIndexSortedSet<Component>());
@@ -43,7 +43,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             if (_cached.ContainsKey(item.Key))
             {
                 var components = _cached[item.Key];
-                if (!components.Contains(item.Component))
+                if (components.Contains(item.Component) == false)
                 {
                     components.Add(item.Component);
                 }

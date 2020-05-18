@@ -15,36 +15,24 @@ namespace MonoChrome.Core.EntityManager
 
         public void Define(string definition, string inheritFromDefinition, params Type[] types)
         {
-            if (_definitions.ContainsKey(definition))
+            if (_definitions.ContainsKey(definition) == false && definition != null)
+            {
+                List<Type> componentTypes = new List<Type>();
+                componentTypes.AddRange(types);
+                if (inheritFromDefinition != null)
+                {
+                    AddParentTypes(inheritFromDefinition, componentTypes);
+                }
+                if (componentTypes.Count > 0)
+                {
+                    _definitions[definition] = componentTypes;
+                }
+            } else if (definition == null)
+            {
+                throw new ArgumentNullException();
+            } else
             {
                 throw new ArgumentException($"Definition {definition} is already exist");
-            }
-            List<Type> componentTypes = new List<Type>();
-            componentTypes.AddRange(types);
-            if (inheritFromDefinition != null)
-            {
-                if (!_definitions.ContainsKey(inheritFromDefinition))
-                {
-                    throw new ArgumentException(
-                        $"Can't inherit from definition {inheritFromDefinition}. {inheritFromDefinition} is not define."
-                    );
-                }
-                else
-                {
-                    var parentDefinitionComponentTypes = _definitions[inheritFromDefinition];
-                    foreach (var type in parentDefinitionComponentTypes)
-                    {
-                        if (componentTypes.Contains(type))
-                        {
-                            componentTypes.Remove(type);
-                        }
-                    }
-                    componentTypes.AddRange(_definitions[inheritFromDefinition]);
-                }
-            }
-            if (componentTypes.Count > 0)
-            {
-                _definitions[definition] = componentTypes;
             }
         }
 
@@ -66,6 +54,28 @@ namespace MonoChrome.Core.EntityManager
         public bool Undefine(string definition)
         {
             return _definitions.Remove(definition);
+        }
+
+        private void AddParentTypes(string parentDefinition, List<Type> componentTypes)
+        {
+            if (_definitions.ContainsKey(parentDefinition))
+            {
+                var parentDefinitionComponentTypes = _definitions[parentDefinition];
+                foreach (var type in parentDefinitionComponentTypes)
+                {
+                    if (componentTypes.Contains(type))
+                    {
+                        componentTypes.Remove(type);
+                    }
+                }
+                componentTypes.AddRange(_definitions[parentDefinition]);
+            }
+            else
+            {
+                throw new ArgumentException(
+                      $"Can't inherit from definition {parentDefinition}. {parentDefinition} is not define."
+                  );
+            }
         }
     }
 }

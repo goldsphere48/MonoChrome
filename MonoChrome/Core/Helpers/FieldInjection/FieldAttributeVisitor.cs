@@ -88,7 +88,7 @@ namespace MonoChrome.Core.Helpers.FieldInjection
 
         public void Inject<T>(T value)
         {
-            if ((IsInOrder || value == null) == false)
+            if (IsInOrder == false || value != null)
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace MonoChrome.Core.Helpers.FieldInjection
         public bool IsObjectValid(Component injectableComponet)
         {
             return
-                (!string.IsNullOrEmpty(From) && From == injectableComponet.GameObject.Name) ||
+                (string.IsNullOrEmpty(From) == false && From == injectableComponet.GameObject.Name) ||
                 string.IsNullOrEmpty(From) && injectableComponet.GameObject == Component.GameObject;
         }
     }

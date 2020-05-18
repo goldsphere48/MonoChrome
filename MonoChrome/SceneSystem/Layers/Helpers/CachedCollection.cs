@@ -47,7 +47,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
             }
             foreach (var item in _itemBufferOnRemove)
             {
-                if (!item.Component.IsDisposed)
+                if (item.Component.IsDisposed == false)
                 {
                     Remove(item);
                 }

@@ -12,26 +12,29 @@ namespace MonoChrome.Core.EntityManager
 
         public bool Add(GameObject entity, Component component)
         {
-            if (entity == null || component == null)
+            if (entity != null && component != null)
+            {
+                bool componentSuccessfullyAttached = false;
+                var components = GetComponentsForEntity(entity);
+                if (components == null)
+                {
+                    components = new Dictionary<Type, Component>();
+                    _gameObjects[entity] = components;
+                    _injector.OnObjectEntered(entity);
+                }
+                if (components.ContainsKey(component.GetType()) == false)
+                {
+                    components.Add(component.GetType(), component);
+                    entity.Attach(component);
+                    _injector.OnComponentAdded(component);
+                    componentSuccessfullyAttached = true;
+                }
+                return componentSuccessfullyAttached;
+            } else
             {
                 throw new ArgumentNullException();
             }
-            bool componentSuccessfullyAttached = false;
-            var components = GetComponentsForEntity(entity);
-            if (components == null)
-            {
-                components = new Dictionary<Type, Component>();
-                _gameObjects[entity] = components;
-                _injector.OnObjectEntered(entity);
-            }
-            if (!components.ContainsKey(component.GetType()))
-            {
-                components.Add(component.GetType(), component);
-                entity.Attach(component);
-                _injector.OnComponentAdded(component);
-                componentSuccessfullyAttached = true;
-            }
-            return componentSuccessfullyAttached;
+            
         }
 
         public void Clear()
@@ -45,11 +48,13 @@ namespace MonoChrome.Core.EntityManager
 
         public bool Contains(GameObject entity)
         {
-            if (entity == null)
+            if (entity != null)
+            {
+                return _gameObjects.ContainsKey(entity);
+            } else
             {
                 throw new ArgumentNullException();
             }
-            return _gameObjects.ContainsKey(entity);
         }
 
         public T GetComponent<T>(GameObject entity) where T : Component
@@ -69,25 +74,26 @@ namespace MonoChrome.Core.EntityManager
 
         public Component GetComponent(GameObject entity, Type componentType, bool allowDerivedComponents)
         {
-            if (entity == null || componentType == null)
+            if (entity != null && componentType != null)
+            {
+                IDictionary<Type, Component> components = GetComponentsForEntity(entity);
+                Component result = null;
+                if (components != null && components.Count > 0)
+                {
+                    foreach (Component otherComponent in components.Values)
+                    {
+                        if (IsMatch(allowDerivedComponents, componentType, otherComponent))
+                        {
+                            result = otherComponent;
+                            break;
+                        }
+                    }
+                }
+                return result;
+            } else
             {
                 throw new ArgumentNullException();
             }
-            IDictionary<Type, Component> components = GetComponentsForEntity(entity);
-            Component result = null;
-            if (components != null && components.Count > 0)
-            {
-                foreach (Component otherComponent in components.Values)
-                {
-                    if ((allowDerivedComponents && otherComponent.GetType().IsSubclassOf(componentType))
-                        || otherComponent.GetType() == componentType)
-                    {
-                        result = otherComponent;
-                        break;
-                    }
-                }
-            }
-            return result;
         }
 
         public IEnumerable<Component> GetComponents(GameObject entity)
@@ -97,7 +103,7 @@ namespace MonoChrome.Core.EntityManager
 
         public IEnumerable<Component> GetComponents(GameObject entity, Type type, bool inherit)
         {
-            if (!inherit)
+            if (inherit == false)
             {
                 yield return GetComponent(entity, type);
                 yield break;
@@ -163,32 +169,39 @@ namespace MonoChrome.Core.EntityManager
 
         public bool Remove(GameObject entity, Component component)
         {
-            if (entity == null || component == null)
+            if (entity != null && component != null)
+            {
+                var components = GetComponentsForEntity(entity);
+                if (components != null)
+                {
+                    if (components.Count == 0)
+                    {
+                        _injector.OnObjectDrop(entity);
+                        _gameObjects.Remove(entity);
+                    }
+                    else
+                    {
+                        EraseComponent(entity, component);
+                        return components.Remove(component.GetType());
+                    }
+                }
+                return false;
+            } else
             {
                 throw new ArgumentNullException();
             }
-            var components = GetComponentsForEntity(entity);
-            if (components == null || components.Count == 0)
-            {
-                if (components.Count == 0)
-                {
-                    _injector.OnObjectDrop(entity);
-                    _gameObjects.Remove(entity);
-                }
-                return false;
-            }
-            EraseComponent(entity, component);
-            return components.Remove(component.GetType());
         }
 
         public bool Remove(GameObject entity)
         {
-            if (entity == null)
+            if (entity != null)
+            {
+                EraseGameObject(entity);
+                return _gameObjects.Remove(entity);
+            } else
             {
                 throw new ArgumentNullException();
             }
-            EraseGameObject(entity);
-            return _gameObjects.Remove(entity);
         }
 
         internal IDictionary<Type, Component> GetComponentsForEntity(GameObject gameObject)
@@ -223,6 +236,12 @@ namespace MonoChrome.Core.EntityManager
             components.Clear();
             _injector.OnObjectDrop(entity);
             _gameObjects.Remove(entity);
+        }
+
+        private bool IsMatch(bool allowDerivedComponents, Type targetType, Component matchingComponent)
+        {
+            return (allowDerivedComponents && matchingComponent.GetType().IsSubclassOf(targetType))
+                            || matchingComponent.GetType() == targetType;
         }
     }
 }

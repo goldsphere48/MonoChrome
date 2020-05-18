@@ -92,17 +92,20 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         public bool Remove(TKey key)
         {
             _list.TryGetValue(key.ZIndex, out var container);
-            if (container == null)
+            if (container != null)
+            {
+                key.ZIndexChanged -= OnZIndexChanged;
+                container.Remove(key);
+                if (container.Count == 0)
+                {
+                    _list.Remove(key.ZIndex);
+                }
+                return true;
+
+            } else
             {
                 return false;
             }
-            key.ZIndexChanged -= OnZIndexChanged;
-            container.Remove(key);
-            if (container.Count == 0)
-            {
-                _list.Remove(key.ZIndex);
-            }
-            return true;
         }
 
         public bool TryGetValue(TKey key, out TValue outValue)

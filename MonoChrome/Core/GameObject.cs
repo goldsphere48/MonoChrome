@@ -304,7 +304,7 @@ namespace MonoChrome.Core
         {
             InvokeAction(
                 component => component.AwakeMethod,
-                component => !component.IsAwaked,
+                component => component.IsAwaked == false,
                 component => component.IsAwaked = true
             );
         }
@@ -343,7 +343,7 @@ namespace MonoChrome.Core
         {
             InvokeAction(
                 component => component.StartMethod,
-                component => !component.IsStarted,
+                component => component.IsStarted == false,
                 component => component.IsStarted = true
             );
         }
@@ -357,20 +357,25 @@ namespace MonoChrome.Core
             }
         }
 
-        private void InvokeActionForComponents(Func<Component, Action> reciever, Predicate<Component> predicate, Action<Component> after, List<Component> components)
+        private void InvokeActionForComponents(
+            Func<Component, Action> methodReciever, 
+            Predicate<Component> canInvoke, 
+            Action<Component> afterInvokeAction, 
+            List<Component> components
+            )
         {
             for (int i = 0; i < components.Count; ++i)
             {
                 CheckComponent(components[i]);
-                var method = reciever?.Invoke(components[i]);
-                if (method != null && predicate(components[i]))
+                var method = methodReciever?.Invoke(components[i]);
+                if (method != null && canInvoke(components[i]))
                 {
                     method();
                     var newComponents = Registry.GetComponents(this).ToList();
                     var result = newComponents.Except(components).ToList();
                     if (result.Count > 0)
                     {
-                        InvokeActionForComponents(reciever, predicate, after, newComponents);
+                        InvokeActionForComponents(methodReciever, canInvoke, afterInvokeAction, newComponents);
                     }
                 }
             }

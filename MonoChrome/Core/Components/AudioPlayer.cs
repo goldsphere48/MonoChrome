@@ -40,7 +40,7 @@ namespace MonoChrome.Core.Components
 
         public void Pause()
         {
-            if (_instance != null && !_instance.IsDisposed)
+            if (_instance != null && _instance.IsDisposed == false)
             {
                 _instance.Pause();
             }
@@ -52,7 +52,7 @@ namespace MonoChrome.Core.Components
 
         public void Play()
         {
-            if (_instance != null && !_instance.IsDisposed)
+            if (_instance != null && _instance.IsDisposed == false)
             {
                 _instance.Play();
             }
@@ -64,7 +64,7 @@ namespace MonoChrome.Core.Components
 
         public void Stop()
         {
-            if (_instance != null && !_instance.IsDisposed)
+            if (_instance != null && _instance.IsDisposed == false)
             {
                 _instance.Stop();
             }

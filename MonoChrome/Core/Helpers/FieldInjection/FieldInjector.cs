@@ -58,7 +58,7 @@ namespace MonoChrome.Core.Helpers.FieldInjection
 
         private IEnumerable<FieldInfo> GetAllFields(Type type)
         {
-            if (type == null && !typeof(Component).IsAssignableFrom(type))
+            if (type == null && typeof(Component).IsAssignableFrom(type) == false)
             {
                 return Enumerable.Empty<FieldInfo>();
             }

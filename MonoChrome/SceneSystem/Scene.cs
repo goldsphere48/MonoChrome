@@ -23,14 +23,16 @@ namespace MonoChrome.SceneSystem
 
         public void Instatiate(GameObject gameObject, string layerName)
         {
-            if (gameObject == null || layerName == null)
+            if (gameObject != null && layerName != null)
+            {
+                gameObject.Scene = this;
+                gameObject.Awake();
+                Added?.Invoke(this, new AddGameObjectEventArgs(gameObject, layerName));
+                gameObject.Start();
+            } else
             {
                 throw new ArgumentNullException();
             }
-            gameObject.Scene = this;
-            gameObject.Awake();
-            Added?.Invoke(this, new AddGameObjectEventArgs(gameObject, layerName));
-            gameObject.Start();
         }
 
         public void Instatiate(GameObject gameObject, DefaultLayers layerName)

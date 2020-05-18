@@ -108,7 +108,7 @@ namespace MonoChrome.SceneSystem
             _layerManager.AddFrameEndTask(() =>
             {
                 OnDisable();
-                if (!Disposed)
+                if (Disposed == false)
                 {
                     if (clean)
                     {

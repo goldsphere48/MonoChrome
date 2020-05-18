@@ -16,7 +16,7 @@ namespace MonoChrome.SceneSystem.Layers
 
         public void Add(Layer layer)
         {
-            if (!_layers.Contains(layer))
+            if (_layers.Contains(layer) == false)
             {
                 _layers.Add(layer);
             }
@@ -68,11 +68,15 @@ namespace MonoChrome.SceneSystem.Layers
 
         public bool Remove(Layer layer)
         {
-            if (layer == null)
+            if (layer != null)
+            {
+                return _layers.Remove(layer);
+            }
+            else
             {
                 throw new ArgumentNullException();
             }
-            return _layers.Remove(layer);
+
         }
 
         public bool Remove(string layerName)

@@ -22,7 +22,7 @@ namespace MonoChrome.SceneSystem.Layers.Helpers
         {
             var rule = cacheRule as MethodCacheRule;
             var methodName = rule.MethodName;
-            if (!_cached.ContainsKey(methodName))
+            if (_cached.ContainsKey(methodName) == false)
             {
                 _rules.Add(methodName, rule.CacheMode);
                 _cached.Add(methodName, new ZIndexSortedList<Component, Action>());

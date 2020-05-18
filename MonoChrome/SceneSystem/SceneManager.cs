@@ -86,19 +86,21 @@ namespace MonoChrome.SceneSystem
 
         public void LoadScene(Type type)
         {
-            if (!IsScene(type))
+            if (IsScene(type))
+            {
+                var scene = GetSceneController(type);
+                if (scene == null)
+                {
+                    scene = new SceneController(type, GraphicsDevice, Content, Game);
+                    _scenes.Add(scene);
+                }
+                if (scene.Initialized == false)
+                {
+                    scene.Setup();
+                }
+            } else
             {
                 throw new ArgumentException($"{type.Name} is not subclass of IScene");
-            }
-            var scene = GetSceneController(type);
-            if (scene == null)
-            {
-                scene = new SceneController(type, GraphicsDevice, Content, Game);
-                _scenes.Add(scene);
-            }
-            if (!scene.Initialized)
-            {
-                scene.Setup();
             }
         }
 
@@ -117,7 +119,7 @@ namespace MonoChrome.SceneSystem
             }
             _currentScreen?.OnDisable();
             _currentScreen = scene;
-            if (!scene.Initialized)
+            if (scene.Initialized == false)
             {
                 scene.Setup();
             }
@@ -131,16 +133,21 @@ namespace MonoChrome.SceneSystem
 
         public void UnloadScene(Type type)
         {
-            if (!IsScene(type) && !Contains(type))
+            if (IsScene(type) && Contains(type))
             {
-                throw new ArgumentException($"{type.Name} is not subclass of IScene or this scene doesn't exist");
-            }
-            var scene = GetSceneController(type);
-            if (scene.Initialized)
+                var scene = GetSceneController(type);
+                if (scene.Initialized)
+                {
+                    scene.Dispose();
+                }
+                _scenes.Remove(scene);
+            } else if (IsScene(type) == false)
             {
-                scene.Dispose();
+                throw new ArgumentException($"{type.Name} is not subclass of IScene");
+            } else if (Contains(type) == false)
+            {
+                throw new ArgumentException($"Scene {type.Name} scene doesn't exist");
             }
-            _scenes.Remove(scene);
         }
 
         public void UnloadScene<T>() where T : IScene

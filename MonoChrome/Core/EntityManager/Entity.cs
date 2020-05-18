@@ -43,24 +43,29 @@ namespace MonoChrome.Core.EntityManager
 
         public static GameObject Create(string name, params Component[] components)
         {
-            if (name == null || components == null)
+            if (name != null && components != null)
+            {
+                var gameObject = _entityFactory.CreateEmpty(name, Registry);
+                AttachComponents(gameObject, components);
+                return gameObject;
+            } else
             {
                 throw new ArgumentNullException();
             }
-            var gameObject = _entityFactory.CreateEmpty(name, Registry);
-            AttachComponents(gameObject, components);
-            return gameObject;
         }
 
         public static GameObject CreateFromDefinition(string definition, string name)
         {
-            if (definition == null)
+            if (definition != null)
+            {
+                var componentTypes = _definitions.Get(definition);
+                var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
+                return gameObject;
+            } else
             {
                 throw new ArgumentNullException();
             }
-            var componentTypes = _definitions.Get(definition);
-            var gameObject = _entityFactory.Create(name, componentTypes.ToArray(), Registry);
-            return gameObject;
+
         }
 
         public static IEnumerable<GameObject> Decompose(GameObject gameObject)
@@ -81,11 +86,13 @@ namespace MonoChrome.Core.EntityManager
 
         public static void Define(string definition, string inheritFromDefinition, params Type[] componentTypes)
         {
-            if (definition == null || componentTypes == null)
+            if (definition != null && componentTypes != null)
+            {
+                _definitions.Define(definition, inheritFromDefinition, componentTypes);
+            } else
             {
                 throw new ArgumentNullException();
             }
-            _definitions.Define(definition, inheritFromDefinition, componentTypes);
         }
 
         public static GameObject Find(string name)
