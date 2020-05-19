@@ -95,7 +95,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
             spriteBatch.Draw(_debugTexture, point, null, Color.Black, angle, origin, scale, SpriteEffects.None, 0);
         }
 
-        private void OnFinalise()
+        private void OnFinalize()
         {
             if (_debugTexture != null)
             {

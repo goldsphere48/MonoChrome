@@ -54,7 +54,7 @@ namespace MonoChrome.SceneSystem.Layers
             _cachedComponents.AddCacheRule(new ComponentCacheRule(allCacheModes, typeof(IKeyboardHandler)));
             _cachedMethods.AddCacheRule(new MethodCacheRule(allCacheModes, "Update", component => component.UpdateMethod));
             _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnDestroy", component => component.OnDestroyMethod));
-            _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalise", component => component.OnFinaliseMethod));
+            _cachedMethods.AddCacheRule(new MethodCacheRule(onlyEntryCacheModes, "OnFinalize", component => component.OnFinalizeMethod));
         }
 
         private ICachedCollection<Type, Component> _cachedComponents;
@@ -155,9 +155,9 @@ namespace MonoChrome.SceneSystem.Layers
             }
         }
 
-        public void OnFinalise()
+        public void OnFinalize()
         {
-            foreach (var updateMethod in _cachedMethods["OnFinalise"])
+            foreach (var updateMethod in _cachedMethods["OnFinalize"])
             {
                 updateMethod();
             }

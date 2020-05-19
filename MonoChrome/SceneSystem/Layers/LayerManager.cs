@@ -175,11 +175,11 @@ namespace MonoChrome.SceneSystem.Layers
             }
         }
 
-        internal void OnFinalise()
+        internal void OnFinalize()
         {
             foreach (var layer in _layers)
             {
-                layer.OnFinalise();
+                layer.OnFinalize();
             }
         }
 

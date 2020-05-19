@@ -133,7 +133,7 @@ namespace MonoChrome.SceneSystem
 
         private void OnFinalize()
         {
-            _layerManager.OnFinalise();
+            _layerManager.OnFinalize();
             _layerManager.Clear();
             _store.Clear();
         }

@@ -70,7 +70,7 @@ namespace MonoChrome.Core
             UpdateMethod = CreateDelegate("Update");
             OnEnableMethod = CreateDelegate("OnEnable");
             OnDisableMethod = CreateDelegate("OnDisable");
-            OnFinaliseMethod = CreateDelegate("OnFinalise");
+            OnFinalizeMethod = CreateDelegate("OnFinalize");
             OnDestroyMethod = CreateDelegate("OnDestroy");
             OnCollision = CreateDelegate<Collision>("OnCollision");
         }
@@ -87,7 +87,7 @@ namespace MonoChrome.Core
         internal Action OnDestroyMethod;
         internal Action OnDisableMethod;
         internal Action OnEnableMethod;
-        internal Action OnFinaliseMethod;
+        internal Action OnFinalizeMethod;
         internal Action StartMethod;
         internal Action UpdateMethod;
         private bool _disposed = false;
@@ -162,7 +162,7 @@ namespace MonoChrome.Core
                 {
                     OnDestroyMethod?.Invoke();
                 }
-                OnFinaliseMethod?.Invoke();
+                OnFinalizeMethod?.Invoke();
                 _disposed = true;
             }
         }
