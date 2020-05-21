@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoChrome.Core.Attributes;
+using MonoChrome.Core.EntityManager;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,23 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         public BoxCollider2D()
         {
+            GameObject.ComponentAttached += OnComponentAttached;
+        }
+
+        private void OnComponentAttached(object sender, ComponentEventArgs e)
+        {
+            if (typeof(GameObjectRenderer).IsAssignableFrom(e.Component.GetType()))
+            {
+                if (IsUseRendererBounds)
+                {
+                    UseRendererBounds();
+                }
+                if (_debugTexture == null)
+                {
+                    _debugTexture = new Texture2D(GameObject.Scene.GraphicsDevice, 1, 1);
+                    _debugTexture.SetData(new[] { Color.Green });
+                }
+            }
         }
 
         public BoxCollider2D(int width, int height)
@@ -55,7 +73,7 @@ namespace MonoChrome.Core.Components.CollisionDetection
 
         public void UseRendererBounds()
         {
-            var renderer = GameObject.GetComponent<Renderer>(true);
+            var renderer = GameObject.GetComponent<GameObjectRenderer>(true);
             if (renderer != null)
             {
                 _box = new Rectangle((int)_transform.Position.X, (int)_transform.Position.Y, (int)renderer.Size.X, (int)renderer.Size.Y);
@@ -75,24 +93,16 @@ namespace MonoChrome.Core.Components.CollisionDetection
             DrawLine(batch, (new Vector2(_box.Left, _box.Bottom)), _box.Width, 0);
         }
 
-        private void Awake()
-        {
-            if (IsUseRendererBounds)
-            {
-                UseRendererBounds();
-            }
-            if (_debugTexture == null)
-            {
-                _debugTexture = new Texture2D(GameObject.Scene.GraphicsDevice, 1, 1);
-                _debugTexture.SetData(new[] { Color.Green });
-            }
-        }
-
         private void DrawLine(SpriteBatch spriteBatch, Vector2 point, float length, float angle, float thickness = 1f)
         {
             var origin = new Vector2(0f, 0.5f);
             var scale = new Vector2(length, thickness);
             spriteBatch.Draw(_debugTexture, point, null, Color.Black, angle, origin, scale, SpriteEffects.None, 0);
+        }
+
+        private void OnDestroy()
+        {
+            GameObject.ComponentAttached -= OnComponentAttached;
         }
 
         private void OnFinalize()
